@@ -2251,11 +2251,11 @@ function App() {
       setAuthToken(demoData.access_token); // Fixed: use access_token not token
       setAppMode('app');
       
-      // Set up profile for demo mode
+      // Set up profile for demo mode - don't set diabetes_type so it's treated as new profile
       setCurrentUser({
         id: demoData.user.id,
         email: demoData.user.email,
-        diabetes_type: 'type2', // Default for demo
+        diabetes_type: "", // Empty so form treats as new profile
         age: null,
         gender: null,
         activity_level: null,
