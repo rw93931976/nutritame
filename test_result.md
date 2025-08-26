@@ -104,6 +104,29 @@
 
 user_problem_statement: "Complete Demo Mode implementation for NutriTame (rebranded from GlucoPlanner), create DemoModeBanner component, integrate demo mode functionality, and update branding throughout the application."
 
+  - task: "Try Demo Button Functionality"
+    implemented: false
+    working: false
+    file: "frontend/src/DemoLandingPage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reports 'Try Demo' button does nothing when clicked. Need to investigate demo access creation functionality."
+  - task: "Profile Creation vs Update Logic"
+    implemented: false
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reports after demo form only shows 'Update Profile' but no profile exists, causing error. Need 'Create Profile' option and proper create/update logic."
+
   - task: "Launch Date Update to 10/1/2025"
     implemented: true
     working: true
