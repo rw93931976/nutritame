@@ -26,49 +26,65 @@ body {
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
+  background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
+  background: linear-gradient(180deg, #059669 0%, #047857 100%);
 }
 
 /* Smooth transitions for interactive elements */
 button {
-  transition: all 0.2s ease-in-out;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.15);
 }
 
 input, textarea, select {
-  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition: all 0.3s ease-in-out;
+  border: 2px solid transparent;
 }
 
-/* Focus styles */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  background: rgba(240, 253, 244, 0.5);
+}
+
+/* Enhanced focus styles with colors */
 button:focus,
 input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  ring: 2px;
-  ring-color: rgb(16 185 129 / 0.2);
+  ring: 3px;
+  ring-color: rgba(59, 130, 246, 0.3);
 }
 
-/* Loading animations */
+/* Loading animations with color */
 @keyframes pulse {
   0%, 100% {
     opacity: 1;
+    background-color: rgba(16, 185, 129, 0.1);
   }
   50% {
-    opacity: 0.5;
+    opacity: 0.6;
+    background-color: rgba(59, 130, 246, 0.1);
   }
 }
 
@@ -76,93 +92,204 @@ select:focus {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Card hover effects */
+/* Enhanced card hover effects */
 .card-hover {
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 .card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgb(0 0 0 / 0.1);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(16, 185, 129, 0.12), 0 8px 16px rgba(59, 130, 246, 0.08);
+  border-color: rgba(16, 185, 129, 0.3);
 }
 
-/* Badge animations */
+/* Enhanced badge animations with colors */
 .badge-interactive {
-  transition: all 0.2s ease-in-out;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  border: 1px solid transparent;
 }
 
 .badge-interactive:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.4);
 }
 
-/* Chat message animations */
+/* Chat message animations with color transitions */
 .message-enter {
-  animation: slideInFromBottom 0.3s ease-out;
+  animation: slideInFromBottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes slideInFromBottom {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
-/* Gradient text effect for headings */
+/* Enhanced gradient text effect */
 .gradient-text {
-  background: linear-gradient(135deg, #059669, #0891b2);
+  background: linear-gradient(135deg, #10b981 0%, #3b82f6 50%, #8b5cf6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Custom button styles */
+/* Enhanced button styles with better colors */
 .btn-primary {
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
   border: none;
   color: white;
   font-weight: 500;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #047857 0%, #065f46 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgb(5 150 105 / 0.3);
+  background: linear-gradient(135deg, #059669 0%, #047857 50%, #065f46 100%);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.4);
 }
 
-/* Glass morphism effect */
+.btn-secondary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+  border: none;
+  color: white;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.4);
+}
+
+/* Enhanced glass morphism effect */
 .glass {
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.1);
 }
 
-/* Diabetes-friendly color palette */
+/* Enhanced color palette with more variety */
 :root {
-  --color-primary: #059669;
-  --color-primary-light: #10b981;
+  --color-primary: #10b981;
+  --color-primary-light: #34d399;
   --color-primary-dark: #047857;
-  --color-secondary: #0891b2;
+  --color-secondary: #3b82f6;
+  --color-secondary-light: #60a5fa;
+  --color-secondary-dark: #1d4ed8;
   --color-accent: #f59e0b;
+  --color-accent-light: #fbbf24;
+  --color-purple: #8b5cf6;
+  --color-pink: #ec4899;
+  --color-orange: #f97316;
   --color-success: #22c55e;
-  --color-warning: #f59e0b;
+  --color-warning: #eab308;
   --color-error: #ef4444;
+  --color-info: #06b6d4;
   --color-neutral-50: #fafafa;
-  --color-neutral-100: #f5f5f5;
-  --color-neutral-200: #e5e5e5;
-  --color-neutral-500: #737373;
-  --color-neutral-700: #404040;
-  --color-neutral-900: #171717;
+  --color-neutral-100: #f4f4f5;
+  --color-neutral-200: #e4e4e7;
+  --color-neutral-500: #71717a;
+  --color-neutral-700: #3f3f46;
+  --color-neutral-900: #18181b;
 }
 
-/* Accessibility improvements */
+/* Status colors for diabetic ratings */
+.diabetic-excellent {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.diabetic-good {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.diabetic-moderate {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.diabetic-caution {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Enhanced health goal badges */
+.health-goal-badge {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+  border: 2px solid rgba(16, 185, 129, 0.2);
+  color: #047857;
+  transition: all 0.3s ease;
+}
+
+.health-goal-badge.active {
+  background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+  border-color: #047857;
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.health-goal-badge:hover {
+  border-color: #10b981;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%);
+}
+
+/* Food preference badges */
+.food-pref-badge {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+  border: 2px solid rgba(139, 92, 246, 0.2);
+  color: #7c3aed;
+  transition: all 0.3s ease;
+}
+
+.food-pref-badge.active {
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  border-color: #7c3aed;
+  color: white;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.food-pref-badge:hover {
+  border-color: #8b5cf6;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(236, 72, 153, 0.15) 100%);
+}
+
+/* Restaurant rating stars */
+.rating-star {
+  color: #fbbf24;
+  filter: drop-shadow(0 2px 4px rgba(251, 191, 36, 0.3));
+}
+
+/* Enhanced restaurant cards */
+.restaurant-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%);
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.restaurant-card:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 253, 244, 0.8) 100%);
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.15);
+}
+
+/* Accessibility improvements with better contrast */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -171,25 +298,66 @@ select:focus {
   }
 }
 
-/* Mobile-first responsive design */
+/* Enhanced mobile-first responsive design */
 @media (max-width: 640px) {
   .mobile-padding {
-    padding: 1rem;
+    padding: 1.5rem;
   }
   
   .mobile-text-sm {
     font-size: 0.875rem;
   }
+  
+  .card-hover:hover {
+    transform: translateY(-2px) scale(1.01);
+  }
 }
 
-/* High contrast mode support */
+/* High contrast mode support with enhanced colors */
 @media (prefers-contrast: high) {
   .card {
-    border: 2px solid var(--color-neutral-700);
+    border: 3px solid var(--color-neutral-700);
+    background: rgba(255, 255, 255, 0.95);
   }
   
   .btn-primary {
     background: var(--color-primary-dark);
-    border: 2px solid var(--color-neutral-900);
+    border: 3px solid var(--color-neutral-900);
   }
+  
+  .btn-secondary {
+    background: var(--color-secondary-dark);
+    border: 3px solid var(--color-neutral-900);
+  }
+}
+
+/* Enhanced loading states */
+.loading-spinner {
+  background: conic-gradient(from 0deg, #10b981, #3b82f6, #8b5cf6, #ec4899, #f97316, #10b981);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Enhanced tab styles */
+.tab-active {
+  background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.tab-inactive {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(248, 250, 252, 0.8) 100%);
+  color: #4b5563;
+  border: 1px solid rgba(209, 213, 219, 0.6);
+}
+
+.tab-inactive:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+  color: #047857;
+  border-color: rgba(16, 185, 129, 0.3);
 }
