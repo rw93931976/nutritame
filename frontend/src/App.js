@@ -283,6 +283,87 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
   );
 };
 
+// API Usage Monitor Component
+const APIUsageMonitor = ({ userProfile }) => {
+  const [usage, setUsage] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadUsageStats();
+    // Refresh usage stats every 30 seconds
+    const interval = setInterval(loadUsageStats, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const loadUsageStats = async () => {
+    try {
+      const response = await axios.get(`${API}/usage/google-places`);
+      setUsage(response.data);
+    } catch (error) {
+      console.error("Failed to load usage stats:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch(status) {
+      case 'limit_exceeded': return 'bg-red-100 text-red-700 border-red-200';
+      case 'approaching_limit': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+      case 'moderate_usage': return 'bg-blue-100 text-blue-700 border-blue-200';
+      default: return 'bg-green-100 text-green-700 border-green-200';
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch(status) {
+      case 'limit_exceeded': return '🚫 Limit Exceeded';
+      case 'approaching_limit': return '⚠️ Approaching Limit';
+      case 'moderate_usage': return '📊 Moderate Usage';
+      default: return '✅ Under Limit';
+    }
+  };
+
+  if (loading) return null;
+  if (!usage) return null;
+
+  return (
+    <div className="mb-4">
+      <Card className={`border-2 ${getStatusColor(usage.status)}`}>
+        <CardContent className="p-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">Google Places API Usage</span>
+              <Badge className={getStatusColor(usage.status)}>
+                {getStatusText(usage.status)}
+              </Badge>
+            </div>
+            <div className="text-sm font-mono">
+              {usage.calls_made} / {usage.monthly_limit} calls
+            </div>
+          </div>
+          <div className="mt-2">
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className={`h-2 rounded-full ${
+                  usage.percentage_used >= 100 ? 'bg-red-500' :
+                  usage.percentage_used >= 90 ? 'bg-yellow-500' :
+                  usage.percentage_used >= 70 ? 'bg-blue-500' : 'bg-green-500'
+                }`}
+                style={{ width: `${Math.min(usage.percentage_used, 100)}%` }}
+              ></div>
+            </div>
+            <div className="flex justify-between text-xs text-gray-600 mt-1">
+              <span>{usage.percentage_used}% used</span>
+              <span>{usage.calls_remaining} calls remaining</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
 // Restaurant Search Component
 const RestaurantSearch = ({ userProfile, onRestaurantSelect }) => {
   const [searchLocation, setSearchLocation] = useState("");
