@@ -809,8 +809,8 @@ class GlucoPlannerAPITester:
         return False
 
     def test_location_geocoding_dallas(self):
-        """Test geocoding for Dallas, Texas - CRITICAL BUG FIX"""
-        print("\n🔍 Testing Dallas, Texas Geocoding (Critical Bug Fix)...")
+        """Test geocoding for Dallas, Texas - URGENT ISSUE"""
+        print("\n🔍 Testing Dallas, Texas Geocoding (URGENT - After API Enable)...")
         
         test_location = "Dallas, Texas"
         expected_lat_range = (32.6, 32.9)  # Dallas latitude range
@@ -852,6 +852,59 @@ class GlucoPlannerAPITester:
                 print(f"   Expected lng: {expected_lng_range}, got: {lng}")
                 print(f"   This suggests Dallas is returning San Francisco coordinates")
                 return False
+        else:
+            # Check for specific error messages
+            print(f"   ❌ Geocoding failed with status code")
+            return False
+        return False
+
+    def test_location_geocoding_new_york(self):
+        """Test geocoding for New York, NY - URGENT ISSUE"""
+        print("\n🔍 Testing New York, NY Geocoding (URGENT - After API Enable)...")
+        
+        test_location = "New York, NY"
+        expected_lat_range = (40.6, 40.9)  # NYC latitude range
+        expected_lng_range = (-74.1, -73.9)  # NYC longitude range
+        
+        success, response = self.run_test(
+            "Geocode New York, NY",
+            "POST",
+            "geocode",
+            200,
+            data={"location": test_location}
+        )
+        
+        if success:
+            lat = response.get('latitude')
+            lng = response.get('longitude')
+            formatted_address = response.get('formatted_address', '')
+            
+            print(f"   Location: {test_location}")
+            print(f"   Returned coordinates: ({lat}, {lng})")
+            print(f"   Formatted address: {formatted_address}")
+            
+            # Check if coordinates are in NYC range
+            if (lat and lng and 
+                expected_lat_range[0] <= lat <= expected_lat_range[1] and
+                expected_lng_range[0] <= lng <= expected_lng_range[1]):
+                print("   ✅ Coordinates are in New York, NY range")
+                
+                # Check if formatted address mentions New York or NY
+                if 'new york' in formatted_address.lower() or 'ny' in formatted_address.lower():
+                    print("   ✅ Formatted address correctly identifies New York/NY")
+                    return True
+                else:
+                    print(f"   ⚠️  Formatted address doesn't clearly identify New York: {formatted_address}")
+                    return True  # Still pass if coordinates are correct
+            else:
+                print(f"   ❌ CRITICAL BUG: New York coordinates are wrong!")
+                print(f"   Expected lat: {expected_lat_range}, got: {lat}")
+                print(f"   Expected lng: {expected_lng_range}, got: {lng}")
+                return False
+        else:
+            # Check for specific error messages
+            print(f"   ❌ Geocoding failed with status code")
+            return False
         return False
 
     def test_restaurant_search_by_dallas_location(self):
