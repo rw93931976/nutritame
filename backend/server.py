@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, Header, Form
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -8,13 +8,23 @@ from pathlib import Path
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 import httpx
 import json
 import asyncio
 import phonenumbers
 from phonenumbers import NumberParseException
+
+# SaaS imports
+from models import (
+    User, PaymentTransaction, SubscriptionTier, SubscriptionRequest, 
+    UserRegistrationResponse, SUBSCRIPTION_PLANS, DataExportRequest, DataDeletionRequest
+)
+from database import db_manager
+from auth import AuthService, TenantMiddleware, get_current_user, get_current_active_user, get_premium_user, TrialManager
+from payment_service import payment_service
+from admin_service import admin_service
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
