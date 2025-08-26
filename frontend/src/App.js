@@ -1289,6 +1289,7 @@ const Dashboard = ({ userProfile, onBack }) => {
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [showShoppingListButton, setShowShoppingListButton] = useState(false);
   const [lastMealPlan, setLastMealPlan] = useState("");
+  const [showBackToTop, setShowBackToTop] = useState(false);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
@@ -1299,10 +1300,36 @@ const Dashboard = ({ userProfile, onBack }) => {
     }
   };
 
+  // Scroll to top function
+  const scrollToTop = () => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // Handle scroll to show/hide back to top button
+  const handleScroll = () => {
+    if (messagesContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+      // Show back to top button if scrolled down more than 300px or past 20% of content
+      const showButton = scrollTop > 300 && scrollTop < (scrollHeight - clientHeight - 100);
+      setShowBackToTop(showButton);
+    }
+  };
+
   // Scroll to bottom when messages update
   useEffect(() => {
     scrollToBottom();
   }, [messages, loading]);
+
+  // Add scroll listener to messages container
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+      return () => container.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
 
   useEffect(() => {
     // Load chat history
