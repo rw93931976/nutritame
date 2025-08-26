@@ -190,6 +190,11 @@ const SaaSHeader = ({ user, subscriptionInfo, onLogout }) => {
                         <Button 
                           size="sm" 
                           className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                          onClick={() => {
+                            setShowUserMenu(false);
+                            // Navigate to upgrade page or show pricing
+                            alert('Upgrade functionality coming soon! Contact support@nutritame.com for early upgrade options.');
+                          }}
                         >
                           <Crown className="h-4 w-4 mr-2" />
                           Upgrade to Premium
