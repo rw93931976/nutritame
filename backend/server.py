@@ -240,6 +240,113 @@ class ShoppingListUpdate(BaseModel):
     title: Optional[str] = None
     items: Optional[List[ShoppingListItem]] = None
 
+class SMSMessage(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    phone_number: str
+    message_content: str
+    message_type: str  # "restaurant_info", "meal_plan", "general"
+    restaurant_data: Optional[dict] = None
+    status: str = "sent"  # "sent", "delivered", "failed"
+    sent_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class SendSMSRequest(BaseModel):
+    user_id: str
+    phone_number: str
+    restaurant_place_id: str
+
+class MockSMSService:
+    """Mock SMS service that simulates sending SMS messages"""
+    
+    def __init__(self):
+        self.sent_messages = []
+    
+    def validate_phone_number(self, phone_number: str) -> bool:
+        """Validate phone number format"""
+        try:
+            parsed = phonenumbers.parse(phone_number, None)
+            return phonenumbers.is_valid_number(parsed)
+        except NumberParseException:
+            return False
+    
+    def format_phone_number(self, phone_number: str) -> str:
+        """Format phone number to E.164 format"""
+        try:
+            parsed = phonenumbers.parse(phone_number, "US")  # Default to US if no country code
+            return phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.E164)
+        except NumberParseException:
+            return phone_number
+    
+    async def send_restaurant_sms(self, phone_number: str, restaurant: dict) -> dict:
+        """Send restaurant information via SMS (mock)"""
+        try:
+            # Format the restaurant message
+            message = self._format_restaurant_message(restaurant)
+            
+            # Simulate SMS sending (in real implementation, this would call Twilio)
+            mock_response = {
+                "sid": f"SM{uuid.uuid4().hex[:32]}",
+                "status": "sent",
+                "to": self.format_phone_number(phone_number),
+                "from": "+15551234567",  # Mock Twilio number
+                "body": message,
+                "date_sent": datetime.now(timezone.utc).isoformat()
+            }
+            
+            # Store in mock sent messages
+            self.sent_messages.append(mock_response)
+            
+            logging.info(f"Mock SMS sent to {phone_number}: {message[:100]}...")
+            
+            return {
+                "success": True,
+                "message_sid": mock_response["sid"],
+                "status": "sent",
+                "formatted_phone": mock_response["to"]
+            }
+            
+        except Exception as e:
+            logging.error(f"Mock SMS sending error: {e}")
+            return {
+                "success": False,
+                "error": str(e)
+            }
+    
+    def _format_restaurant_message(self, restaurant: dict) -> str:
+        """Format restaurant information for SMS"""
+        name = restaurant.get('name', 'Unknown Restaurant')
+        address = restaurant.get('address', 'Address not available')
+        rating = restaurant.get('rating', 'N/A')
+        phone = restaurant.get('phone_number', 'Not available')
+        diabetic_score = restaurant.get('diabetic_friendly_score', 0)
+        
+        # Create diabetic rating text
+        if diabetic_score >= 4:
+            diabetic_text = "Excellent for diabetics"
+        elif diabetic_score >= 3:
+            diabetic_text = "Good for diabetics"
+        elif diabetic_score >= 2:
+            diabetic_text = "Fair - use caution"
+        else:
+            diabetic_text = "Requires careful selection"
+        
+        message = f"""🍽️ GlucoPlanner Restaurant Info
+
+{name}
+📍 {address}
+⭐ {rating}/5.0 Google Rating
+📞 {phone}
+
+🩺 Diabetic Score: {diabetic_score:.1f}/5.0
+{diabetic_text}
+
+Sent from GlucoPlanner - Your diabetic meal planning assistant"""
+        
+        return message
+
+# Initialize mock SMS service
+mock_sms_service = MockSMSService()
+
 def prepare_for_mongo(data):
     """Convert datetime objects to ISO strings for MongoDB storage"""
     if isinstance(data, dict):
