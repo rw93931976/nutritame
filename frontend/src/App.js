@@ -1319,18 +1319,27 @@ const Dashboard = ({ userProfile, onBack }) => {
     }
   };
 
-  // New Chat functionality
+  // New Chat functionality - Opens in new window/tab
   const startNewChat = () => {
-    setMessages([{
-      id: 'welcome-' + Date.now(),
-      message: `Hi! I'm your AI health coach. I can help you with meal planning, restaurant recommendations, and nutrition analysis. What would you like to explore today?`,
-      response: '',
-      isWelcome: true
-    }]);
-    setCurrentChatId(null);
-    setLastMealPlan("");
-    setShowShoppingListButton(false);
-    toast.success("Started new chat session");
+    // Open new window/tab with fresh chat
+    const newWindow = window.open(window.location.href, '_blank');
+    if (newWindow) {
+      // Focus the new window
+      newWindow.focus();
+      toast.success("New chat opened in new window");
+    } else {
+      // Fallback if popup blocked - clear current chat
+      setMessages([{
+        id: 'welcome-' + Date.now(),
+        message: `Hi! I'm your AI health coach. I can help you with meal planning, restaurant recommendations, and nutrition analysis. What would you like to explore today?`,
+        response: '',
+        isWelcome: true
+      }]);
+      setCurrentChatId(null);
+      setLastMealPlan("");
+      setShowShoppingListButton(false);
+      toast.success("Started new chat session (popup blocked - cleared current)");
+    }
   };
 
   // Save current chat
