@@ -1987,7 +1987,7 @@ const Dashboard = ({ userProfile, onBack }) => {
               )}
 
               {/* Input Area */}
-              <Card className="shadow-xl bg-white/90 backdrop-blur-sm border border-gray-200/50 sticky bottom-0">
+              <Card className="shadow-xl bg-white/90 backdrop-blur-sm border border-gray-200/50 mb-20">
                 <CardContent className="p-6">
                   <div className="flex gap-4">
                     <Textarea
