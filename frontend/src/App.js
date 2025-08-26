@@ -302,22 +302,20 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
               {/* Diabetes Type */}
               <div className="space-y-2">
                 <Label htmlFor="diabetes_type">Diabetes Type *</Label>
-                <Select 
+                <select 
+                  name="diabetes_type"
                   value={profile.diabetes_type} 
-                  onValueChange={(value) => {
-                    console.log('Diabetes type selected:', value);
-                    setProfile({...profile, diabetes_type: value});
+                  onChange={(e) => {
+                    console.log('Diabetes type selected:', e.target.value);
+                    setProfile({...profile, diabetes_type: e.target.value});
                   }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select your diabetes type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="type1">Type 1 Diabetes</SelectItem>
-                    <SelectItem value="type2">Type 2 Diabetes</SelectItem>
-                    <SelectItem value="prediabetes">Prediabetes</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <option value="">Select your diabetes type</option>
+                  <option value="type1">Type 1 Diabetes</option>
+                  <option value="type2">Type 2 Diabetes</option>
+                  <option value="prediabetes">Prediabetes</option>
+                </select>
               </div>
 
               {/* Basic Info */}
