@@ -92,7 +92,12 @@ const DemoModeBanner = ({ isMinimized = false, onToggleMinimize = null }) => {
             <div className="flex items-center gap-3 flex-1">
               <div className="flex items-center gap-2">
                 <TestTube className="h-5 w-5 animate-pulse" />
-                <Badge className="bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm">
+                <Badge 
+                  className="bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm cursor-pointer transition-colors"
+                  onClick={() => {
+                    alert('🧪 PRE-LAUNCH DEMO: You are currently using NutriTame in demo mode with full access to all premium features. This allows you to test the complete application before the official launch. No payment or account creation required during this phase!');
+                  }}
+                >
                   PRE-LAUNCH DEMO
                 </Badge>
               </div>
