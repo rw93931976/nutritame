@@ -1653,6 +1653,8 @@ const Dashboard = ({ userProfile, onBack }) => {
         message: messageText
       });
 
+      console.log('AI response received:', response.data);
+
       // Clean up AI response - remove markdown formatting
       const cleanedResponse = response.data.response
         .replace(/\*\*(.*?)\*\*/g, '$1')  // Remove **bold**
