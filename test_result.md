@@ -104,6 +104,40 @@
 
 user_problem_statement: "Complete Demo Mode implementation for NutriTame (rebranded from GlucoPlanner), create DemoModeBanner component, integrate demo mode functionality, and update branding throughout the application."
 
+  - task: "Launch Date Update to 10/1/2025"
+    implemented: false
+    working: false
+    file: "backend/.env"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reports launch date needs to be changed to 10/1/2025. Currently set to 2025-02-01 in backend."
+  - task: "Profile Save Functionality"
+    implemented: true
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reports profile won't save. Need to investigate profile form submission and backend API."
+  - task: "Profile Page Navigation Links"
+    implemented: false
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reports links at top of profile page are not working. Need to investigate navigation functionality."
+
 backend:
   - task: "Demo Mode Backend Configuration"
     implemented: true
