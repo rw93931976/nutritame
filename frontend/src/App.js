@@ -1377,7 +1377,7 @@ const Dashboard = ({ userProfile, onBack }) => {
       updatedChats.splice(10);
     }
     
-    localStorage.setItem('glucoplanner_chats', JSON.stringify(updatedChats));
+    localStorage.setItem('nutritame_chats', JSON.stringify(updatedChats));
     setSavedChats(updatedChats);
     setCurrentChatId(chatId);
     
