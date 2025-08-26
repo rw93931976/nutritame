@@ -1647,6 +1647,7 @@ const Dashboard = ({ userProfile, onBack }) => {
     setMessages(prev => [...prev, tempUserMsg]);
 
     try {
+      console.log('Making API call to AI...');
       const response = await axios.post(`${API}/chat`, {
         user_id: userProfile.id,
         message: messageText
