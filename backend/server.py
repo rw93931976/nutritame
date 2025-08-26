@@ -827,6 +827,61 @@ google_places = GooglePlacesClient()
 usda_nutrition = USDANutritionClient()
 
 # =============================================
+# DEMO MODE ENDPOINTS
+# =============================================
+
+@api_router.get("/demo/config")
+async def get_demo_config():
+    """Get demo mode configuration"""
+    return {
+        "demo_mode": DEMO_MODE,
+        "launch_date": LAUNCH_DATE,
+        "message": "Currently in demo mode - full access without account creation",
+        "launch_requirements": {
+            "account_required": True,
+            "subscription_required": True,
+            "basic_plan": "$9/month",
+            "premium_plan": "$19/month",
+            "free_trial": "15 days"
+        }
+    }
+
+@api_router.post("/demo/access")
+async def create_demo_access(demo_request: dict):
+    """Create demo access without payment"""
+    if not DEMO_MODE:
+        raise HTTPException(status_code=403, detail="Demo mode is not enabled")
+    
+    try:
+        # Create demo user with full access
+        demo_user = User(
+            email=demo_request.get("email", f"demo_{uuid.uuid4().hex[:8]}@demo.glucoplanner.com"),
+            subscription_status="active",  # Give full access in demo
+            subscription_tier=SubscriptionTier.PREMIUM,  # Premium features for demo
+            trial_end_date=None,
+            subscription_end_date=datetime.utcnow() + timedelta(days=365)  # Long demo access
+        )
+        
+        # Save demo user
+        await db_manager.create_user(demo_user)
+        
+        # Create demo access token
+        token = AuthService.create_access_token(demo_user)
+        
+        return {
+            "demo_access": True,
+            "access_token": token.token,
+            "user": demo_user,
+            "expires_at": token.expires_at,
+            "demo_notice": "This is a demo account with full premium access. Account creation will be required after launch.",
+            "launch_date": LAUNCH_DATE
+        }
+        
+    except Exception as e:
+        logging.error(f"Demo access error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create demo access")
+
+# =============================================
 # SAAS AUTHENTICATION & SUBSCRIPTION ENDPOINTS
 # =============================================
 
