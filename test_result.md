@@ -177,19 +177,19 @@ user_problem_statement: "Complete Demo Mode implementation for NutriTame (rebran
         comment: "Added click handlers to navigation links in SaaSHeader component: Account Settings (shows alert and profile guidance), Help & Support (opens email), Notifications (shows trial alerts), and Upgrade buttons (shows upgrade info). All links now have proper functionality."
 
   - task: "AI Health Coach Response Display"
-    implemented: true
-    working: true
+    implemented: false
+    working: false
     file: "frontend/src/App.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: false
         agent: "user"
         comment: "User reports AI Health Coach page space between response and input does not expand to show response. Chat responses may not be displaying properly or scrolling correctly."
-      - working: true
+      - working: false
         agent: "main"
-        comment: "Fixed AI Health Coach response display issues by optimizing chat container layout: adjusted container height to h-[calc(100vh-280px)], removed restrictive max-height, reduced input margins (mb-20 to mb-6), made textarea more compact (80px to 60px), and improved flex layout. AI responses now display properly with appropriate spacing and the input area remains visible and functional."
+        comment: "Previous fix attempt did not resolve the issue. User confirms AI Health Coach response display issue has not been resolved and needs more space and better controlled scrolling in window."
 
   - task: "AI Health Coach Layout Spacing"
     implemented: true
