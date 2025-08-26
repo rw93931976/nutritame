@@ -19,6 +19,99 @@ import { Heart, MessageCircle, User, ChefHat, Target, Calendar, Clock, CheckCirc
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// Map Component for displaying restaurant locations
+const RestaurantMap = ({ center, restaurants, selectedRestaurant, onRestaurantSelect }) => {
+  const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+  const markersRef = useRef([]);
+
+  useEffect(() => {
+    if (!mapRef.current || !window.google) return;
+
+    // Initialize map
+    const map = new window.google.maps.Map(mapRef.current, {
+      center: center ? { lat: center.latitude, lng: center.longitude } : { lat: 32.7767, lng: -96.7970 }, // Default to Dallas
+      zoom: 13,
+      styles: [
+        {
+          featureType: "poi",
+          elementType: "labels",
+          stylers: [{ visibility: "off" }]
+        }
+      ]
+    });
+
+    mapInstanceRef.current = map;
+
+    // Clear existing markers
+    markersRef.current.forEach(marker => marker.setMap(null));
+    markersRef.current = [];
+
+    // Add markers for restaurants
+    restaurants.forEach((restaurant, index) => {
+      const marker = new window.google.maps.Marker({
+        position: { lat: restaurant.latitude, lng: restaurant.longitude },
+        map: map,
+        title: restaurant.name,
+        icon: {
+          url: selectedRestaurant?.place_id === restaurant.place_id 
+            ? 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+              <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="12" fill="#059669" stroke="#ffffff" stroke-width="3"/>
+                <circle cx="16" cy="16" r="6" fill="#ffffff"/>
+              </svg>
+            `)
+            : 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+              <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="8" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+                <circle cx="12" cy="12" r="4" fill="#ffffff"/>
+              </svg>
+            `),
+          scaledSize: new window.google.maps.Size(
+            selectedRestaurant?.place_id === restaurant.place_id ? 32 : 24, 
+            selectedRestaurant?.place_id === restaurant.place_id ? 32 : 24
+          )
+        }
+      });
+
+      // Add click listener
+      marker.addListener('click', () => {
+        onRestaurantSelect(restaurant);
+      });
+
+      markersRef.current.push(marker);
+    });
+
+    // Center search location marker
+    if (center) {
+      const centerMarker = new window.google.maps.Marker({
+        position: { lat: center.latitude, lng: center.longitude },
+        map: map,
+        title: 'Search Center',
+        icon: {
+          url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="8" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
+              <circle cx="12" cy="12" r="3" fill="#ffffff"/>
+            </svg>
+          `),
+          scaledSize: new window.google.maps.Size(24, 24)
+        }
+      });
+      markersRef.current.push(centerMarker);
+    }
+
+  }, [center, restaurants, selectedRestaurant]);
+
+  return (
+    <div 
+      ref={mapRef} 
+      className="w-full h-64 md:h-80 rounded-lg border border-gray-200 shadow-sm"
+      style={{ minHeight: '300px' }}
+    />
+  );
+};
+
 // User Profile Setup Component
 const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
   const [profile, setProfile] = useState({
