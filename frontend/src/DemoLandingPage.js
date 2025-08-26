@@ -107,7 +107,7 @@ const DemoLandingPage = ({ onDemoAccess }) => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
-                  GlucoPlanner
+                  NutriTame
                 </h1>
                 <Badge className="bg-orange-100 text-orange-800 text-xs">
                   <TestTube className="h-3 w-3 mr-1" />
@@ -397,7 +397,7 @@ const DemoLandingPage = ({ onDemoAccess }) => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold mb-6">Ready to Transform Your Diabetes Management?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Join hundreds of people already testing GlucoPlanner. Experience the future of personalized diabetes care.
+            Join hundreds of people already testing NutriTame. Experience the future of personalized diabetes care.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -426,7 +426,7 @@ const DemoLandingPage = ({ onDemoAccess }) => {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-600 to-blue-600 flex items-center justify-center">
               <ChefHat className="h-5 w-5 text-white" />
             </div>
-            <h2 className="text-xl font-bold">GlucoPlanner</h2>
+            <h2 className="text-xl font-bold">NutriTame</h2>
             <Badge className="bg-orange-600 text-white text-xs">
               Pre-Launch Demo
             </Badge>
@@ -437,7 +437,7 @@ const DemoLandingPage = ({ onDemoAccess }) => {
           </p>
           
           <p className="text-gray-500 text-xs">
-            © 2025 GlucoPlanner. All rights reserved. | Built with ❤️ for the diabetes community.
+            © 2025 NutriTame. All rights reserved. | Built with ❤️ for the diabetes community.
           </p>
         </div>
       </footer>
