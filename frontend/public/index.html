@@ -21,8 +21,15 @@
         <title>GlucoPlanner | Diabetic Meal Planning</title>
         
         <!-- Google Maps API -->
-        <script async
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAyf8zKG6TwOQ9m-D6YId0EwA7ZHZHQB0I&libraries=places">
+        <script>
+          function initGoogleMaps() {
+            // This will be called when Google Maps API is loaded
+            window.googleMapsLoaded = true;
+            window.dispatchEvent(new Event('google-maps-loaded'));
+          }
+        </script>
+        <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAyf8zKG6TwOQ9m-D6YId0EwA7ZHZHQB0I&libraries=places&callback=initGoogleMaps">
         </script>
     </head>
     <body>
