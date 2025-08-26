@@ -156,12 +156,32 @@ const SaaSHeader = ({ user, subscriptionInfo, onLogout }) => {
 
                     {/* Quick Actions */}
                     <div className="space-y-2">
-                      <Button variant="outline" size="sm" className="w-full justify-start">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full justify-start"
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          // Navigate to profile/account settings
+                          window.location.hash = '#profile-settings';
+                          // For now, show an alert since full account settings page isn't implemented
+                          alert('Account Settings feature coming soon! Use the "← Back to Profile" button in the dashboard to edit your profile.');
+                        }}
+                      >
                         <Settings className="h-4 w-4 mr-2" />
                         Account Settings
                       </Button>
                       
-                      <Button variant="outline" size="sm" className="w-full justify-start">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full justify-start"
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          // Open help in new tab or show help modal
+                          window.open('mailto:support@nutritame.com?subject=Help Request from NutriTame', '_blank');
+                        }}
+                      >
                         <HelpCircle className="h-4 w-4 mr-2" />
                         Help & Support
                       </Button>
