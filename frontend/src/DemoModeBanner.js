@@ -13,7 +13,7 @@ import {
   Star
 } from 'lucide-react';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://diabeticmeal-app.preview.emergentagent.com';
 const API = `${BACKEND_URL}/api`;
 
 const DemoModeBanner = ({ isMinimized = false, onToggleMinimize = null }) => {
