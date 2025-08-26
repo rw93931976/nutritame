@@ -1,96 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
 import { Button } from './components/ui/button';
-import { Input } from './components/ui/input';
 import { Badge } from './components/ui/badge';
-import { Check, Star, Heart, Shield, Users, TrendingUp, ChefHat, Smartphone, MapPin } from 'lucide-react';
+import { ChefHat, Heart, Target, Users, Star, Check, ArrowRight, Smartphone, MapPin, ShoppingCart, Crown } from 'lucide-react';
+import { API } from './config';
 
-const API = import.meta.env.REACT_APP_BACKEND_URL || process.env.REACT_APP_BACKEND_URL;
+const LandingPage = ({ onGetStarted }) => {
+  const [stats, setStats] = useState({ users: 0, recipes: 0, restaurants: 0 });
 
-const LandingPage = ({ onStartTrial }) => {
-  const [email, setEmail] = useState('');
-  const [selectedPlan, setSelectedPlan] = useState('basic');
-  const [loading, setLoading] = useState(false);
-
-  const plans = {
-    basic: {
-      name: 'Basic Plan',
-      price: '$9',
-      interval: 'month',
-      features: [
-        'AI Health Coach',
-        'Basic Restaurant Search',
-        'Shopping Lists',
-        '5 chat sessions per day',
-        'Imperial measurements',
-        'Email support'
-      ],
-      popular: false
-    },
-    premium: {
-      name: 'Premium Plan', 
-      price: '$19',
-      interval: 'month',
-      features: [
-        'Everything in Basic',
-        'Unlimited AI conversations',
-        'Advanced Restaurant Search',
-        'Recipe favorites & save',
-        'Data export (GDPR)',
-        'Priority support',
-        'Premium meal planning'
-      ],
-      popular: true
-    }
-  };
-
-  const handleStartTrial = async (plan) => {
-    if (!email) {
-      alert('Please enter your email address');
-      return;
-    }
-
-    if (!email.includes('@')) {
-      alert('Please enter a valid email address');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const response = await fetch(`${API}/payments/checkout`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          plan: plan,
-          email: email,
-          origin_url: window.location.origin
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create checkout session');
+  useEffect(() => {
+    // Load some basic stats
+    const loadStats = async () => {
+      try {
+        const response = await fetch(`${API}/stats`);
+        if (response.ok) {
+          const data = await response.json();
+          setStats(data);
+        }
+      } catch (error) {
+        console.error('Failed to load stats:', error);
       }
+    };
 
-      const data = await response.json();
-      
-      // Redirect to Stripe Checkout
-      if (data.checkout_url) {
-        window.location.href = data.checkout_url;
-      } else {
-        throw new Error('No checkout URL received');
-      }
-    } catch (error) {
-      console.error('Checkout error:', error);
-      alert('Failed to start trial. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    loadStats();
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-cyan-50 to-blue-50">
       {/* Header */}
       <header className="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
@@ -100,13 +36,13 @@ const LandingPage = ({ onStartTrial }) => {
                 <ChefHat className="h-6 w-6 text-white" />
               </div>
               <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
-                GlucoPlanner
+                NutriTame
               </h1>
             </div>
             <div className="hidden md:flex items-center gap-6">
               <a href="#features" className="text-gray-600 hover:text-emerald-600 transition-colors">Features</a>
               <a href="#pricing" className="text-gray-600 hover:text-emerald-600 transition-colors">Pricing</a>
-              <a href="#about" className="text-gray-600 hover:text-emerald-600 transition-colors">About</a>
+              <a href="#testimonials" className="text-gray-600 hover:text-emerald-600 transition-colors">Reviews</a>
             </div>
           </div>
         </div>
@@ -115,43 +51,58 @@ const LandingPage = ({ onStartTrial }) => {
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 text-center">
         <div className="max-w-4xl mx-auto">
-          <Badge className="mb-6 bg-emerald-100 text-emerald-700 hover:bg-emerald-200">
+          <Badge className="mb-6 bg-gradient-to-r from-emerald-500 to-blue-500 text-white hover:from-emerald-600 hover:to-blue-600">
             <Heart className="h-4 w-4 mr-2" />
             AI-Powered Diabetes Management
           </Badge>
           
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-8">
-            Take Control of Your
+            Your Personal
             <span className="block bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
-              Diabetes Journey
+              Diabetes Health Coach
             </span>
           </h1>
           
-          <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
-            Get personalized meal plans, restaurant recommendations, and AI-powered health coaching 
-            designed specifically for diabetes management. Start your 15-day free trial today.
+          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+            Get personalized meal recommendations, find diabetic-friendly restaurants, and manage your health with AI-powered insights tailored specifically for diabetes management.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <Input
-              type="email"
-              placeholder="Enter your email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="max-w-sm h-12 text-lg"
-            />
             <Button
-              onClick={() => handleStartTrial(selectedPlan)}
-              disabled={loading}
-              className="h-12 px-8 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-lg font-semibold"
+              onClick={onGetStarted}
+              className="px-8 py-4 text-lg font-semibold bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
             >
-              {loading ? 'Starting Trial...' : 'Start Free Trial'}
+              Start Your Health Journey
+              <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
+            
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex -space-x-2">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-blue-400 border-2 border-white flex items-center justify-center text-white text-xs font-bold">
+                    {i}
+                  </div>
+                ))}
+              </div>
+              <span>Join {stats.users || '1,000+'} users managing their diabetes better</span>
+            </div>
           </div>
 
-          <p className="text-sm text-gray-500">
-            🎉 <strong>15-day free trial</strong> • No credit card required initially • Cancel anytime
-          </p>
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-emerald-600">{stats.users || '1,000+'}+</div>
+              <div className="text-gray-600">Active Users</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-blue-600">{stats.recipes || '5,000+'}+</div>
+              <div className="text-gray-600">Healthy Recipes</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-purple-600">{stats.restaurants || '10,000+'}+</div>
+              <div className="text-gray-600">Partner Restaurants</div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -172,38 +123,44 @@ const LandingPage = ({ onStartTrial }) => {
               {
                 icon: ChefHat,
                 title: "AI Health Coach",
-                description: "Get personalized meal recommendations and nutrition advice powered by advanced AI technology specifically trained for diabetes management."
+                description: "Get personalized meal recommendations and nutrition advice from our diabetes-specialized AI coach.",
+                color: "emerald"
               },
               {
                 icon: MapPin,
                 title: "Restaurant Finder",
-                description: "Discover diabetic-friendly restaurants near you with detailed nutritional information and meal suggestions."
+                description: "Discover diabetic-friendly restaurants near you with detailed nutritional information and reviews.",
+                color: "blue"
+              },
+              {
+                icon: ShoppingCart,
+                title: "Smart Shopping Lists",
+                description: "Generate organized shopping lists from your meal plans with healthy substitution suggestions.",
+                color: "purple"
+              },
+              {
+                icon: Target,
+                title: "Goal Tracking",
+                description: "Set and monitor your health goals with comprehensive progress tracking and insights.",
+                color: "pink"
               },
               {
                 icon: Smartphone,
-                title: "Smart Shopping Lists",
-                description: "Generate organized shopping lists from meal plans with imperial measurements and diabetes-friendly substitutions."
+                title: "Mobile Friendly",
+                description: "Access all features on any device with our responsive, mobile-optimized interface.",
+                color: "indigo"
               },
               {
-                icon: Shield,
-                title: "HIPAA Compliant",
-                description: "Your health data is protected with enterprise-grade security and full GDPR/HIPAA compliance."
-              },
-              {
-                icon: TrendingUp,
-                title: "Progress Tracking",
-                description: "Monitor your journey with comprehensive analytics and insights to optimize your diabetes management."
-              },
-              {
-                icon: Users,
-                title: "Expert Support",
-                description: "Access to nutrition experts and dedicated customer support to help you succeed in your health goals."
+                icon: Heart,
+                title: "Health Integration",
+                description: "Connect with popular health apps and devices to sync your health data automatically.",
+                color: "red"
               }
             ].map((feature, index) => (
-              <Card key={index} className="text-center hover:shadow-lg transition-shadow duration-300">
+              <Card key={index} className="text-center hover:shadow-lg transition-shadow duration-300 border-2 hover:border-emerald-200">
                 <CardHeader>
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-emerald-100 to-blue-100 flex items-center justify-center">
-                    <feature.icon className="h-8 w-8 text-emerald-600" />
+                  <div className={`w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-${feature.color}-100 to-${feature.color}-200 flex items-center justify-center`}>
+                    <feature.icon className={`h-8 w-8 text-${feature.color}-600`} />
                   </div>
                   <CardTitle className="text-xl">{feature.title}</CardTitle>
                 </CardHeader>
@@ -224,63 +181,132 @@ const LandingPage = ({ onStartTrial }) => {
               Choose Your Plan
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Start with a 15-day free trial. No credit card required initially.
+              Start free and upgrade when you're ready for advanced features
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {Object.entries(plans).map(([planKey, plan]) => (
-              <Card 
-                key={planKey}
-                className={`relative hover:shadow-xl transition-all duration-300 ${
-                  plan.popular ? 'ring-2 ring-emerald-500 scale-105' : ''
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-gradient-to-r from-emerald-600 to-blue-600 text-white px-4 py-1">
-                      <Star className="h-4 w-4 mr-1" />
-                      Most Popular
-                    </Badge>
-                  </div>
-                )}
+            {/* Free Plan */}
+            <Card className="relative hover:shadow-xl transition-all duration-300">
+              <CardHeader className="text-center pb-8">
+                <CardTitle className="text-2xl font-bold">Free Plan</CardTitle>
+                <div className="mt-4">
+                  <span className="text-5xl font-bold text-gray-900">$0</span>
+                  <span className="text-xl text-gray-500">/month</span>
+                </div>
+              </CardHeader>
+              
+              <CardContent className="space-y-6">
+                <ul className="space-y-3">
+                  {[
+                    "Basic AI health coaching",
+                    "5 chat sessions per day", 
+                    "Basic restaurant search",
+                    "Simple meal planning",
+                    "Community support"
+                  ].map((feature, index) => (
+                    <li key={index} className="flex items-center gap-3">
+                      <Check className="h-5 w-5 text-emerald-600 flex-shrink-0" />
+                      <span className="text-gray-700">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
                 
-                <CardHeader className="text-center pb-8">
-                  <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
-                  <div className="mt-4">
-                    <span className="text-5xl font-bold text-gray-900">{plan.price}</span>
-                    <span className="text-xl text-gray-500">/{plan.interval}</span>
-                  </div>
-                </CardHeader>
+                <Button onClick={onGetStarted} className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white">
+                  Get Started Free
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Premium Plan */}
+            <Card className="relative hover:shadow-xl transition-all duration-300 ring-2 ring-emerald-500 scale-105">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <Badge className="bg-gradient-to-r from-emerald-600 to-blue-600 text-white px-4 py-1">
+                  <Crown className="h-4 w-4 mr-1" />
+                  Most Popular
+                </Badge>
+              </div>
+              
+              <CardHeader className="text-center pb-8">
+                <CardTitle className="text-2xl font-bold">Premium Plan</CardTitle>
+                <div className="mt-4">
+                  <span className="text-5xl font-bold text-gray-900">$19</span>
+                  <span className="text-xl text-gray-500">/month</span>
+                </div>
+              </CardHeader>
+              
+              <CardContent className="space-y-6">
+                <ul className="space-y-3">
+                  {[
+                    "Unlimited AI conversations",
+                    "Advanced restaurant search", 
+                    "Smart shopping lists",
+                    "Recipe favorites & export",
+                    "Progress tracking & analytics",
+                    "Priority support",
+                    "Health app integrations"
+                  ].map((feature, index) => (
+                    <li key={index} className="flex items-center gap-3">
+                      <Check className="h-5 w-5 text-emerald-600 flex-shrink-0" />
+                      <span className="text-gray-700">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
                 
-                <CardContent className="space-y-6">
-                  <ul className="space-y-3">
-                    {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-center gap-3">
-                        <Check className="h-5 w-5 text-emerald-600 flex-shrink-0" />
-                        <span className="text-gray-700">{feature}</span>
-                      </li>
+                <Button onClick={onGetStarted} className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white">
+                  Start Premium Trial
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section id="testimonials" className="bg-white/50 py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              What Our Users Say
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Real stories from people managing their diabetes with NutriTame
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {[
+              {
+                name: "Sarah M.",
+                role: "Type 2 Diabetes",
+                content: "NutriTame has completely changed how I approach meal planning. The AI coach understands my dietary restrictions and always suggests delicious, healthy options.",
+                rating: 5
+              },
+              {
+                name: "Michael R.",
+                role: "Type 1 Diabetes",
+                content: "Finding restaurants that cater to my needs used to be a nightmare. Now I can easily discover great places to eat with confidence.",
+                rating: 5
+              },
+              {
+                name: "Jennifer L.",
+                role: "Prediabetes",
+                content: "The shopping lists feature saves me so much time and helps me stick to my healthy eating goals. Highly recommend!",
+                rating: 5
+              }
+            ].map((testimonial, index) => (
+              <Card key={index} className="text-center hover:shadow-lg transition-shadow duration-300">
+                <CardContent className="p-6">
+                  <div className="flex justify-center mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                     ))}
-                  </ul>
-                  
-                  <Button
-                    onClick={() => {
-                      setSelectedPlan(planKey);
-                      handleStartTrial(planKey);
-                    }}
-                    disabled={loading}
-                    className={`w-full h-12 text-lg font-semibold ${
-                      plan.popular
-                        ? 'bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700'
-                        : 'bg-gray-900 hover:bg-gray-800'
-                    }`}
-                  >
-                    {loading && selectedPlan === planKey ? 'Starting Trial...' : 'Start Free Trial'}
-                  </Button>
-                  
-                  <p className="text-sm text-gray-500 text-center">
-                    15-day free trial included
-                  </p>
+                  </div>
+                  <p className="text-gray-600 mb-4 italic">"{testimonial.content}"</p>
+                  <div>
+                    <p className="font-semibold text-gray-800">{testimonial.name}</p>
+                    <p className="text-sm text-gray-500">{testimonial.role}</p>
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -288,35 +314,45 @@ const LandingPage = ({ onStartTrial }) => {
         </div>
       </section>
 
+      {/* CTA Section */}
+      <section className="bg-gradient-to-r from-emerald-600 to-blue-600 text-white py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-4xl font-bold mb-6">Ready to Take Control of Your Health?</h2>
+          <p className="text-xl mb-8 max-w-2xl mx-auto">
+            Join thousands of people who are successfully managing their diabetes with NutriTame's AI-powered platform.
+          </p>
+          
+          <Button
+            onClick={onGetStarted}
+            className="px-8 py-4 text-lg font-semibold bg-white text-emerald-600 hover:bg-gray-100 hover:text-emerald-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+          >
+            Start Your Free Trial Today
+            <ArrowRight className="h-5 w-5 ml-2" />
+          </Button>
+          
+          <p className="text-sm mt-4 opacity-90">
+            No credit card required • 15-day free trial • Cancel anytime
+          </p>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-blue-600 flex items-center justify-center">
-                <ChefHat className="h-6 w-6 text-white" />
-              </div>
-              <h2 className="text-2xl font-bold">GlucoPlanner</h2>
+      <footer className="bg-gray-900 text-white py-8">
+        <div className="container mx-auto px-4 text-center">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-600 to-blue-600 flex items-center justify-center">
+              <ChefHat className="h-5 w-5 text-white" />
             </div>
-            
-            <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
-              Empowering people with diabetes to take control of their health through AI-powered meal planning, 
-              restaurant recommendations, and personalized coaching.
-            </p>
-            
-            <div className="flex justify-center gap-8 text-sm">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">HIPAA Compliance</a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">Support</a>
-            </div>
-            
-            <div className="mt-8 pt-8 border-t border-gray-800">
-              <p className="text-gray-500">
-                © 2025 GlucoPlanner. All rights reserved. | Built with ❤️ for the diabetes community.
-              </p>
-            </div>
+            <h2 className="text-xl font-bold">NutriTame</h2>
           </div>
+          
+          <p className="text-gray-400 text-sm mb-4">
+            Empowering people with diabetes to live healthier, happier lives through AI-powered nutrition guidance.
+          </p>
+          
+          <p className="text-gray-500 text-xs">
+            © 2025 NutriTame. All rights reserved. | Privacy Policy | Terms of Service
+          </p>
         </div>
       </footer>
     </div>
