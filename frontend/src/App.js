@@ -2240,9 +2240,10 @@ function App() {
   // Handle demo access
   const handleDemoAccess = async (demoData) => {
     try {
+      console.log('Demo access data received:', demoData);
       setDemoMode(true);
       setDemoUser(demoData.user);
-      setAuthToken(demoData.token);
+      setAuthToken(demoData.access_token); // Fixed: use access_token not token
       setAppMode('app');
       
       // Set up profile for demo mode
