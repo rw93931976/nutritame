@@ -14,7 +14,7 @@ import { Badge } from "./components/ui/badge";
 import { Separator } from "./components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
 import { toast } from "sonner";
-import { Heart, MessageCircle, User, ChefHat, Target, Calendar, Clock, CheckCircle } from "lucide-react";
+import { Heart, MessageCircle, User, ChefHat, Target, Calendar, Clock, CheckCircle, MapPin, Search, Star, Phone, Globe, Navigation } from "lucide-react";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -95,7 +95,7 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
             Welcome to GlucoPlanner
           </h1>
           <p className="text-gray-600">
-            Your personalized AI health coach for diabetes-friendly meal planning
+            Your personalized AI health coach for diabetes-friendly meal planning with restaurant search
           </p>
         </div>
 
@@ -106,7 +106,7 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
               {existingProfile?.id ? "Update Your Profile" : "Create Your Profile"}
             </CardTitle>
             <CardDescription>
-              Help us understand your needs so we can provide the best meal recommendations
+              Help us understand your needs so we can provide the best meal recommendations and restaurant suggestions
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -268,12 +268,214 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
   );
 };
 
-// AI Chat Component
-const AIChat = ({ userProfile, onBack }) => {
+// Restaurant Search Component
+const RestaurantSearch = ({ userProfile, onRestaurantSelect }) => {
+  const [searchLocation, setSearchLocation] = useState("");
+  const [searchRadius, setSearchRadius] = useState(2000);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [restaurants, setRestaurants] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
+
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      setLoading(true);
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const location = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          };
+          setUserLocation(location);
+          searchRestaurants(location.latitude, location.longitude);
+        },
+        (error) => {
+          toast.error("Unable to get your location. Please enter a location manually.");
+          setLoading(false);
+        }
+      );
+    } else {
+      toast.error("Geolocation is not supported by your browser.");
+    }
+  };
+
+  const searchRestaurants = async (lat, lng, keyword = searchKeyword) => {
+    setLoading(true);
+    try {
+      const response = await axios.post(`${API}/restaurants/search`, {
+        latitude: lat,
+        longitude: lng,
+        radius: searchRadius,
+        keyword: keyword
+      });
+      setRestaurants(response.data);
+      toast.success(`Found ${response.data.length} restaurants`);
+    } catch (error) {
+      console.error("Restaurant search error:", error);
+      toast.error("Failed to search restaurants. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleManualSearch = async () => {
+    if (!searchLocation.trim()) {
+      toast.error("Please enter a location");
+      return;
+    }
+    
+    // For demo, we'll use a default location (San Francisco)
+    // In production, you'd use a geocoding service to convert address to coordinates
+    const defaultCoords = { lat: 37.7749, lng: -122.4194 };
+    await searchRestaurants(defaultCoords.lat, defaultCoords.lng);
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Search className="h-5 w-5 text-emerald-600" />
+            Find Diabetic-Friendly Restaurants
+          </CardTitle>
+          <CardDescription>
+            Search for restaurants near you with healthy options for diabetes management
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-2">
+            <Button 
+              onClick={getCurrentLocation}
+              disabled={loading}
+              className="bg-emerald-600 hover:bg-emerald-700"
+            >
+              <Navigation className="h-4 w-4 mr-2" />
+              Use My Location
+            </Button>
+            <div className="flex-1 flex gap-2">
+              <Input
+                placeholder="Or enter a location (e.g., San Francisco, CA)"
+                value={searchLocation}
+                onChange={(e) => setSearchLocation(e.target.value)}
+                className="flex-1"
+              />
+              <Button onClick={handleManualSearch} disabled={loading}>
+                Search
+              </Button>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label>Search Radius</Label>
+              <Select value={searchRadius.toString()} onValueChange={(value) => setSearchRadius(parseInt(value))}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1000">1 km</SelectItem>
+                  <SelectItem value="2000">2 km</SelectItem>
+                  <SelectItem value="5000">5 km</SelectItem>
+                  <SelectItem value="10000">10 km</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Cuisine Type (Optional)</Label>
+              <Input
+                placeholder="e.g., Mediterranean, Healthy, Salad"
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {loading && (
+        <div className="text-center py-8">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+          <p className="mt-2 text-gray-600">Searching for restaurants...</p>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {restaurants.map((restaurant) => (
+          <RestaurantCard 
+            key={restaurant.place_id} 
+            restaurant={restaurant} 
+            onSelect={onRestaurantSelect}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Restaurant Card Component
+const RestaurantCard = ({ restaurant, onSelect }) => {
+  const getDiabeticRatingColor = (score) => {
+    if (score >= 4) return "text-green-600 bg-green-100";
+    if (score >= 3) return "text-yellow-600 bg-yellow-100";
+    return "text-red-600 bg-red-100";
+  };
+
+  const getDiabeticRatingText = (score) => {
+    if (score >= 4) return "Excellent";
+    if (score >= 3) return "Good";
+    return "Fair";
+  };
+
+  return (
+    <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => onSelect(restaurant)}>
+      <CardContent className="p-4">
+        <div className="space-y-3">
+          <div>
+            <h3 className="font-semibold text-lg">{restaurant.name}</h3>
+            <p className="text-sm text-gray-600 flex items-center gap-1">
+              <MapPin className="h-3 w-3" />
+              {restaurant.address}
+            </p>
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              {restaurant.rating && (
+                <div className="flex items-center gap-1">
+                  <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                  <span className="text-sm font-medium">{restaurant.rating}</span>
+                </div>
+              )}
+              {restaurant.price_level && (
+                <span className="text-sm text-gray-500">
+                  {"$".repeat(restaurant.price_level)}
+                </span>
+              )}
+            </div>
+            
+            {restaurant.diabetic_friendly_score && (
+              <Badge className={getDiabeticRatingColor(restaurant.diabetic_friendly_score)}>
+                {getDiabeticRatingText(restaurant.diabetic_friendly_score)}
+              </Badge>
+            )}
+          </div>
+          
+          <div className="text-xs text-gray-500">
+            Diabetic Score: {restaurant.diabetic_friendly_score?.toFixed(1) || "N/A"}/5.0
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+// Main Dashboard Component
+const Dashboard = ({ userProfile, onBack }) => {
+  const [activeTab, setActiveTab] = useState("chat");
   const [messages, setMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [chatHistory, setChatHistory] = useState([]);
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
 
   useEffect(() => {
     // Load chat history
@@ -281,7 +483,7 @@ const AIChat = ({ userProfile, onBack }) => {
     // Add welcome message
     const welcomeMsg = {
       id: 'welcome',
-      message: `Hi! I'm your AI health coach. I'm here to help you create delicious, diabetes-friendly meal plans tailored to your needs. What would you like to work on today?`,
+      message: `Hi! I'm your AI health coach. I can help you with meal planning, restaurant recommendations, and nutrition analysis. What would you like to explore today?`,
       response: '',
       isWelcome: true
     };
@@ -291,23 +493,26 @@ const AIChat = ({ userProfile, onBack }) => {
   const loadChatHistory = async () => {
     try {
       const response = await axios.get(`${API}/chat/${userProfile.id}`);
-      setChatHistory(response.data);
+      // Only load recent messages to avoid overwhelming the UI
+      const recentMessages = response.data.slice(-10);
+      if (recentMessages.length > 0) {
+        setMessages(prev => [...prev, ...recentMessages.map(msg => ({ ...msg, isUser: false }))]);
+      }
     } catch (error) {
       console.error("Failed to load chat history:", error);
     }
   };
 
-  const sendMessage = async () => {
-    if (!currentMessage.trim() || loading) return;
+  const sendMessage = async (messageText = currentMessage) => {
+    if (!messageText.trim() || loading) return;
 
-    const userMsg = currentMessage;
     setCurrentMessage("");
     setLoading(true);
 
     // Add user message to UI
     const tempUserMsg = {
       id: Date.now(),
-      message: userMsg,
+      message: messageText,
       response: '',
       isUser: true
     };
@@ -316,7 +521,7 @@ const AIChat = ({ userProfile, onBack }) => {
     try {
       const response = await axios.post(`${API}/chat`, {
         user_id: userProfile.id,
-        message: userMsg
+        message: messageText
       });
 
       // Add AI response to UI
@@ -342,18 +547,27 @@ const AIChat = ({ userProfile, onBack }) => {
     }
   };
 
+  const handleRestaurantSelect = async (restaurant) => {
+    setSelectedRestaurant(restaurant);
+    setActiveTab("chat");
+    
+    // Send restaurant analysis message to AI
+    const restaurantMessage = `I'm interested in eating at ${restaurant.name} located at ${restaurant.address}. Can you help me understand what diabetic-friendly options might be available there and give me tips for ordering healthy meals?`;
+    await sendMessage(restaurantMessage);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50">
       {/* Header */}
       <div className="bg-white border-b shadow-sm p-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="outline" onClick={onBack}>
-              ← Back
+              ← Back to Profile
             </Button>
             <div className="flex items-center gap-2">
               <ChefHat className="h-6 w-6 text-emerald-600" />
-              <h1 className="text-xl font-semibold">AI Meal Coach</h1>
+              <h1 className="text-xl font-semibold">GlucoPlanner Dashboard</h1>
             </div>
           </div>
           <div className="text-sm text-gray-600">
@@ -366,83 +580,108 @@ const AIChat = ({ userProfile, onBack }) => {
         </div>
       </div>
 
-      {/* Chat Area */}
-      <div className="max-w-4xl mx-auto p-4 h-[calc(100vh-140px)] flex flex-col">
-        {/* Messages */}
-        <div className="flex-1 space-y-4 overflow-y-auto mb-4">
-          {messages.map((msg, index) => (
-            <div key={msg.id || index} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'}`}>
-              <Card className={`max-w-[80%] ${
-                msg.isUser 
-                  ? 'bg-emerald-600 text-white' 
-                  : msg.isWelcome 
-                    ? 'bg-gradient-to-r from-emerald-100 to-teal-100 border-emerald-200' 
-                    : 'bg-white'
-              } shadow-sm`}>
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-3">
-                    {!msg.isUser && (
-                      <div className="flex-shrink-0">
-                        <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
-                          <ChefHat className="h-4 w-4 text-emerald-600" />
-                        </div>
-                      </div>
-                    )}
-                    <div className="flex-1">
-                      <p className="whitespace-pre-wrap">
-                        {msg.isUser ? msg.message : (msg.response || msg.message)}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          ))}
-          {loading && (
-            <div className="flex justify-start">
-              <Card className="bg-white shadow-sm">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
-                      <ChefHat className="h-4 w-4 text-emerald-600" />
-                    </div>
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                      <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-        </div>
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto p-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="chat" className="flex items-center gap-2">
+              <MessageCircle className="h-4 w-4" />
+              AI Health Coach
+            </TabsTrigger>
+            <TabsTrigger value="restaurants" className="flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              Restaurant Search
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Input Area */}
-        <Card className="shadow-lg">
-          <CardContent className="p-4">
-            <div className="flex gap-3">
-              <Textarea
-                value={currentMessage}
-                onChange={(e) => setCurrentMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Ask about meal planning, recipes, or nutrition advice..."
-                className="min-h-[60px] resize-none"
-                disabled={loading}
-              />
-              <Button 
-                onClick={sendMessage}
-                disabled={!currentMessage.trim() || loading}
-                className="bg-emerald-600 hover:bg-emerald-700 px-6"
-              >
-                <MessageCircle className="h-4 w-4" />
-              </Button>
+          <TabsContent value="chat" className="space-y-4">
+            {/* Chat Interface */}
+            <div className="h-[calc(100vh-250px)] flex flex-col">
+              {/* Messages */}
+              <div className="flex-1 space-y-4 overflow-y-auto mb-4 pr-2">
+                {messages.map((msg, index) => (
+                  <div key={msg.id || index} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'}`}>
+                    <Card className={`max-w-[80%] ${
+                      msg.isUser 
+                        ? 'bg-emerald-600 text-white' 
+                        : msg.isWelcome 
+                          ? 'bg-gradient-to-r from-emerald-100 to-teal-100 border-emerald-200' 
+                          : 'bg-white'
+                    } shadow-sm`}>
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                          {!msg.isUser && (
+                            <div className="flex-shrink-0">
+                              <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                                <ChefHat className="h-4 w-4 text-emerald-600" />
+                              </div>
+                            </div>
+                          )}
+                          <div className="flex-1">
+                            <p className="whitespace-pre-wrap">
+                              {msg.isUser ? msg.message : (msg.response || msg.message)}
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                ))}
+                {loading && (
+                  <div className="flex justify-start">
+                    <Card className="bg-white shadow-sm">
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                            <ChefHat className="h-4 w-4 text-emerald-600" />
+                          </div>
+                          <div className="flex space-x-1">
+                            <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce"></div>
+                            <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                            <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                )}
+              </div>
+
+              {/* Input Area */}
+              <Card className="shadow-lg">
+                <CardContent className="p-4">
+                  <div className="flex gap-3">
+                    <Textarea
+                      value={currentMessage}
+                      onChange={(e) => setCurrentMessage(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="Ask about meal planning, restaurant recommendations, nutrition analysis..."
+                      className="min-h-[60px] resize-none"
+                      disabled={loading}
+                    />
+                    <Button 
+                      onClick={() => sendMessage()}
+                      disabled={!currentMessage.trim() || loading}
+                      className="bg-emerald-600 hover:bg-emerald-700 px-6"
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="text-xs text-gray-500 mt-2">
+                    Ask me about restaurants, nutrition, meal planning, or diabetic-friendly recipes!
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-            <div className="text-xs text-gray-500 mt-2">
-              Press Enter to send • Shift+Enter for new line
-            </div>
-          </CardContent>
-        </Card>
+          </TabsContent>
+
+          <TabsContent value="restaurants">
+            <RestaurantSearch 
+              userProfile={userProfile} 
+              onRestaurantSelect={handleRestaurantSelect}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
@@ -451,7 +690,7 @@ const AIChat = ({ userProfile, onBack }) => {
 // Main App Component
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
-  const [showChat, setShowChat] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -467,7 +706,7 @@ function App() {
       if (savedUserId) {
         const response = await axios.get(`${API}/users/${savedUserId}`);
         setCurrentUser(response.data);
-        setShowChat(true);
+        setShowDashboard(true);
       }
     } catch (error) {
       console.error("Error checking existing profile:", error);
@@ -480,18 +719,12 @@ function App() {
   const handleProfileComplete = (userProfile) => {
     setCurrentUser(userProfile);
     localStorage.setItem('glucoplanner_user_id', userProfile.id);
-    setShowChat(true);
-    toast.success("Welcome to GlucoPlanner! Let's start planning your meals.");
+    setShowDashboard(true);
+    toast.success("Welcome to GlucoPlanner! Let's explore restaurants and plan your meals.");
   };
 
   const handleBackToProfile = () => {
-    setShowChat(false);
-  };
-
-  const handleNewProfile = () => {
-    localStorage.removeItem('glucoplanner_user_id');
-    setCurrentUser(null);
-    setShowChat(false);
+    setShowDashboard(false);
   };
 
   if (loading) {
@@ -512,8 +745,8 @@ function App() {
           <Route
             path="/"
             element={
-              showChat && currentUser ? (
-                <AIChat 
+              showDashboard && currentUser ? (
+                <Dashboard 
                   userProfile={currentUser} 
                   onBack={handleBackToProfile}
                 />
