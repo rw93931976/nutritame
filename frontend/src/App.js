@@ -663,15 +663,18 @@ const Dashboard = ({ userProfile, onBack }) => {
                 {loading && (
                   <div className="flex justify-start">
                     <Card className="bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200/50">
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-100 to-blue-100 flex items-center justify-center shadow-md">
-                            <ChefHat className="h-4 w-4 text-emerald-600" />
+                      <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-100 to-blue-100 flex items-center justify-center shadow-md">
+                            <ChefHat className="h-5 w-5 text-emerald-600" />
                           </div>
-                          <div className="flex space-x-1">
-                            <div className="w-2 h-2 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-full animate-bounce"></div>
-                            <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                            <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                          <div className="flex items-center gap-2">
+                            <div className="flex space-x-1">
+                              <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-full animate-bounce"></div>
+                              <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                              <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                            </div>
+                            <span className="text-gray-600 ml-2">AI is thinking...</span>
                           </div>
                         </div>
                       </CardContent>
