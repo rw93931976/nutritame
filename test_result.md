@@ -176,6 +176,29 @@ user_problem_statement: "Complete Demo Mode implementation for NutriTame (rebran
         agent: "main"
         comment: "Added click handlers to navigation links in SaaSHeader component: Account Settings (shows alert and profile guidance), Help & Support (opens email), Notifications (shows trial alerts), and Upgrade buttons (shows upgrade info). All links now have proper functionality."
 
+  - task: "Profile Page Scroll Position"
+    implemented: false
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "When clicking 'Free Demo Now', the profile page loads too far down in the window. Need to ensure page loads at the top."
+  - task: "AI Health Coach Response Window & Shopping List"
+    implemented: false
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "AI health coach meal plan shopping list popup covers response window. Need larger response window, scroll should stop at beginning of response, shopping list option should appear below response not as popup."
+
   - task: "AI Health Coach Response Display"
     implemented: true
     working: true
