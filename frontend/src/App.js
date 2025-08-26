@@ -1859,7 +1859,7 @@ const Dashboard = ({ userProfile, onBack }) => {
             )}
 
             {/* Chat Interface */}
-            <div className="h-[calc(100vh-300px)] flex flex-col relative">
+            <div className="h-[calc(100vh-380px)] flex flex-col relative">
               {/* Messages */}
               <div 
                 ref={messagesContainerRef}
