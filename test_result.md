@@ -135,15 +135,18 @@ backend:
         comment: "❌ CRITICAL ISSUE: Google Geocoding API returns 'REQUEST_DENIED - This API key is not authorized to use this service or API.' The Google Places API key needs Geocoding API service enabled. This is a configuration issue, not a code bug. Backend logs show clear error: geocoding requests fail with REQUEST_DENIED status."
   - task: "Restaurant Search API"
     implemented: true
-    working: true
+    working: false
     file: "backend/server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
       - working: true
         agent: "main"
         comment: "Basic restaurant search functionality working but location issue exists."
+      - working: false
+        agent: "testing"
+        comment: "❌ Restaurant search by location fails because it depends on geocoding service. /api/restaurants/search-by-location returns 400 'Could not find location: Dallas, Texas'. Direct coordinate search (/api/restaurants/search) works fine. Issue is blocked by geocoding API key configuration problem."
 
 frontend:
   - task: "Map Display Integration"
