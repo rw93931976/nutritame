@@ -1334,9 +1334,21 @@ const Dashboard = ({ userProfile, onBack }) => {
     }
   };
 
-  // Scroll to bottom when messages update
+  // Auto-scroll to show start of latest AI response when messages update
   useEffect(() => {
-    scrollToBottom();
+    // Only auto-scroll when there are messages and we're not in loading state
+    if (messages.length > 0 && !loading) {
+      // Delay slightly to ensure message is rendered
+      setTimeout(() => {
+        scrollToLatestResponse();
+      }, 100);
+    }
+    // When loading starts, scroll to show the "AI is thinking" indicator
+    else if (loading && messages.length > 0) {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+    }
   }, [messages, loading]);
 
   // Add scroll listener to messages container
