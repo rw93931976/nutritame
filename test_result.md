@@ -342,5 +342,7 @@ agent_communication:
     message: "USER BUG REPORT: 1) Launch date needs to be updated to 10/1/2025, 2) Profile won't save, 3) Links at top of profile page are not working"
   - agent: "user"  
     message: "ADDITIONAL BUG REPORT after testing fixes: 1) Try Demo button does nothing, 2) After demo form only shows 'Update Profile' option but no profile exists causing error, 3) Need 'Create Profile' option, 4) Links at top of page still not active"
+  - agent: "user"
+    message: "PERSISTENT ISSUES after attempted fixes: 1) Try demo still goes to update profile page not create profile page, 2) Links at top of page still not working, 3) No access to test features - clicking features does nothing"
   - agent: "testing"
     message: "✅ LAUNCH DATE & PROFILE TESTING COMPLETED: ✅ Launch date is correctly set to 2025-10-01 (October 1, 2025) in backend/.env and properly reflected in GET /api/demo/config endpoint. ✅ Profile save functionality is working perfectly - all profile endpoints (POST /api/users, GET /api/users/{id}, PUT /api/users/{id}) are functional with comprehensive field support including diabetes_type, age, gender, health_goals, food_preferences, allergies, etc. ✅ Error handling works correctly for invalid user IDs. Backend profile API is production-ready. The user-reported 'profile won't save' issue appears to be a frontend integration problem, not a backend API issue."
