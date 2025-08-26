@@ -855,7 +855,7 @@ async def create_demo_access(demo_request: dict):
     try:
         # Create demo user with full access
         demo_user = User(
-            email=demo_request.get("email", f"demo_{uuid.uuid4().hex[:8]}@demo.glucoplanner.com"),
+            email=demo_request.get("email", f"demo_{uuid.uuid4().hex[:8]}@demo.nutritame.com"),
             subscription_status="active",  # Give full access in demo
             subscription_tier=SubscriptionTier.PREMIUM,  # Premium features for demo
             trial_end_date=None,
