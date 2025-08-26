@@ -2296,9 +2296,12 @@ function App() {
     return (
       <BrowserRouter>
         <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50">
+          {/* Demo Mode Banner - only show when in demo mode */}
+          {demoMode && <DemoModeBanner />}
+          
           {/* SaaS Header */}
           <SaaSHeader 
-            user={user} 
+            user={user || demoUser} 
             subscriptionInfo={subscriptionInfo} 
             onLogout={handleLogout} 
           />
@@ -2319,6 +2322,7 @@ function App() {
                 onBack={() => setShowForm(true)}
                 authToken={authToken}
                 subscriptionInfo={subscriptionInfo}
+                demoMode={demoMode}
               />
             )}
           </div>
