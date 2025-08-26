@@ -1005,6 +1005,76 @@ async def get_user_meal_plans(user_id: str):
     plans = await db.meal_plans.find({"user_id": user_id}).sort("created_at", -1).to_list(100)
     return [MealPlan(**parse_from_mongo(plan)) for plan in plans]
 
+# API Usage Monitoring Endpoints
+@api_router.get("/usage/google-places")
+async def get_google_places_usage():
+    """Get Google Places API usage statistics"""
+    try:
+        current_month = datetime.now(timezone.utc).strftime("%Y-%m")
+        usage_doc = await db.api_usage.find_one({
+            "api": "google_places",
+            "month": current_month
+        })
+        
+        if not usage_doc:
+            return {
+                "month": current_month,
+                "calls_made": 0,
+                "monthly_limit": 9000,
+                "percentage_used": 0,
+                "calls_remaining": 9000,
+                "status": "under_limit"
+            }
+        
+        calls_made = usage_doc.get('calls_made', 0)
+        monthly_limit = 9000
+        percentage_used = (calls_made / monthly_limit) * 100
+        calls_remaining = monthly_limit - calls_made
+        
+        # Determine status
+        if calls_made >= monthly_limit:
+            status = "limit_exceeded"
+        elif calls_made >= (monthly_limit * 0.9):
+            status = "approaching_limit"
+        elif calls_made >= (monthly_limit * 0.7):
+            status = "moderate_usage"
+        else:
+            status = "under_limit"
+        
+        return {
+            "month": current_month,
+            "calls_made": calls_made,
+            "monthly_limit": monthly_limit,
+            "percentage_used": round(percentage_used, 2),
+            "calls_remaining": calls_remaining,
+            "status": status,
+            "last_updated": usage_doc.get('last_updated')
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Usage check error: {str(e)}")
+
+@api_router.post("/usage/reset-google-places")
+async def reset_google_places_usage():
+    """Reset Google Places API usage counter (admin function)"""
+    try:
+        current_month = datetime.now(timezone.utc).strftime("%Y-%m")
+        await db.api_usage.update_one(
+            {"api": "google_places", "month": current_month},
+            {
+                "$set": {
+                    "calls_made": 0,
+                    "last_updated": datetime.now(timezone.utc).isoformat()
+                }
+            },
+            upsert=True
+        )
+        
+        return {"message": "Google Places API usage counter reset successfully"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Reset error: {str(e)}")
+
 # Health check endpoint
 @api_router.get("/")
 async def root():
