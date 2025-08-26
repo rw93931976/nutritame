@@ -196,9 +196,7 @@ metadata:
 test_plan:
   current_focus:
     - "Map Display Integration"
-  stuck_tasks:
-    - "Location Geocoding Service"
-    - "Restaurant Search API"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
