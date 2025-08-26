@@ -176,6 +176,18 @@ user_problem_statement: "Complete Demo Mode implementation for NutriTame (rebran
         agent: "main"
         comment: "Added click handlers to navigation links in SaaSHeader component: Account Settings (shows alert and profile guidance), Help & Support (opens email), Notifications (shows trial alerts), and Upgrade buttons (shows upgrade info). All links now have proper functionality."
 
+  - task: "AI Health Coach Response Display"
+    implemented: false
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reports AI Health Coach page space between response and input does not expand to show response. Chat responses may not be displaying properly or scrolling correctly."
+
   - task: "AI Health Coach Layout Spacing"
     implemented: true
     working: true
