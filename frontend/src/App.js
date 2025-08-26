@@ -2044,9 +2044,9 @@ const Dashboard = ({ userProfile, onBack }) => {
                 </div>
               )}
 
-              {/* Input Area - Fixed at bottom */}
-              <div className="flex-shrink-0 mt-auto">
-                <Card className="shadow-xl bg-white/95 backdrop-blur-sm border border-gray-200/50">
+              {/* Input Area - Always visible at bottom */}
+              <div className="flex-shrink-0 border-t border-gray-100 pt-4">
+                <Card className="shadow-lg bg-white border border-gray-200">
                   <CardContent className="p-4">
                   <div className="flex gap-4">
                     <Textarea
