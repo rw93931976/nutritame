@@ -1875,9 +1875,21 @@ const Dashboard = ({ userProfile, onBack }) => {
                             </div>
                           )}
                           <div className="flex-1">
-                            <p className="whitespace-pre-wrap leading-relaxed text-base">
-                              {msg.isUser ? msg.message : (msg.response || msg.message)}
-                            </p>
+                            <div className="flex items-start justify-between">
+                              <p className="whitespace-pre-wrap leading-relaxed text-base flex-1">
+                                {msg.isUser ? msg.message : (msg.response || msg.message)}
+                              </p>
+                              {/* Add to Favorites button for AI responses */}
+                              {!msg.isUser && !msg.isWelcome && (msg.response || msg.message) && (
+                                <button
+                                  onClick={() => addToFavorites(msg.response || msg.message, index)}
+                                  className="ml-3 p-2 text-gray-400 hover:text-pink-600 hover:bg-pink-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
+                                  title="Add to favorites"
+                                >
+                                  <Heart className="h-4 w-4" />
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </CardContent>
