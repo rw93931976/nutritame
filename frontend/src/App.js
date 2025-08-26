@@ -470,7 +470,8 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
                     Saving...
                   </div>
                 ) : (
-                  existingProfile?.id ? "Update Profile" : "Create Profile"
+                  // Check if this is a real profile update or should be treated as creation
+                  (existingProfile?.id && existingProfile?.diabetes_type) ? "Update Profile" : "Create Profile"
                 )}
               </Button>
             </form>
