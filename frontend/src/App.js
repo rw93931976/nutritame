@@ -225,8 +225,11 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
       console.log('Sending profile data:', profileData);
 
       let response;
-      if (existingProfile?.id) {
-        console.log(`Updating profile with ID: ${existingProfile.id}`);
+      // Check if this is a real profile update (has diabetes_type) or should be treated as new profile creation
+      const isRealProfileUpdate = existingProfile?.id && existingProfile?.diabetes_type;
+      
+      if (isRealProfileUpdate) {
+        console.log(`Updating existing profile with ID: ${existingProfile.id}`);
         response = await axios.put(`${API}/users/${existingProfile.id}`, profileData);
       } else {
         console.log('Creating new profile');
