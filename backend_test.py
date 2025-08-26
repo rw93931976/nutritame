@@ -1475,11 +1475,39 @@ def main():
         ("Restaurant Search", tester.test_restaurant_search),
     ]
     
-    # Run urgent tests first
-    print("\n🚨 RUNNING URGENT GEOCODING TESTS FIRST")
+    # Run demo mode tests first (primary focus)
+    print("\n🎯 RUNNING DEMO MODE TESTS FIRST")
     print("=" * 50)
     
     failed_tests = []
+    demo_failed = []
+    
+    for test_name, test_func in demo_tests:
+        try:
+            if not test_func():
+                failed_tests.append(test_name)
+                demo_failed.append(test_name)
+        except Exception as e:
+            print(f"❌ {test_name} failed with exception: {str(e)}")
+            failed_tests.append(test_name)
+            demo_failed.append(test_name)
+    
+    # Print demo results immediately
+    print("\n" + "=" * 50)
+    print("🎯 DEMO MODE TEST RESULTS")
+    print("=" * 50)
+    
+    if demo_failed:
+        print(f"❌ DEMO MODE FAILURES:")
+        for test in demo_failed:
+            print(f"   - {test}")
+    else:
+        print("✅ All demo mode tests passed!")
+    
+    # Run urgent geocoding tests (secondary priority)
+    print("\n🚨 RUNNING URGENT GEOCODING TESTS")
+    print("=" * 50)
+    
     urgent_failed = []
     
     for test_name, test_func in urgent_tests:
@@ -1492,9 +1520,9 @@ def main():
             failed_tests.append(test_name)
             urgent_failed.append(test_name)
     
-    # Print urgent results immediately
+    # Print urgent results
     print("\n" + "=" * 50)
-    print("🚨 URGENT TEST RESULTS")
+    print("🚨 URGENT GEOCODING TEST RESULTS")
     print("=" * 50)
     
     if urgent_failed:
@@ -1504,8 +1532,8 @@ def main():
     else:
         print("✅ All urgent geocoding tests passed!")
     
-    # Continue with standard tests only if urgent tests pass or user wants to continue
-    if not urgent_failed:
+    # Continue with standard tests only if demo tests pass
+    if not demo_failed:
         print("\n📋 Running standard tests...")
         for test_name, test_func in standard_tests:
             try:
