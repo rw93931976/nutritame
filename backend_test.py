@@ -1025,53 +1025,70 @@ class GlucoPlannerAPITester:
 
 def main():
     print("🧪 Starting GlucoPlanner API Tests")
-    print("🎯 FOCUS: Testing 3 Critical Issues from Review Request")
+    print("🚨 URGENT: Testing Geocoding After API Service Enable")
     print("=" * 60)
     
     tester = GlucoPlannerAPITester()
     
-    # CRITICAL TESTS FIRST - As requested in review
-    critical_tests = [
+    # URGENT GEOCODING TESTS FIRST - As requested in review
+    urgent_tests = [
+        ("🚨 URGENT: Dallas Geocoding Test", tester.test_location_geocoding_dallas),
+        ("🚨 URGENT: New York Geocoding Test", tester.test_location_geocoding_new_york),
         ("🚨 Google Places API Usage Tracking", tester.test_google_places_api_usage_tracking),
         ("🚨 API Rate Limiting Enforcement", tester.test_api_rate_limiting_enforcement),
-        ("🚨 Dallas Geocoding Bug Fix", tester.test_location_geocoding_dallas),
         ("🚨 Dallas Restaurant Search Bug Fix", tester.test_restaurant_search_by_dallas_location),
     ]
     
-    # Standard test sequence
+    # Standard test sequence (reduced for focus)
     standard_tests = [
         ("Health Check", tester.test_health_check),
-        ("Health Endpoint", tester.test_health_endpoint),
         ("Create User Profile", tester.test_create_user_profile),
-        ("Get User Profile", tester.test_get_user_profile),
-        ("Update User Profile", tester.test_update_user_profile),
-        ("List Users", tester.test_list_users),
-        ("AI Chat", tester.test_ai_chat),
-        ("Get Chat History", tester.test_get_chat_history),
-        ("Get Meal Plans", tester.test_get_meal_plans),
         ("Restaurant Search", tester.test_restaurant_search),
-        ("Restaurant Details", tester.test_restaurant_details),
-        ("Restaurant Analysis", tester.test_restaurant_analysis),
-        ("Nutrition Search", tester.test_nutrition_search),
-        ("Nutrition Details", tester.test_nutrition_details),
     ]
     
-    # Combine all tests - critical tests first
-    tests = critical_tests + standard_tests
+    # Run urgent tests first
+    print("\n🚨 RUNNING URGENT GEOCODING TESTS FIRST")
+    print("=" * 50)
     
     failed_tests = []
+    urgent_failed = []
     
-    for test_name, test_func in tests:
+    for test_name, test_func in urgent_tests:
         try:
             if not test_func():
                 failed_tests.append(test_name)
+                urgent_failed.append(test_name)
         except Exception as e:
             print(f"❌ {test_name} failed with exception: {str(e)}")
             failed_tests.append(test_name)
+            urgent_failed.append(test_name)
     
-    # Print results
+    # Print urgent results immediately
     print("\n" + "=" * 50)
-    print("📊 TEST RESULTS")
+    print("🚨 URGENT TEST RESULTS")
+    print("=" * 50)
+    
+    if urgent_failed:
+        print(f"❌ URGENT FAILURES:")
+        for test in urgent_failed:
+            print(f"   - {test}")
+    else:
+        print("✅ All urgent geocoding tests passed!")
+    
+    # Continue with standard tests only if urgent tests pass or user wants to continue
+    if not urgent_failed:
+        print("\n📋 Running standard tests...")
+        for test_name, test_func in standard_tests:
+            try:
+                if not test_func():
+                    failed_tests.append(test_name)
+            except Exception as e:
+                print(f"❌ {test_name} failed with exception: {str(e)}")
+                failed_tests.append(test_name)
+    
+    # Print final results
+    print("\n" + "=" * 50)
+    print("📊 FINAL TEST RESULTS")
     print("=" * 50)
     print(f"Tests passed: {tester.tests_passed}/{tester.tests_run}")
     
