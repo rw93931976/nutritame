@@ -1441,13 +1441,25 @@ class GlucoPlannerAPITester:
         return False
 
 def main():
-    print("🧪 Starting GlucoPlanner API Tests")
-    print("🚨 URGENT: Testing Geocoding After API Service Enable")
+    print("🧪 Starting NutriTame API Tests")
+    print("🎯 FOCUS: Demo Mode Implementation Testing")
     print("=" * 60)
     
     tester = GlucoPlannerAPITester()
     
-    # URGENT GEOCODING TESTS FIRST - As requested in review
+    # DEMO MODE TESTS - Primary focus as requested in review
+    demo_tests = [
+        ("🎯 Demo Configuration Endpoint", tester.test_demo_config_endpoint),
+        ("🎯 Demo Access with Email", tester.test_demo_access_with_email),
+        ("🎯 Demo Access without Email", tester.test_demo_access_without_email),
+        ("🎯 Demo User Authentication", tester.test_demo_user_authentication),
+        ("🎯 Demo Environment Configuration", tester.test_demo_environment_configuration),
+        ("🎯 Demo Database Integration", tester.test_demo_database_integration),
+        ("🎯 Demo User App Functionality", tester.test_demo_user_app_functionality),
+        ("🎯 Demo Mode Disabled Check", tester.test_demo_mode_disabled_check),
+    ]
+    
+    # URGENT GEOCODING TESTS - Secondary priority
     urgent_tests = [
         ("🚨 URGENT: Dallas Geocoding Test", tester.test_location_geocoding_dallas),
         ("🚨 URGENT: New York Geocoding Test", tester.test_location_geocoding_new_york),
