@@ -1313,10 +1313,12 @@ const Dashboard = ({ userProfile, onBack }) => {
     if (messagesContainerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
       // Show back to top button if scrolled down more than 200px from the top
-      // and not at the very bottom (within 50px)
       const isScrolledDown = scrollTop > 200;
-      const isNearBottom = scrollTop > (scrollHeight - clientHeight - 50);
-      setShowBackToTop(isScrolledDown && !isNearBottom);
+      // Show scroll to bottom if not at the bottom and scrolled up from bottom
+      const isNearBottom = scrollTop > (scrollHeight - clientHeight - 100);
+      
+      setShowBackToTop(isScrolledDown && messages.length > 2);
+      setShowScrollToBottom(!isNearBottom && messages.length > 2);
     }
   };
 
