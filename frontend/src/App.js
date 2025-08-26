@@ -2034,8 +2034,8 @@ const Dashboard = ({ userProfile, onBack }) => {
               )}
 
               {/* Input Area */}
-              <Card className="shadow-xl bg-white/90 backdrop-blur-sm border border-gray-200/50 mb-20">
-                <CardContent className="p-6">
+              <Card className="shadow-xl bg-white/90 backdrop-blur-sm border border-gray-200/50 mt-4 mb-6">
+                <CardContent className="p-4">
                   <div className="flex gap-4">
                     <Textarea
                       value={currentMessage}
