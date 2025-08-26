@@ -2187,7 +2187,7 @@ function App() {
         });
         setShowForm(false);
         
-        toast.success("Welcome to GlucoPlanner! Your account is ready.");
+        toast.success("Welcome to NutriTame! Your account is ready.");
       }
     } catch (error) {
       console.error('App access error:', error);
