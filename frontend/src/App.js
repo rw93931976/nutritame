@@ -1801,6 +1801,54 @@ const Dashboard = ({ userProfile, onBack }) => {
               </Card>
             )}
 
+            {/* Favorites Panel */}
+            {showFavorites && (
+              <Card className="mb-4">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Heart className="h-5 w-5 text-pink-600" />
+                    Favorite Recipes & Meal Plans
+                  </CardTitle>
+                  <CardDescription>
+                    Your saved recipes and meal recommendations
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {favoriteRecipes.length === 0 ? (
+                    <p className="text-gray-500 text-center py-4">No favorites yet. Use the ♡ button on AI responses to save recipes!</p>
+                  ) : (
+                    <div className="space-y-3 max-h-80 overflow-y-auto">
+                      {favoriteRecipes.map((favorite) => (
+                        <div
+                          key={favorite.id}
+                          className="p-4 bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg border border-pink-100 group"
+                        >
+                          <div className="flex items-start justify-between mb-2">
+                            <h4 className="font-medium text-gray-900 text-sm">
+                              {favorite.title}
+                            </h4>
+                            <button
+                              onClick={(e) => deleteFavorite(favorite.id, e)}
+                              className="opacity-0 group-hover:opacity-100 p-1 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                              title="Remove from favorites"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </div>
+                          <div className="text-sm text-gray-700 mb-2 max-h-20 overflow-y-auto">
+                            {favorite.content.substring(0, 200)}...
+                          </div>
+                          <p className="text-xs text-gray-500">
+                            Saved on {new Date(favorite.timestamp).toLocaleDateString()}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
             {/* Chat Interface */}
             <div className="h-[calc(100vh-300px)] flex flex-col relative">
               {/* Messages */}
