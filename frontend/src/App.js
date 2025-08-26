@@ -1506,6 +1506,10 @@ const Dashboard = ({ userProfile, onBack }) => {
     const saved = JSON.parse(localStorage.getItem('glucoplanner_chats') || '[]');
     setSavedChats(saved);
     
+    // Load favorites from localStorage
+    const favorites = JSON.parse(localStorage.getItem('glucoplanner_favorites') || '[]');
+    setFavoriteRecipes(favorites);
+    
     // Add welcome message
     const welcomeMsg = {
       id: 'welcome',
