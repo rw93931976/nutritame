@@ -176,6 +176,29 @@ user_problem_statement: "Complete Demo Mode implementation for NutriTame (rebran
         agent: "main"
         comment: "Added click handlers to navigation links in SaaSHeader component: Account Settings (shows alert and profile guidance), Help & Support (opens email), Notifications (shows trial alerts), and Upgrade buttons (shows upgrade info). All links now have proper functionality."
 
+  - task: "AI Health Coach Layout Spacing"
+    implemented: false
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reports too much room between where AI health coach asks a question and the input field. Need to reduce spacing in chat layout."
+  - task: "Top Navigation Links Not Working"
+    implemented: false
+    working: false
+    file: "frontend/src/SaaSHeader.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reports links at top of page still do not work despite previous attempts to fix navigation."
+
 backend:
   - task: "User Profile API Endpoints"
     implemented: true
