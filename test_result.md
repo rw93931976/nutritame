@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "GlucoPlanner app for diabetics with AI health coach, restaurant search, and shopping lists. Three critical issues need fixing: (1) Strict Google Places API limit enforcement (exactly 9,000 calls, not 9,001), (2) Add map display for restaurant search results, (3) Fix location search bug where Dallas returns San Francisco results."
+user_problem_statement: "Complete Demo Mode implementation for NutriTame (rebranded from GlucoPlanner), create DemoModeBanner component, integrate demo mode functionality, and update branding throughout the application."
 
 backend:
   - task: "Google Places API Rate Limiting"
