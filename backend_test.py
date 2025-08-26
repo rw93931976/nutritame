@@ -317,6 +317,11 @@ def main():
         ("AI Chat", tester.test_ai_chat),
         ("Get Chat History", tester.test_get_chat_history),
         ("Get Meal Plans", tester.test_get_meal_plans),
+        ("Restaurant Search", tester.test_restaurant_search),
+        ("Restaurant Details", tester.test_restaurant_details),
+        ("Restaurant Analysis", tester.test_restaurant_analysis),
+        ("Nutrition Search", tester.test_nutrition_search),
+        ("Nutrition Details", tester.test_nutrition_details),
     ]
     
     failed_tests = []
