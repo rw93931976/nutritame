@@ -1117,6 +1117,93 @@ async def get_user_meal_plans(user_id: str):
     plans = await db.meal_plans.find({"user_id": user_id}).sort("created_at", -1).to_list(100)
     return [MealPlan(**parse_from_mongo(plan)) for plan in plans]
 
+# SMS Endpoints
+@api_router.post("/sms/send-restaurant")
+async def send_restaurant_sms(sms_request: SendSMSRequest):
+    """Send restaurant information to user's phone via SMS"""
+    try:
+        # Get user profile to get phone number if not provided
+        user_profile = await db.user_profiles.find_one({"id": sms_request.user_id})
+        if not user_profile:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        phone_number = sms_request.phone_number
+        if not phone_number and user_profile.get('phone_number'):
+            phone_number = user_profile['phone_number']
+        
+        if not phone_number:
+            raise HTTPException(status_code=400, detail="Phone number is required")
+        
+        # Validate phone number
+        if not mock_sms_service.validate_phone_number(phone_number):
+            raise HTTPException(status_code=400, detail="Invalid phone number format")
+        
+        # Get restaurant details
+        restaurant = await google_places.get_restaurant_details(sms_request.restaurant_place_id)
+        if not restaurant:
+            raise HTTPException(status_code=404, detail="Restaurant not found")
+        
+        # Send SMS using mock service
+        sms_result = await mock_sms_service.send_restaurant_sms(phone_number, restaurant.dict())
+        
+        if not sms_result["success"]:
+            raise HTTPException(status_code=500, detail=f"Failed to send SMS: {sms_result.get('error')}")
+        
+        # Save SMS record to database
+        sms_record = SMSMessage(
+            user_id=sms_request.user_id,
+            phone_number=sms_result["formatted_phone"],
+            message_content=mock_sms_service._format_restaurant_message(restaurant.dict()),
+            message_type="restaurant_info",
+            restaurant_data=restaurant.dict(),
+            status="sent"
+        )
+        
+        sms_data = prepare_for_mongo(sms_record.dict())
+        await db.sms_messages.insert_one(sms_data)
+        
+        return {
+            "success": True,
+            "message": f"Restaurant information sent to {sms_result['formatted_phone']}",
+            "message_sid": sms_result["message_sid"],
+            "restaurant_name": restaurant.name
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"SMS sending error: {e}")
+        raise HTTPException(status_code=500, detail=f"SMS sending failed: {str(e)}")
+
+@api_router.get("/sms/history/{user_id}")
+async def get_sms_history(user_id: str):
+    """Get SMS history for a user"""
+    try:
+        messages = await db.sms_messages.find({"user_id": user_id}).sort("sent_at", -1).to_list(50)
+        return [SMSMessage(**parse_from_mongo(msg)) for msg in messages]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve SMS history: {str(e)}")
+
+@api_router.post("/sms/validate-phone")
+async def validate_phone_number(phone_data: dict):
+    """Validate a phone number format"""
+    try:
+        phone_number = phone_data.get("phone_number")
+        if not phone_number:
+            raise HTTPException(status_code=400, detail="Phone number is required")
+        
+        is_valid = mock_sms_service.validate_phone_number(phone_number)
+        formatted_phone = mock_sms_service.format_phone_number(phone_number) if is_valid else None
+        
+        return {
+            "valid": is_valid,
+            "formatted": formatted_phone,
+            "message": "Phone number is valid" if is_valid else "Invalid phone number format. Please use format: +1234567890"
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Phone validation error: {str(e)}")
+
 # API Usage Monitoring Endpoints
 @api_router.get("/usage/google-places")
 async def get_google_places_usage():
