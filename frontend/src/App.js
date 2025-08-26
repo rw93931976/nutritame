@@ -1395,7 +1395,7 @@ const Dashboard = ({ userProfile, onBack }) => {
 
   // Load saved chats from localStorage
   const loadSavedChats = () => {
-    const saved = JSON.parse(localStorage.getItem('glucoplanner_chats') || '[]');
+    const saved = JSON.parse(localStorage.getItem('nutritame_chats') || '[]');
     setSavedChats(saved);
     setShowSavedChats(!showSavedChats);
   };
