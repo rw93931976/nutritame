@@ -1384,6 +1384,73 @@ const Dashboard = ({ userProfile, onBack }) => {
     setShowSavedChats(!showSavedChats);
   };
 
+  // Delete saved chat
+  const deleteSavedChat = (chatId, event) => {
+    event.stopPropagation(); // Prevent loading the chat when clicking delete
+    
+    if (deleteConfirmId === chatId) {
+      // Actually delete
+      const existingChats = JSON.parse(localStorage.getItem('glucoplanner_chats') || '[]');
+      const updatedChats = existingChats.filter(chat => chat.id !== chatId);
+      localStorage.setItem('glucoplanner_chats', JSON.stringify(updatedChats));
+      setSavedChats(updatedChats);
+      setDeleteConfirmId(null);
+      
+      // If we deleted the current chat, clear the current chat ID
+      if (currentChatId === chatId) {
+        setCurrentChatId(null);
+      }
+      
+      toast.success("Chat deleted successfully");
+    } else {
+      // Show confirmation
+      setDeleteConfirmId(chatId);
+      setTimeout(() => setDeleteConfirmId(null), 3000); // Auto-cancel after 3 seconds
+    }
+  };
+
+  // Add to favorites (for specific AI responses containing recipes/meal plans)
+  const addToFavorites = (messageContent, messageIndex) => {
+    const favoriteItem = {
+      id: 'fav-' + Date.now(),
+      title: messageContent.substring(0, 60) + '...',
+      content: messageContent,
+      timestamp: new Date().toISOString(),
+      fromChatId: currentChatId,
+      messageIndex: messageIndex
+    };
+
+    const existingFavorites = JSON.parse(localStorage.getItem('glucoplanner_favorites') || '[]');
+    existingFavorites.unshift(favoriteItem);
+    
+    // Keep only last 20 favorites
+    if (existingFavorites.length > 20) {
+      existingFavorites.splice(20);
+    }
+    
+    localStorage.setItem('glucoplanner_favorites', JSON.stringify(existingFavorites));
+    setFavoriteRecipes(existingFavorites);
+    
+    toast.success("Added to favorites!");
+  };
+
+  // Load favorites
+  const loadFavorites = () => {
+    const saved = JSON.parse(localStorage.getItem('glucoplanner_favorites') || '[]');
+    setFavoriteRecipes(saved);
+    setShowFavorites(!showFavorites);
+  };
+
+  // Delete favorite
+  const deleteFavorite = (favId, event) => {
+    event.stopPropagation();
+    const existingFavorites = JSON.parse(localStorage.getItem('glucoplanner_favorites') || '[]');
+    const updatedFavorites = existingFavorites.filter(fav => fav.id !== favId);
+    localStorage.setItem('glucoplanner_favorites', JSON.stringify(updatedFavorites));
+    setFavoriteRecipes(updatedFavorites);
+    toast.success("Favorite deleted");
+  };
+
   // Scroll to top function
   const scrollToTop = () => {
     if (messagesContainerRef.current) {
