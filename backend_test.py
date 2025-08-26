@@ -1023,6 +1023,423 @@ class GlucoPlannerAPITester:
                 print(f"   ❌ Monthly limit should be 9,000, got {monthly_limit}")
                 return False
 
+    # =============================================
+    # DEMO MODE TESTS - As requested in review
+    # =============================================
+    
+    def test_demo_config_endpoint(self):
+        """Test GET /api/demo/config endpoint"""
+        print("\n🔍 Testing Demo Configuration Endpoint...")
+        
+        success, response = self.run_test(
+            "Demo Configuration",
+            "GET",
+            "demo/config",
+            200
+        )
+        
+        if success:
+            # Verify required fields
+            required_fields = ['demo_mode', 'launch_date', 'message', 'launch_requirements']
+            missing_fields = [field for field in required_fields if field not in response]
+            
+            if missing_fields:
+                print(f"   ❌ Missing required fields: {missing_fields}")
+                return False
+            
+            # Verify demo_mode is true
+            if response.get('demo_mode') is True:
+                print("   ✅ demo_mode is correctly set to true")
+            else:
+                print(f"   ❌ demo_mode should be true, got: {response.get('demo_mode')}")
+                return False
+            
+            # Verify launch_date exists
+            launch_date = response.get('launch_date')
+            if launch_date:
+                print(f"   ✅ launch_date is set: {launch_date}")
+            else:
+                print("   ❌ launch_date is missing")
+                return False
+            
+            # Verify demo message
+            message = response.get('message', '')
+            if 'demo mode' in message.lower():
+                print("   ✅ Demo message is appropriate")
+            else:
+                print(f"   ❌ Demo message unclear: {message}")
+                return False
+            
+            # Verify launch requirements structure
+            launch_req = response.get('launch_requirements', {})
+            expected_req_fields = ['account_required', 'subscription_required', 'basic_plan', 'premium_plan', 'free_trial']
+            missing_req_fields = [field for field in expected_req_fields if field not in launch_req]
+            
+            if missing_req_fields:
+                print(f"   ❌ Missing launch requirement fields: {missing_req_fields}")
+                return False
+            else:
+                print("   ✅ Launch requirements structure is complete")
+            
+            print(f"   Demo config: {json.dumps(response, indent=2)}")
+            return True
+        
+        return False
+    
+    def test_demo_access_with_email(self):
+        """Test POST /api/demo/access with email provided"""
+        print("\n🔍 Testing Demo Access Creation with Email...")
+        
+        demo_email = "sarah.johnson@example.com"
+        demo_data = {
+            "email": demo_email
+        }
+        
+        success, response = self.run_test(
+            "Demo Access with Email",
+            "POST",
+            "demo/access",
+            200,
+            data=demo_data
+        )
+        
+        if success:
+            # Verify required response fields
+            required_fields = ['demo_access', 'access_token', 'user', 'expires_at', 'demo_notice', 'launch_date']
+            missing_fields = [field for field in required_fields if field not in response]
+            
+            if missing_fields:
+                print(f"   ❌ Missing required fields: {missing_fields}")
+                return False
+            
+            # Verify demo_access is true
+            if response.get('demo_access') is True:
+                print("   ✅ demo_access is correctly set to true")
+            else:
+                print(f"   ❌ demo_access should be true, got: {response.get('demo_access')}")
+                return False
+            
+            # Verify access token exists and is not empty
+            access_token = response.get('access_token')
+            if access_token and len(access_token) > 20:  # JWT tokens are typically long
+                print("   ✅ Access token generated successfully")
+                self.demo_access_token = access_token  # Store for later tests
+            else:
+                print(f"   ❌ Invalid access token: {access_token}")
+                return False
+            
+            # Verify user object
+            user = response.get('user', {})
+            if user.get('email') == demo_email:
+                print(f"   ✅ User email matches: {demo_email}")
+            else:
+                print(f"   ❌ User email mismatch. Expected: {demo_email}, Got: {user.get('email')}")
+                return False
+            
+            # Verify premium subscription
+            if user.get('subscription_tier') == 'premium':
+                print("   ✅ Demo user has premium subscription tier")
+            else:
+                print(f"   ❌ Demo user should have premium tier, got: {user.get('subscription_tier')}")
+                return False
+            
+            # Verify active status
+            if user.get('subscription_status') == 'active':
+                print("   ✅ Demo user has active subscription status")
+            else:
+                print(f"   ❌ Demo user should have active status, got: {user.get('subscription_status')}")
+                return False
+            
+            # Store demo user info for later tests
+            self.demo_user_id = user.get('id')
+            self.demo_user_email = user.get('email')
+            
+            # Verify demo notice
+            demo_notice = response.get('demo_notice', '')
+            if 'demo account' in demo_notice.lower() and 'premium access' in demo_notice.lower():
+                print("   ✅ Demo notice is appropriate")
+            else:
+                print(f"   ❌ Demo notice unclear: {demo_notice}")
+                return False
+            
+            print(f"   Created demo user ID: {self.demo_user_id}")
+            return True
+        
+        return False
+    
+    def test_demo_access_without_email(self):
+        """Test POST /api/demo/access without email (should generate demo email)"""
+        print("\n🔍 Testing Demo Access Creation without Email...")
+        
+        demo_data = {}  # No email provided
+        
+        success, response = self.run_test(
+            "Demo Access without Email",
+            "POST",
+            "demo/access",
+            200,
+            data=demo_data
+        )
+        
+        if success:
+            # Verify user object
+            user = response.get('user', {})
+            user_email = user.get('email', '')
+            
+            # Verify demo email domain
+            if '@demo.nutritame.com' in user_email:
+                print(f"   ✅ Generated demo email with correct domain: {user_email}")
+            else:
+                print(f"   ❌ Demo email should use @demo.nutritame.com domain, got: {user_email}")
+                return False
+            
+            # Verify email format (should start with demo_)
+            if user_email.startswith('demo_'):
+                print("   ✅ Demo email has correct prefix")
+            else:
+                print(f"   ❌ Demo email should start with 'demo_', got: {user_email}")
+                return False
+            
+            # Verify premium access
+            if user.get('subscription_tier') == 'premium' and user.get('subscription_status') == 'active':
+                print("   ✅ Generated demo user has premium access")
+            else:
+                print(f"   ❌ Generated demo user should have premium access")
+                return False
+            
+            # Store second demo user for testing
+            self.demo_user_2_id = user.get('id')
+            access_token = response.get('access_token')
+            if access_token:
+                self.demo_access_token_2 = access_token
+            
+            return True
+        
+        return False
+    
+    def test_demo_user_authentication(self):
+        """Test demo user authentication with JWT token"""
+        print("\n🔍 Testing Demo User Authentication...")
+        
+        if not hasattr(self, 'demo_access_token') or not self.demo_access_token:
+            print("   ❌ No demo access token available for testing")
+            return False
+        
+        # Test GET /api/auth/me with demo token
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {self.demo_access_token}'
+        }
+        
+        success, response = self.run_test(
+            "Demo User Authentication",
+            "GET",
+            "auth/me",
+            200,
+            headers=headers
+        )
+        
+        if success:
+            # Verify user information
+            user = response.get('user', {})
+            
+            if user.get('id') == self.demo_user_id:
+                print(f"   ✅ Demo user ID matches: {self.demo_user_id}")
+            else:
+                print(f"   ❌ Demo user ID mismatch. Expected: {self.demo_user_id}, Got: {user.get('id')}")
+                return False
+            
+            if user.get('email') == self.demo_user_email:
+                print(f"   ✅ Demo user email matches: {self.demo_user_email}")
+            else:
+                print(f"   ❌ Demo user email mismatch. Expected: {self.demo_user_email}, Got: {user.get('email')}")
+                return False
+            
+            # Verify subscription info
+            subscription_info = response.get('subscription_info', {})
+            if subscription_info.get('tier') == 'premium':
+                print("   ✅ Demo user has premium subscription info")
+            else:
+                print(f"   ❌ Demo user should have premium subscription, got: {subscription_info.get('tier')}")
+                return False
+            
+            # Verify tenant ID
+            tenant_id = response.get('tenant_id')
+            if tenant_id:
+                print(f"   ✅ Demo user has tenant ID: {tenant_id}")
+                self.demo_tenant_id = tenant_id
+            else:
+                print("   ❌ Demo user missing tenant ID")
+                return False
+            
+            return True
+        
+        return False
+    
+    def test_demo_environment_configuration(self):
+        """Test environment configuration for demo mode"""
+        print("\n🔍 Testing Demo Environment Configuration...")
+        
+        # Test that demo config endpoint reflects environment variables
+        success, response = self.run_test(
+            "Demo Environment Check",
+            "GET",
+            "demo/config",
+            200
+        )
+        
+        if success:
+            # Verify DEMO_MODE environment variable is properly loaded
+            if response.get('demo_mode') is True:
+                print("   ✅ DEMO_MODE environment variable is properly loaded as true")
+            else:
+                print(f"   ❌ DEMO_MODE should be true, environment may not be properly configured")
+                return False
+            
+            # Verify launch date is set
+            launch_date = response.get('launch_date')
+            if launch_date and launch_date != '':
+                print(f"   ✅ LAUNCH_DATE environment variable is set: {launch_date}")
+            else:
+                print("   ❌ LAUNCH_DATE environment variable is not properly set")
+                return False
+            
+            return True
+        
+        return False
+    
+    def test_demo_database_integration(self):
+        """Test that demo users are properly saved to database"""
+        print("\n🔍 Testing Demo Database Integration...")
+        
+        if not hasattr(self, 'demo_user_id') or not self.demo_user_id:
+            print("   ❌ No demo user ID available for database testing")
+            return False
+        
+        # Test that we can retrieve the demo user (this tests database persistence)
+        if not hasattr(self, 'demo_access_token') or not self.demo_access_token:
+            print("   ❌ No demo access token available for testing")
+            return False
+        
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {self.demo_access_token}'
+        }
+        
+        # Test accessing a protected endpoint that requires database lookup
+        success, response = self.run_test(
+            "Demo Database Integration",
+            "GET",
+            "auth/me",
+            200,
+            headers=headers
+        )
+        
+        if success:
+            user = response.get('user', {})
+            
+            # Verify user data persistence
+            if user.get('id') == self.demo_user_id:
+                print("   ✅ Demo user is properly saved and retrievable from database")
+            else:
+                print("   ❌ Demo user not found in database or ID mismatch")
+                return False
+            
+            # Verify subscription data persistence
+            if user.get('subscription_tier') == 'premium' and user.get('subscription_status') == 'active':
+                print("   ✅ Demo user subscription data is properly persisted")
+            else:
+                print("   ❌ Demo user subscription data not properly persisted")
+                return False
+            
+            return True
+        
+        return False
+    
+    def test_demo_user_app_functionality(self):
+        """Test that demo users can access all app functionality"""
+        print("\n🔍 Testing Demo User App Functionality Access...")
+        
+        if not hasattr(self, 'demo_access_token') or not self.demo_access_token:
+            print("   ❌ No demo access token available for testing")
+            return False
+        
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {self.demo_access_token}'
+        }
+        
+        # Test subscription info endpoint (premium feature)
+        success, response = self.run_test(
+            "Demo User Subscription Access",
+            "GET",
+            "subscription/info",
+            200,
+            headers=headers
+        )
+        
+        if success:
+            subscription_info = response
+            if subscription_info.get('tier') == 'premium':
+                print("   ✅ Demo user can access premium subscription features")
+            else:
+                print(f"   ❌ Demo user should have premium access, got: {subscription_info.get('tier')}")
+                return False
+            
+            # Verify subscription is active
+            if subscription_info.get('status') == 'active':
+                print("   ✅ Demo user subscription is active")
+            else:
+                print(f"   ❌ Demo user subscription should be active, got: {subscription_info.get('status')}")
+                return False
+            
+            return True
+        
+        return False
+    
+    def test_demo_mode_disabled_check(self):
+        """Test behavior when demo mode is disabled (theoretical test)"""
+        print("\n🔍 Testing Demo Mode Disabled Behavior (Informational)...")
+        
+        # This is an informational test - we can't actually disable demo mode
+        # but we can verify the current state and document expected behavior
+        
+        success, response = self.run_test(
+            "Current Demo Mode Status",
+            "GET",
+            "demo/config",
+            200
+        )
+        
+        if success:
+            if response.get('demo_mode') is True:
+                print("   ℹ️  Demo mode is currently ENABLED")
+                print("   ℹ️  When disabled, POST /api/demo/access should return 403")
+                print("   ℹ️  When disabled, demo_mode in config should be false")
+                print("   ✅ Demo mode configuration is working as expected")
+                return True
+            else:
+                print("   ⚠️  Demo mode appears to be disabled")
+                
+                # Test that demo access is blocked
+                demo_data = {"email": "test@example.com"}
+                success_blocked, response_blocked = self.run_test(
+                    "Demo Access When Disabled",
+                    "POST",
+                    "demo/access",
+                    403,  # Should be forbidden
+                    data=demo_data
+                )
+                
+                if success_blocked:
+                    print("   ✅ Demo access correctly blocked when demo mode disabled")
+                    return True
+                else:
+                    print("   ❌ Demo access should be blocked when demo mode disabled")
+                    return False
+        
+        return False
+
 def main():
     print("🧪 Starting GlucoPlanner API Tests")
     print("🚨 URGENT: Testing Geocoding After API Service Enable")
