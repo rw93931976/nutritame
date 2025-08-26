@@ -946,6 +946,10 @@ const Dashboard = ({ userProfile, onBack }) => {
               onRestaurantSelect={handleRestaurantSelect}
             />
           </TabsContent>
+
+          <TabsContent value="shopping">
+            <ShoppingListView userProfile={userProfile} />
+          </TabsContent>
         </Tabs>
       </div>
     </div>
