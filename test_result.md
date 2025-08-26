@@ -192,9 +192,13 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Demo Mode Backend Configuration"
+    - "Demo Mode Banner Component"  
+    - "App.js Demo Integration"
+    - "Demo Landing Page"
   stuck_tasks: []
-  test_all: false
+  test_all: true
   test_priority: "high_first"
 
 agent_communication:
