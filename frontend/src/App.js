@@ -2051,39 +2051,6 @@ const Dashboard = ({ userProfile, onBack }) => {
                 </div>
               )}
 
-              {/* Shopping List Generation Button */}
-              {showShoppingListButton && (
-                <div className="mb-4">
-                  <Card className="bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-200 shadow-md">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 bg-orange-100 rounded-full">
-                            <ShoppingCart className="h-5 w-5 text-orange-600" />
-                          </div>
-                          <div>
-                            <h4 className="font-semibold text-gray-800">Generate Shopping List</h4>
-                            <p className="text-sm text-gray-600">Create a shopping list based on this meal plan</p>
-                          </div>
-                        </div>
-                        <Button 
-                          onClick={generateShoppingList}
-                          disabled={loading}
-                          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg"
-                        >
-                          {loading ? (
-                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                          ) : (
-                            <Plus className="h-4 w-4 mr-2" />
-                          )}
-                          Create List
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-
               {/* Input Area - Always visible at bottom */}
               <div className="flex-shrink-0 border-t border-gray-100 pt-4">
                 <Card className="shadow-lg bg-white border border-gray-200">
