@@ -131,7 +131,7 @@ user_problem_statement: "Complete Demo Mode implementation for NutriTame (rebran
         comment: "User reports after demo form only shows 'Update Profile' but no profile exists, causing error. Need 'Create Profile' option and proper create/update logic."
       - working: true
         agent: "main"
-        comment: "Fixed profile create/update logic to check for actual profile data (diabetes_type) not just user ID. Demo users now see 'Create Profile' until they fill out their profile completely. Updated button text, card title, and API call logic accordingly."
+        comment: "Fixed profile create/update logic to check for actual profile data (diabetes_type) not just user ID. Demo users now see 'Create Profile' until they fill out their profile completely. Updated button text, card title, and API call logic accordingly. Fixed onProfileComplete prop name mismatch to resolve JavaScript function error. Added comprehensive debugging."
 
   - task: "Launch Date Update to 10/1/2025"
     implemented: true
