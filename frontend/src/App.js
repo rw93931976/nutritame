@@ -1452,7 +1452,7 @@ const Dashboard = ({ userProfile, onBack }) => {
 
   // Load favorites
   const loadFavorites = () => {
-    const saved = JSON.parse(localStorage.getItem('glucoplanner_favorites') || '[]');
+    const saved = JSON.parse(localStorage.getItem('nutritame_favorites') || '[]');
     setFavoriteRecipes(saved);
     setShowFavorites(!showFavorites);
   };
