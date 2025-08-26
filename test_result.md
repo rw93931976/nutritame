@@ -123,13 +123,16 @@ backend:
     implemented: true
     working: false
     file: "backend/server.py"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "user"
         comment: "Dallas, Texas search returns San Francisco results. Geocoding logic needs debugging."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL ISSUE: Google Geocoding API returns 'REQUEST_DENIED - This API key is not authorized to use this service or API.' The Google Places API key needs Geocoding API service enabled. This is a configuration issue, not a code bug. Backend logs show clear error: geocoding requests fail with REQUEST_DENIED status."
   - task: "Restaurant Search API"
     implemented: true
     working: true
