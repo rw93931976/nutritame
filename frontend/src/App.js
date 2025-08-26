@@ -1608,25 +1608,25 @@ const Dashboard = ({ userProfile, onBack }) => {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Scroll Navigation Buttons - Always show when there are multiple messages */}
+              {/* Fixed Floating Scroll Navigation Buttons */}
               {messages.length > 3 && (
-                <div className="absolute right-4 top-4 z-10 flex flex-col gap-2">
+                <div className="fixed bottom-20 right-6 z-50 flex flex-col gap-3">
                   {/* Back to Top Button */}
                   <button
                     onClick={scrollToTop}
-                    className="bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
+                    className="bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white p-4 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110 backdrop-blur-sm border border-white/20"
                     title="Scroll to top of conversation"
                   >
-                    <ChevronUp className="h-5 w-5" />
+                    <ChevronUp className="h-6 w-6" />
                   </button>
                   
                   {/* Scroll to Bottom Button */}
                   <button
                     onClick={scrollToBottom}
-                    className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
+                    className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white p-4 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110 backdrop-blur-sm border border-white/20"
                     title="Scroll to latest message"
                   >
-                    <ChevronDown className="h-5 w-5" />
+                    <ChevronDown className="h-6 w-6" />
                   </button>
                 </div>
               )}
