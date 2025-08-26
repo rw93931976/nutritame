@@ -31,7 +31,8 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
     cultural_background: existingProfile?.cultural_background || "",
     allergies: existingProfile?.allergies || [],
     dislikes: existingProfile?.dislikes || [],
-    cooking_skill: existingProfile?.cooking_skill || ""
+    cooking_skill: existingProfile?.cooking_skill || "",
+    phone_number: existingProfile?.phone_number || ""
   });
 
   const [loading, setLoading] = useState(false);
