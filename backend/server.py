@@ -34,6 +34,10 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
+# Demo Mode Configuration
+DEMO_MODE = os.environ.get('DEMO_MODE', 'true').lower() == 'true'
+LAUNCH_DATE = os.environ.get('LAUNCH_DATE', '2025-02-01')  # Set your launch date
+
 # Create the main app
 app = FastAPI(title="GlucoPlanner SaaS", version="2.0.0")
 
