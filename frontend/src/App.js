@@ -215,23 +215,48 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
     setLoading(true);
 
     try {
+      console.log('Profile submission started:', { profile, existingProfile });
+      
       const profileData = {
         ...profile,
         age: profile.age ? parseInt(profile.age) : null
       };
 
+      console.log('Sending profile data:', profileData);
+
       let response;
       if (existingProfile?.id) {
+        console.log(`Updating profile with ID: ${existingProfile.id}`);
         response = await axios.put(`${API}/users/${existingProfile.id}`, profileData);
       } else {
+        console.log('Creating new profile');
         response = await axios.post(`${API}/users`, profileData);
       }
 
+      console.log('Profile save response:', response.data);
       toast.success(existingProfile?.id ? "Profile updated successfully!" : "Profile created successfully!");
       onProfileComplete(response.data);
     } catch (error) {
-      console.error("Profile save error:", error);
-      toast.error("Failed to save profile. Please try again.");
+      console.error("Profile save error details:", {
+        error,
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        config: error.config
+      });
+      
+      // More specific error messages
+      if (error.response?.status === 404) {
+        toast.error("Profile not found. Please try creating a new profile.");
+      } else if (error.response?.status === 400) {
+        toast.error(`Invalid profile data: ${error.response?.data?.detail || 'Please check your input'}`);
+      } else if (error.response?.status >= 500) {
+        toast.error("Server error. Please try again later.");
+      } else if (error.code === 'NETWORK_ERROR') {
+        toast.error("Network error. Please check your internet connection.");
+      } else {
+        toast.error(`Failed to save profile: ${error.response?.data?.detail || error.message || 'Unknown error'}`);
+      }
     } finally {
       setLoading(false);
     }
