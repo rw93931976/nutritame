@@ -83,29 +83,29 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-cyan-50 to-blue-50 p-4">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <div className="p-3 bg-emerald-100 rounded-full">
+            <div className="p-4 bg-gradient-to-br from-emerald-100 to-blue-100 rounded-full shadow-lg">
               <Heart className="h-8 w-8 text-emerald-600" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
             Welcome to GlucoPlanner
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-700 text-lg">
             Your personalized AI health coach for diabetes-friendly meal planning with restaurant search
           </p>
         </div>
 
-        <Card className="shadow-lg border-0">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
+          <CardHeader className="bg-gradient-to-r from-emerald-50 to-blue-50 rounded-t-lg">
+            <CardTitle className="flex items-center gap-2 text-gray-800">
               <User className="h-5 w-5 text-emerald-600" />
               {existingProfile?.id ? "Update Your Profile" : "Create Your Profile"}
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-gray-600">
               Help us understand your needs so we can provide the best meal recommendations and restaurant suggestions
             </CardDescription>
           </CardHeader>
