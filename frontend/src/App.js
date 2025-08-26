@@ -25,8 +25,7 @@ import AdminDashboard from './AdminDashboard';
 import AdminLogin from './AdminLogin';
 import SaaSHeader from './SaaSHeader';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://diabeticmeal-app.preview.emergentagent.com';
-const API = `${BACKEND_URL}/api`;
+import { BACKEND_URL, API } from './config';
 
 // Map Component for displaying restaurant locations
 const RestaurantMap = ({ center, restaurants, selectedRestaurant, onRestaurantSelect }) => {
