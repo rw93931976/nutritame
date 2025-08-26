@@ -98,18 +98,33 @@ const DemoModeBanner = ({ isMinimized = false, onToggleMinimize = null }) => {
               </div>
               
               <div className="hidden sm:flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-1">
+                <div 
+                  className="flex items-center gap-1 cursor-pointer hover:bg-white/10 px-2 py-1 rounded transition-colors"
+                  onClick={() => {
+                    alert('🎁 Demo Mode Active: All premium features including unlimited AI conversations, restaurant search with mapping, shopping list generation, and personalized meal planning are completely free during the pre-launch demo period!');
+                  }}
+                >
                   <Gift className="h-4 w-4" />
                   <span className="font-medium">All Premium Features Free</span>
                 </div>
                 
-                <div className="flex items-center gap-1">
+                <div 
+                  className="flex items-center gap-1 cursor-pointer hover:bg-white/10 px-2 py-1 rounded transition-colors"
+                  onClick={() => {
+                    alert('👑 No Account Required: During demo mode, you can access all features without creating an account. After launch, users will need to subscribe to continue using premium features.');
+                  }}
+                >
                   <Crown className="h-4 w-4" />
                   <span>No Account Required</span>
                 </div>
                 
                 {demoConfig?.launch_date && (
-                  <div className="flex items-center gap-1">
+                  <div 
+                    className="flex items-center gap-1 cursor-pointer hover:bg-white/10 px-2 py-1 rounded transition-colors"
+                    onClick={() => {
+                      alert(`🚀 Launch Date: NutriTame will officially launch on ${formatDate(demoConfig.launch_date)}. After this date, subscription plans ($9 Basic, $19 Premium) will be required to access features. Enjoy the free demo until then!`);
+                    }}
+                  >
                     <Calendar className="h-4 w-4" />
                     <span>Launch: {formatDate(demoConfig.launch_date)}</span>
                   </div>
