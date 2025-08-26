@@ -263,10 +263,17 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
 
               <Button 
                 type="submit" 
-                className="w-full bg-emerald-600 hover:bg-emerald-700" 
+                className="w-full bg-gradient-to-r from-emerald-600 via-blue-600 to-emerald-600 hover:from-emerald-700 hover:via-blue-700 hover:to-emerald-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105" 
                 disabled={loading || !profile.diabetes_type}
               >
-                {loading ? "Saving..." : existingProfile?.id ? "Update Profile" : "Create Profile"}
+                {loading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    Saving...
+                  </div>
+                ) : (
+                  existingProfile?.id ? "Update Profile" : "Create Profile"
+                )}
               </Button>
             </form>
           </CardContent>
