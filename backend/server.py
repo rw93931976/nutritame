@@ -855,9 +855,34 @@ async def create_demo_access(demo_request: dict):
         raise HTTPException(status_code=403, detail="Demo mode is not enabled")
     
     try:
+        # Generate unique email for demo if not provided or if provided email already exists
+        provided_email = demo_request.get("email")
+        if provided_email:
+            # Check if user already exists
+            existing_user = await db_manager.get_user_by_email(provided_email)
+            if existing_user:
+                # Return existing demo user if it's already a demo user
+                if existing_user.subscription_tier == SubscriptionTier.PREMIUM and existing_user.subscription_status == "active":
+                    token = AuthService.create_access_token(existing_user)
+                    return {
+                        "demo_access": True,
+                        "access_token": token.token,
+                        "user": existing_user,
+                        "expires_at": token.expires_at,
+                        "demo_notice": "Returning existing demo account with full premium access.",
+                        "launch_date": LAUNCH_DATE
+                    }
+                else:
+                    # User exists but not a demo user, create new demo email
+                    demo_email = f"demo_{uuid.uuid4().hex[:8]}@demo.nutritame.com"
+            else:
+                demo_email = provided_email
+        else:
+            demo_email = f"demo_{uuid.uuid4().hex[:8]}@demo.nutritame.com"
+        
         # Create demo user with full access
         demo_user = User(
-            email=demo_request.get("email", f"demo_{uuid.uuid4().hex[:8]}@demo.nutritame.com"),
+            email=demo_email,
             subscription_status="active",  # Give full access in demo
             subscription_tier=SubscriptionTier.PREMIUM,  # Premium features for demo
             trial_end_date=None,
