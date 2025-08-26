@@ -1520,7 +1520,7 @@ const Dashboard = ({ userProfile, onBack }) => {
 
           <TabsContent value="chat" className="space-y-4">
             {/* Chat Interface */}
-            <div className="h-[calc(100vh-200px)] flex flex-col">
+            <div className="h-[calc(100vh-200px)] flex flex-col relative">
               {/* Messages */}
               <div 
                 ref={messagesContainerRef}
@@ -1578,6 +1578,17 @@ const Dashboard = ({ userProfile, onBack }) => {
                 {/* Auto-scroll anchor */}
                 <div ref={messagesEndRef} />
               </div>
+
+              {/* Back to Top Button */}
+              {showBackToTop && (
+                <button
+                  onClick={scrollToTop}
+                  className="absolute right-4 top-4 z-10 bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
+                  title="Back to top"
+                >
+                  <ChevronUp className="h-5 w-5" />
+                </button>
+              )}
 
               {/* Shopping List Generation Button */}
               {showShoppingListButton && (
