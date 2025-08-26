@@ -633,19 +633,19 @@ const Dashboard = ({ userProfile, onBack }) => {
               {/* Messages */}
               <div className="flex-1 space-y-4 overflow-y-auto mb-4 pr-2">
                 {messages.map((msg, index) => (
-                  <div key={msg.id || index} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'}`}>
-                    <Card className={`max-w-[80%] ${
+                  <div key={msg.id || index} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'} message-enter`}>
+                    <Card className={`max-w-[80%] transition-all duration-300 ${
                       msg.isUser 
-                        ? 'bg-emerald-600 text-white' 
+                        ? 'bg-gradient-to-r from-emerald-600 to-blue-600 text-white shadow-lg' 
                         : msg.isWelcome 
-                          ? 'bg-gradient-to-r from-emerald-100 to-teal-100 border-emerald-200' 
-                          : 'bg-white'
-                    } shadow-sm`}>
+                          ? 'bg-gradient-to-r from-emerald-50 via-blue-50 to-purple-50 border-emerald-200 shadow-lg' 
+                          : 'bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200/50'
+                    }`}>
                       <CardContent className="p-4">
                         <div className="flex items-start gap-3">
                           {!msg.isUser && (
                             <div className="flex-shrink-0">
-                              <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-100 to-blue-100 flex items-center justify-center shadow-md">
                                 <ChefHat className="h-4 w-4 text-emerald-600" />
                               </div>
                             </div>
@@ -662,16 +662,16 @@ const Dashboard = ({ userProfile, onBack }) => {
                 ))}
                 {loading && (
                   <div className="flex justify-start">
-                    <Card className="bg-white shadow-sm">
+                    <Card className="bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200/50">
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-100 to-blue-100 flex items-center justify-center shadow-md">
                             <ChefHat className="h-4 w-4 text-emerald-600" />
                           </div>
                           <div className="flex space-x-1">
-                            <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce"></div>
-                            <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                            <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                            <div className="w-2 h-2 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-full animate-bounce"></div>
+                            <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                            <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
                           </div>
                         </div>
                       </CardContent>
