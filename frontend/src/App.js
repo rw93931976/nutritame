@@ -298,7 +298,13 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
               {/* Diabetes Type */}
               <div className="space-y-2">
                 <Label htmlFor="diabetes_type">Diabetes Type *</Label>
-                <Select value={profile.diabetes_type} onValueChange={(value) => setProfile({...profile, diabetes_type: value})}>
+                <Select 
+                  value={profile.diabetes_type} 
+                  onValueChange={(value) => {
+                    console.log('Diabetes type selected:', value);
+                    setProfile({...profile, diabetes_type: value});
+                  }}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select your diabetes type" />
                   </SelectTrigger>
