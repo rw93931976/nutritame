@@ -1028,7 +1028,7 @@ class GlucoPlannerAPITester:
     # =============================================
     
     def test_demo_config_endpoint(self):
-        """Test GET /api/demo/config endpoint"""
+        """Test GET /api/demo/config endpoint - FOCUS: Launch date should be 2025-10-01"""
         print("\n🔍 Testing Demo Configuration Endpoint...")
         
         success, response = self.run_test(
@@ -1054,12 +1054,13 @@ class GlucoPlannerAPITester:
                 print(f"   ❌ demo_mode should be true, got: {response.get('demo_mode')}")
                 return False
             
-            # Verify launch_date exists
+            # CRITICAL: Verify launch_date is 2025-10-01 (October 1, 2025)
             launch_date = response.get('launch_date')
-            if launch_date:
-                print(f"   ✅ launch_date is set: {launch_date}")
+            expected_launch_date = "2025-10-01"
+            if launch_date == expected_launch_date:
+                print(f"   ✅ launch_date is correctly set to {expected_launch_date} (October 1, 2025)")
             else:
-                print("   ❌ launch_date is missing")
+                print(f"   ❌ CRITICAL: launch_date should be {expected_launch_date}, got: {launch_date}")
                 return False
             
             # Verify demo message
