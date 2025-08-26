@@ -168,6 +168,12 @@ class RestaurantSearchRequest(BaseModel):
     keyword: Optional[str] = None
     cuisine_type: Optional[str] = None
 
+class LocationSearchRequest(BaseModel):
+    location: str  # Address or city name
+    radius: Optional[int] = 2000
+    keyword: Optional[str] = None
+    cuisine_type: Optional[str] = None
+
 class Restaurant(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     place_id: str
