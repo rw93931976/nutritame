@@ -1296,12 +1296,12 @@ const Dashboard = ({ userProfile, onBack }) => {
 
   // Auto-scroll to show start of latest AI response (not the very bottom)
   const scrollToLatestResponse = () => {
-    // Find the last AI message (non-user message)
-    const aiMessages = messagesContainerRef.current?.querySelectorAll('.message-enter');
-    if (aiMessages && aiMessages.length > 1) {
-      // Get the last message (should be the latest AI response)
-      const lastMessage = aiMessages[aiMessages.length - 1];
-      // Scroll to show the beginning of this message
+    // Find all messages
+    const messageElements = messagesContainerRef.current?.querySelectorAll('.message-enter');
+    if (messageElements && messageElements.length > 0) {
+      // Get the last message
+      const lastMessage = messageElements[messageElements.length - 1];
+      // Scroll to show the beginning of this message, with some padding
       lastMessage.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
