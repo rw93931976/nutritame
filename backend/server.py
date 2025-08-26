@@ -345,14 +345,15 @@ class GooglePlacesClient:
 class USDANutritionClient:
     def __init__(self):
         self.base_url = "https://api.nal.usda.gov/fdc/v1"
-        # USDA API is free and doesn't require a key for basic searches
+        self.api_key = os.environ.get('USDA_API_KEY')
         
     async def search_food(self, query: str):
         """Search for food items in USDA database"""
         async with httpx.AsyncClient() as client:
             params = {
                 'query': query,
-                'pageSize': 5
+                'pageSize': 5,
+                'api_key': self.api_key
             }
             
             try:
@@ -374,8 +375,12 @@ class USDANutritionClient:
     async def get_food_details(self, fdc_id: str):
         """Get detailed nutrition information for a specific food"""
         async with httpx.AsyncClient() as client:
+            params = {
+                'api_key': self.api_key
+            }
+            
             try:
-                response = await client.get(f"{self.base_url}/food/{fdc_id}")
+                response = await client.get(f"{self.base_url}/food/{fdc_id}", params=params)
                 response.raise_for_status()
                 food_data = response.json()
                 
