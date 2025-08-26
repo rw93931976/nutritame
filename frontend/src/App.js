@@ -430,39 +430,41 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect }) => {
 // Restaurant Card Component
 const RestaurantCard = ({ restaurant, onSelect }) => {
   const getDiabeticRatingColor = (score) => {
-    if (score >= 4) return "text-green-600 bg-green-100";
-    if (score >= 3) return "text-yellow-600 bg-yellow-100";
-    return "text-red-600 bg-red-100";
+    if (score >= 4) return "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg";
+    if (score >= 3) return "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg";
+    if (score >= 2) return "bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-lg";
+    return "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg";
   };
 
   const getDiabeticRatingText = (score) => {
     if (score >= 4) return "Excellent";
     if (score >= 3) return "Good";
-    return "Fair";
+    if (score >= 2) return "Fair";
+    return "Needs Care";
   };
 
   return (
-    <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => onSelect(restaurant)}>
+    <Card className="hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 bg-white/90 backdrop-blur-sm border border-gray-200/50" onClick={() => onSelect(restaurant)}>
       <CardContent className="p-4">
         <div className="space-y-3">
           <div>
-            <h3 className="font-semibold text-lg">{restaurant.name}</h3>
+            <h3 className="font-semibold text-lg text-gray-800">{restaurant.name}</h3>
             <p className="text-sm text-gray-600 flex items-center gap-1">
-              <MapPin className="h-3 w-3" />
+              <MapPin className="h-3 w-3 text-emerald-500" />
               {restaurant.address}
             </p>
           </div>
           
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               {restaurant.rating && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-full">
                   <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                  <span className="text-sm font-medium">{restaurant.rating}</span>
+                  <span className="text-sm font-medium text-yellow-700">{restaurant.rating}</span>
                 </div>
               )}
               {restaurant.price_level && (
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full font-medium">
                   {"$".repeat(restaurant.price_level)}
                 </span>
               )}
@@ -475,8 +477,10 @@ const RestaurantCard = ({ restaurant, onSelect }) => {
             )}
           </div>
           
-          <div className="text-xs text-gray-500">
-            Diabetic Score: {restaurant.diabetic_friendly_score?.toFixed(1) || "N/A"}/5.0
+          <div className="flex items-center justify-between">
+            <div className="text-xs text-gray-500 bg-gradient-to-r from-emerald-50 to-blue-50 px-2 py-1 rounded-full">
+              Diabetic Score: <span className="font-semibold">{restaurant.diabetic_friendly_score?.toFixed(1) || "N/A"}/5.0</span>
+            </div>
           </div>
         </div>
       </CardContent>
