@@ -141,7 +141,7 @@ backend:
         comment: "✅ FIXED: Geocoding API service is now properly enabled! Dallas, Texas geocoding returns correct coordinates (32.7766642, -96.79698789999999) with formatted address 'Dallas, TX, USA'. New York, NY geocoding returns correct coordinates (40.7127753, -74.0059728) with formatted address 'New York, NY, USA'. All geocoding tests pass with status 200. The Dallas location bug is completely resolved."
   - task: "Restaurant Search API"
     implemented: true
-    working: false
+    working: true
     file: "backend/server.py"
     stuck_count: 2
     priority: "high"
@@ -156,6 +156,9 @@ backend:
       - working: false
         agent: "testing"
         comment: "❌ URGENT TESTING RESULTS: Restaurant search by location still fails with 400 'Could not find location: Dallas, Texas' because geocoding dependency is broken. Direct coordinate-based restaurant search works perfectly (found 10 restaurants in San Francisco test). The issue remains blocked by the Geocoding API authorization problem."
+      - working: true
+        agent: "testing"
+        comment: "✅ FIXED: Restaurant search by location now works perfectly! Dallas, Texas search successfully found 8 Dallas restaurants with correct Dallas addresses and coordinates. Sample restaurants: 'Snap Kitchen - Uptown' at (32.792887, -96.802009), 'Packin' Bowls (Keto Friendly)' at (32.7734831, -96.83719359999999). All restaurants are properly located in Dallas area (32.6-32.9 lat, -97.1 to -96.6 lng). The Dallas→San Francisco bug is completely resolved."
 
 frontend:
   - task: "Map Display Integration"
