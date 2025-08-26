@@ -300,6 +300,215 @@ class GlucoPlannerAPITester:
         """Test the health endpoint"""
         return self.run_test("Health Endpoint", "GET", "health", 200)[0]
 
+    def test_create_shopping_list(self):
+        """Test creating a shopping list"""
+        if not self.created_user_id:
+            print("❌ No user ID available for testing")
+            return False
+            
+        shopping_list_data = {
+            "user_id": self.created_user_id,
+            "title": "Test Shopping List",
+            "items": [
+                {
+                    "item": "Chicken breast",
+                    "category": "proteins",
+                    "quantity": "2 lbs",
+                    "checked": False
+                },
+                {
+                    "item": "Broccoli",
+                    "category": "produce",
+                    "quantity": "1 bunch",
+                    "checked": False
+                },
+                {
+                    "item": "Brown rice",
+                    "category": "pantry",
+                    "quantity": "1 bag",
+                    "checked": False
+                }
+            ]
+        }
+        
+        success, response = self.run_test(
+            "Create Shopping List",
+            "POST",
+            "shopping-lists",
+            200,
+            data=shopping_list_data
+        )
+        
+        if success and 'id' in response:
+            self.created_shopping_list_id = response['id']
+            print(f"   Created shopping list ID: {self.created_shopping_list_id}")
+            return True
+        return False
+
+    def test_get_user_shopping_lists(self):
+        """Test getting shopping lists for a user"""
+        if not self.created_user_id:
+            print("❌ No user ID available for testing")
+            return False
+            
+        success, response = self.run_test(
+            "Get User Shopping Lists",
+            "GET",
+            f"shopping-lists/{self.created_user_id}",
+            200
+        )
+        
+        if success and isinstance(response, list):
+            print(f"   Found {len(response)} shopping lists")
+            return True
+        return False
+
+    def test_get_shopping_list_details(self):
+        """Test getting a specific shopping list"""
+        if not hasattr(self, 'created_shopping_list_id') or not self.created_shopping_list_id:
+            print("❌ No shopping list ID available for testing")
+            return False
+            
+        return self.run_test(
+            "Get Shopping List Details",
+            "GET",
+            f"shopping-lists/detail/{self.created_shopping_list_id}",
+            200
+        )[0]
+
+    def test_update_shopping_list(self):
+        """Test updating a shopping list"""
+        if not hasattr(self, 'created_shopping_list_id') or not self.created_shopping_list_id:
+            print("❌ No shopping list ID available for testing")
+            return False
+            
+        update_data = {
+            "title": "Updated Test Shopping List",
+            "items": [
+                {
+                    "item": "Chicken breast",
+                    "category": "proteins",
+                    "quantity": "2 lbs",
+                    "checked": True  # Mark as checked
+                },
+                {
+                    "item": "Broccoli",
+                    "category": "produce",
+                    "quantity": "1 bunch",
+                    "checked": False
+                },
+                {
+                    "item": "Brown rice",
+                    "category": "pantry",
+                    "quantity": "1 bag",
+                    "checked": False
+                },
+                {
+                    "item": "Greek yogurt",
+                    "category": "proteins",
+                    "quantity": "1 container",
+                    "checked": False
+                }
+            ]
+        }
+        
+        return self.run_test(
+            "Update Shopping List",
+            "PUT",
+            f"shopping-lists/{self.created_shopping_list_id}",
+            200,
+            data=update_data
+        )[0]
+
+    def test_generate_shopping_list_from_ai(self):
+        """Test AI-powered shopping list generation"""
+        if not self.created_user_id:
+            print("❌ No user ID available for testing")
+            return False
+            
+        meal_plan_text = """
+        Day 1:
+        Breakfast: Greek yogurt with berries and nuts
+        Lunch: Grilled chicken salad with mixed vegetables
+        Dinner: Baked salmon with quinoa and steamed broccoli
+        
+        Day 2:
+        Breakfast: Scrambled eggs with spinach and whole grain toast
+        Lunch: Turkey and avocado wrap with whole wheat tortilla
+        Dinner: Lean beef stir-fry with brown rice and mixed vegetables
+        """
+        
+        generation_data = {
+            "user_id": self.created_user_id,
+            "meal_plan_text": meal_plan_text
+        }
+        
+        print("   Note: AI shopping list generation may take 10-15 seconds...")
+        success, response = self.run_test(
+            "Generate Shopping List from AI",
+            "POST",
+            "shopping-lists/generate",
+            200,
+            data=generation_data
+        )
+        
+        if success and 'shopping_list' in response:
+            generated_list = response['shopping_list']
+            print(f"   Generated list with {len(generated_list.get('items', []))} items")
+            if 'ai_response' in response:
+                print(f"   AI response preview: {response['ai_response'][:100]}...")
+            return True
+        return False
+
+    def test_ai_chat_clean_formatting(self):
+        """Test AI chat for clean formatting (no markdown)"""
+        if not self.created_user_id:
+            print("❌ No user ID available for testing")
+            return False
+            
+        chat_data = {
+            "user_id": self.created_user_id,
+            "message": "Create a 3-day meal plan for Type 2 diabetes"
+        }
+        
+        print("   Note: AI response may take 10-15 seconds...")
+        success, response = self.run_test(
+            "AI Chat Clean Formatting Test",
+            "POST",
+            "chat",
+            200,
+            data=chat_data
+        )
+        
+        if success and 'response' in response:
+            ai_response = response['response']
+            print(f"   AI Response preview: {ai_response[:200]}...")
+            
+            # Check for markdown formatting that should NOT be present
+            has_markdown = (
+                '**' in ai_response or 
+                '*' in ai_response or 
+                '#' in ai_response or
+                '##' in ai_response
+            )
+            
+            # Check for shopping list prompt
+            has_shopping_prompt = "Would you like me to create a shopping list" in ai_response
+            
+            if has_markdown:
+                print("   ❌ Response contains markdown formatting (*, **, #)")
+                return False
+            else:
+                print("   ✅ Response is clean (no markdown formatting)")
+                
+            if has_shopping_prompt:
+                print("   ✅ Response includes shopping list prompt")
+            else:
+                print("   ⚠️  Response missing shopping list prompt")
+                
+            return True
+        return False
+
 def main():
     print("🧪 Starting GlucoPlanner API Tests")
     print("=" * 50)
