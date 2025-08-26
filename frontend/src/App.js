@@ -1658,7 +1658,7 @@ const Dashboard = ({ userProfile, onBack }) => {
             </Button>
             <div className="flex items-center gap-2">
               <ChefHat className="h-6 w-6 text-emerald-600" />
-              <h1 className="text-xl font-semibold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">GlucoPlanner Dashboard</h1>
+              <h1 className="text-xl font-semibold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">NutriTame Dashboard</h1>
             </div>
           </div>
           <div className="text-sm text-gray-600">
