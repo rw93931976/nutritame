@@ -492,7 +492,7 @@ class USDANutritionClient:
                 fdc_id=str(food_data.get('fdcId', '')),
                 description=food_data.get('description', ''),
                 brand_name=food_data.get('brandOwner'),
-                serving_size="100g",  # USDA data is typically per 100g
+                serving_size="3.5 oz (100g)",  # USDA data is per 100g, convert to imperial reference
                 **nutrients,
                 diabetic_rating=diabetic_rating
             )
