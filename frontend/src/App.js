@@ -684,27 +684,27 @@ const Dashboard = ({ userProfile, onBack }) => {
               </div>
 
               {/* Input Area */}
-              <Card className="shadow-xl bg-white/90 backdrop-blur-sm border border-gray-200/50">
-                <CardContent className="p-4">
-                  <div className="flex gap-3">
+              <Card className="shadow-xl bg-white/90 backdrop-blur-sm border border-gray-200/50 sticky bottom-0">
+                <CardContent className="p-6">
+                  <div className="flex gap-4">
                     <Textarea
                       value={currentMessage}
                       onChange={(e) => setCurrentMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Ask about meal planning, restaurant recommendations, nutrition analysis..."
-                      className="min-h-[60px] resize-none border-2 border-gray-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200 transition-all duration-300"
+                      className="min-h-[80px] resize-none border-2 border-gray-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200 transition-all duration-300 text-base"
                       disabled={loading}
                     />
                     <Button 
                       onClick={() => sendMessage()}
                       disabled={!currentMessage.trim() || loading}
-                      className="bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white px-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                      className="bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 min-h-[80px]"
                     >
-                      <MessageCircle className="h-4 w-4" />
+                      <MessageCircle className="h-5 w-5" />
                     </Button>
                   </div>
-                  <div className="text-xs text-gray-500 mt-2 bg-gradient-to-r from-emerald-50 to-blue-50 px-3 py-1 rounded-full inline-block">
-                    Ask me about restaurants, nutrition, meal planning, or diabetic-friendly recipes!
+                  <div className="text-sm text-gray-600 mt-3 bg-gradient-to-r from-emerald-50 to-blue-50 px-4 py-2 rounded-full inline-block">
+                    💡 Ask me about restaurants, nutrition, meal planning, or diabetic-friendly recipes!
                   </div>
                 </CardContent>
               </Card>
