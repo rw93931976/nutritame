@@ -19,6 +19,72 @@ import { Heart, MessageCircle, User, ChefHat, Target, Calendar, Clock, CheckCirc
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// Simple Map Test Component
+const SimpleMapTest = () => {
+  const mapRef = useRef(null);
+  const [mapStatus, setMapStatus] = useState('Checking...');
+
+  useEffect(() => {
+    const testGoogleMaps = () => {
+      if (!window.google) {
+        setMapStatus('❌ window.google not available');
+        return;
+      }
+      
+      if (!window.google.maps) {
+        setMapStatus('❌ window.google.maps not available');
+        return;
+      }
+      
+      if (!window.google.maps.Map) {
+        setMapStatus('❌ window.google.maps.Map not available');
+        return;
+      }
+      
+      try {
+        const map = new window.google.maps.Map(mapRef.current, {
+          center: { lat: 32.7767, lng: -96.7970 },
+          zoom: 10
+        });
+        setMapStatus('✅ Google Maps initialized successfully!');
+        console.log('Google Maps test successful:', map);
+      } catch (error) {
+        setMapStatus(`❌ Error creating map: ${error.message}`);
+        console.error('Google Maps error:', error);
+      }
+    };
+
+    // Check immediately if already loaded
+    if (window.google && window.google.maps) {
+      testGoogleMaps();
+      return;
+    }
+
+    // Wait for google-maps-loaded event
+    const handleGoogleMapsLoaded = () => {
+      setTimeout(testGoogleMaps, 100);
+    };
+
+    window.addEventListener('google-maps-loaded', handleGoogleMapsLoaded);
+
+    return () => {
+      window.removeEventListener('google-maps-loaded', handleGoogleMapsLoaded);
+    };
+  }, []);
+
+  return (
+    <div className="p-4 border rounded-lg bg-blue-50">
+      <h3 className="font-semibold mb-2">Google Maps Test</h3>
+      <p className="text-sm mb-2">Status: {mapStatus}</p>
+      <div 
+        ref={mapRef} 
+        className="w-full h-40 bg-gray-200 rounded border"
+        style={{ minHeight: '160px' }}
+      />
+    </div>
+  );
+};
+
 // Map Component for displaying restaurant locations
 const RestaurantMap = ({ center, restaurants, selectedRestaurant, onRestaurantSelect }) => {
   const mapRef = useRef(null);
