@@ -1519,7 +1519,7 @@ const Dashboard = ({ userProfile, onBack }) => {
     loadChatHistory();
     
     // Load saved chats from localStorage
-    const saved = JSON.parse(localStorage.getItem('glucoplanner_chats') || '[]');
+    const saved = JSON.parse(localStorage.getItem('nutritame_chats') || '[]');
     setSavedChats(saved);
     
     // Load favorites from localStorage
