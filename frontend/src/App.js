@@ -470,6 +470,7 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
                 type="submit" 
                 className="w-full bg-gradient-to-r from-emerald-600 via-blue-600 to-emerald-600 hover:from-emerald-700 hover:via-blue-700 hover:to-emerald-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105" 
                 disabled={loading || !profile.diabetes_type}
+                onClick={() => console.log('Button clicked, profile state:', profile)}
               >
                 {loading ? (
                   <div className="flex items-center gap-2">
