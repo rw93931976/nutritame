@@ -1858,7 +1858,7 @@ const Dashboard = ({ userProfile, onBack }) => {
               >
                 {messages.map((msg, index) => (
                   <div key={msg.id || index} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'} message-enter`}>
-                    <Card className={`max-w-[85%] transition-all duration-300 ${
+                    <Card className={`max-w-[85%] transition-all duration-300 group ${
                       msg.isUser 
                         ? 'bg-gradient-to-r from-emerald-600 to-blue-600 text-white shadow-lg' 
                         : msg.isWelcome 
