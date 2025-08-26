@@ -18,6 +18,8 @@ import { Heart, MessageCircle, User, ChefHat, Target, Calendar, Clock, CheckCirc
 
 // Import SaaS components
 import LandingPage from './LandingPage';
+import DemoLandingPage from './DemoLandingPage';
+import DemoModeBanner from './DemoModeBanner';
 import PaymentSuccess from './PaymentSuccess';
 import AdminDashboard from './AdminDashboard';
 import AdminLogin from './AdminLogin';
