@@ -395,5 +395,7 @@ agent_communication:
     message: "NEW ISSUES after profile access works: 1) AI health coach has too much room between question area and input field, 2) Links at top of page still do not work"
   - agent: "user"
     message: "ADDITIONAL AI COACH ISSUE: AI Health Coach page - space between response and input does not expand to show response"
+  - agent: "user"
+    message: "NEW UX ISSUES: 1) Free demo now loads profile page too far down in window, 2) AI health coach meal plan shopping list popup covers response window preventing reading, 3) Need larger response window, scroll should stop at beginning of response, shopping list option should appear below response not as popup"
   - agent: "testing"
     message: "✅ LAUNCH DATE & PROFILE TESTING COMPLETED: ✅ Launch date is correctly set to 2025-10-01 (October 1, 2025) in backend/.env and properly reflected in GET /api/demo/config endpoint. ✅ Profile save functionality is working perfectly - all profile endpoints (POST /api/users, GET /api/users/{id}, PUT /api/users/{id}) are functional with comprehensive field support including diabetes_type, age, gender, health_goals, food_preferences, allergies, etc. ✅ Error handling works correctly for invalid user IDs. Backend profile API is production-ready. The user-reported 'profile won't save' issue appears to be a frontend integration problem, not a backend API issue."
