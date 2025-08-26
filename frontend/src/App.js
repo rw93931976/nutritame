@@ -1915,12 +1915,12 @@ const Dashboard = ({ userProfile, onBack }) => {
               </Card>
             )}
 
-            {/* Chat Interface - Proper Layout */}
-            <div className="h-[calc(100vh-250px)] flex flex-col">
-              {/* Messages Container */}
+            {/* Chat Interface - Larger Response Window */}
+            <div className="h-[calc(100vh-200px)] flex flex-col">
+              {/* Messages Container - Larger Space for Responses */}
               <div 
                 ref={messagesContainerRef}
-                className="flex-1 space-y-4 overflow-y-auto pr-2 pb-4"
+                className="flex-1 space-y-4 overflow-y-auto pr-2 pb-6"
                 style={{ scrollBehavior: 'smooth' }}
               >
                 {messages.map((msg, index) => (
