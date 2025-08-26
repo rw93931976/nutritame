@@ -177,6 +177,125 @@ class GlucoPlannerAPITester:
             200
         )[0]
 
+    def test_restaurant_search(self):
+        """Test restaurant search functionality"""
+        # Test with San Francisco coordinates as specified in the request
+        search_data = {
+            "latitude": 37.7749,
+            "longitude": -122.4194,
+            "radius": 2000,
+            "keyword": "healthy"
+        }
+        
+        print("   Note: Restaurant search may take 10-15 seconds...")
+        success, response = self.run_test(
+            "Restaurant Search",
+            "POST",
+            "restaurants/search",
+            200,
+            data=search_data
+        )
+        
+        if success and isinstance(response, list):
+            print(f"   Found {len(response)} restaurants")
+            if len(response) > 0:
+                # Store first restaurant for detail testing
+                self.test_restaurant = response[0]
+                print(f"   Sample restaurant: {response[0].get('name', 'Unknown')}")
+            return True
+        return False
+
+    def test_restaurant_details(self):
+        """Test getting restaurant details"""
+        if not hasattr(self, 'test_restaurant') or not self.test_restaurant:
+            print("❌ No restaurant available for testing details")
+            return False
+            
+        place_id = self.test_restaurant.get('place_id')
+        if not place_id:
+            print("❌ No place_id available for testing")
+            return False
+            
+        return self.run_test(
+            "Get Restaurant Details",
+            "GET",
+            f"restaurants/{place_id}",
+            200
+        )[0]
+
+    def test_restaurant_analysis(self):
+        """Test restaurant analysis for diabetic-friendliness"""
+        if not self.created_user_id:
+            print("❌ No user ID available for testing")
+            return False
+            
+        if not hasattr(self, 'test_restaurant') or not self.test_restaurant:
+            print("❌ No restaurant available for testing analysis")
+            return False
+            
+        place_id = self.test_restaurant.get('place_id')
+        if not place_id:
+            print("❌ No place_id available for testing")
+            return False
+            
+        analysis_data = {
+            "user_id": self.created_user_id,
+            "restaurant_place_id": place_id,
+            "menu_items": ["grilled chicken salad", "quinoa bowl"]
+        }
+        
+        print("   Note: Restaurant analysis may take 10-15 seconds...")
+        success, response = self.run_test(
+            "Restaurant Analysis",
+            "POST",
+            "restaurants/analyze",
+            200,
+            data=analysis_data
+        )
+        
+        if success and 'analysis' in response:
+            print(f"   Analysis preview: {response['analysis'][:100]}...")
+            return True
+        return False
+
+    def test_nutrition_search(self):
+        """Test nutrition database search"""
+        query = "chicken breast"
+        
+        success, response = self.run_test(
+            "Nutrition Search",
+            "GET",
+            f"nutrition/search/{query}",
+            200
+        )
+        
+        if success and isinstance(response, list):
+            print(f"   Found {len(response)} nutrition items")
+            if len(response) > 0:
+                # Store first nutrition item for detail testing
+                self.test_nutrition = response[0]
+                print(f"   Sample food: {response[0].get('food_name', 'Unknown')}")
+            return True
+        return False
+
+    def test_nutrition_details(self):
+        """Test getting detailed nutrition information"""
+        if not hasattr(self, 'test_nutrition') or not self.test_nutrition:
+            print("❌ No nutrition item available for testing details")
+            return False
+            
+        fdc_id = self.test_nutrition.get('fdc_id')
+        if not fdc_id:
+            print("❌ No fdc_id available for testing")
+            return False
+            
+        return self.run_test(
+            "Get Nutrition Details",
+            "GET",
+            f"nutrition/{fdc_id}",
+            200
+        )[0]
+
     def test_health_endpoint(self):
         """Test the health endpoint"""
         return self.run_test("Health Endpoint", "GET", "health", 200)[0]
