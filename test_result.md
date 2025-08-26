@@ -119,8 +119,8 @@ user_problem_statement: "Complete Demo Mode implementation for NutriTame (rebran
         agent: "main"
         comment: "Fixed demo access token issue - backend returns 'access_token' but frontend was looking for 'token'. Updated handleDemoAccess to use correct field name. Also added demo section id for navigation links."
   - task: "Profile Creation vs Update Logic"
-    implemented: false
-    working: false
+    implemented: true
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "high"
@@ -129,6 +129,9 @@ user_problem_statement: "Complete Demo Mode implementation for NutriTame (rebran
       - working: false
         agent: "user"
         comment: "User reports after demo form only shows 'Update Profile' but no profile exists, causing error. Need 'Create Profile' option and proper create/update logic."
+      - working: true
+        agent: "main"
+        comment: "Fixed profile create/update logic to check for actual profile data (diabetes_type) not just user ID. Demo users now see 'Create Profile' until they fill out their profile completely. Updated button text, card title, and API call logic accordingly."
 
   - task: "Launch Date Update to 10/1/2025"
     implemented: true
