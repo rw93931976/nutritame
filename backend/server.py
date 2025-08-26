@@ -193,6 +193,30 @@ class MealPlan(BaseModel):
     meals: List[dict]  # Flexible structure for meals
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
+class ShoppingListItem(BaseModel):
+    item: str
+    category: str  # "produce", "proteins", "pantry", "frozen", "other"
+    quantity: Optional[str] = None
+    checked: bool = False
+
+class ShoppingList(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    title: str
+    items: List[ShoppingListItem] = []
+    meal_plan_reference: Optional[str] = None  # Reference to related meal plan
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ShoppingListCreate(BaseModel):
+    user_id: str
+    title: str
+    items: List[ShoppingListItem] = []
+    meal_plan_reference: Optional[str] = None
+
+class ShoppingListUpdate(BaseModel):
+    title: Optional[str] = None
+    items: Optional[List[ShoppingListItem]] = None
+
 def prepare_for_mongo(data):
     """Convert datetime objects to ISO strings for MongoDB storage"""
     if isinstance(data, dict):
