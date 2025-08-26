@@ -1735,6 +1735,16 @@ const Dashboard = ({ userProfile, onBack }) => {
                   <FolderOpen className="h-4 w-4" />
                   Saved ({savedChats.length})
                 </button>
+                
+                {/* Favorites Button */}
+                <button
+                  onClick={loadFavorites}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-pink-600 hover:text-pink-700 hover:bg-pink-50 rounded-lg transition-all duration-200"
+                  title="View favorite recipes"
+                >
+                  <Heart className="h-4 w-4" />
+                  Favorites ({favoriteRecipes.length})
+                </button>
               </div>
             </div>
 
