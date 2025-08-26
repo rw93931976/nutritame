@@ -183,11 +183,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Google Places API Rate Limiting"
-    - "Location Geocoding Service"
     - "Map Display Integration"
   stuck_tasks:
     - "Location Geocoding Service"
+    - "Restaurant Search API"
   test_all: false
   test_priority: "high_first"
 
