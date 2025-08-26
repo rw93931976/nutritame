@@ -1444,7 +1444,7 @@ const Dashboard = ({ userProfile, onBack }) => {
       existingFavorites.splice(20);
     }
     
-    localStorage.setItem('glucoplanner_favorites', JSON.stringify(existingFavorites));
+    localStorage.setItem('nutritame_favorites', JSON.stringify(existingFavorites));
     setFavoriteRecipes(existingFavorites);
     
     toast.success("Added to favorites!");
