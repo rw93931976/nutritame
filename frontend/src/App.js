@@ -262,6 +262,21 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
                 </Select>
               </div>
 
+              {/* Phone Number */}
+              <div className="space-y-2">
+                <Label htmlFor="phone_number">Phone Number (Optional)</Label>
+                <Input
+                  id="phone_number"
+                  type="tel"
+                  value={profile.phone_number}
+                  onChange={(e) => setProfile({...profile, phone_number: e.target.value})}
+                  placeholder="+1 (555) 123-4567"
+                />
+                <p className="text-xs text-gray-500">
+                  📱 Add your phone number to receive restaurant details via text message
+                </p>
+              </div>
+
               <Button 
                 type="submit" 
                 className="w-full bg-gradient-to-r from-emerald-600 via-blue-600 to-emerald-600 hover:from-emerald-700 hover:via-blue-700 hover:to-emerald-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105" 
