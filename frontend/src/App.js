@@ -1431,6 +1431,11 @@ const Dashboard = ({ userProfile, onBack }) => {
   useEffect(() => {
     // Load chat history
     loadChatHistory();
+    
+    // Load saved chats from localStorage
+    const saved = JSON.parse(localStorage.getItem('glucoplanner_chats') || '[]');
+    setSavedChats(saved);
+    
     // Add welcome message
     const welcomeMsg = {
       id: 'welcome',
