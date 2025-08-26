@@ -1528,6 +1528,16 @@ const Dashboard = ({ userProfile, onBack }) => {
     }
   };
 
+  // Auto scroll to bottom when new messages arrive
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (messagesContainerRef.current) {
+        messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [messages]);
+
   // Auto-scroll to show start of latest AI response when messages update
   useEffect(() => {
     // Only auto-scroll when there are messages and we're not in loading state
