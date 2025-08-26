@@ -1932,7 +1932,7 @@ const Dashboard = ({ userProfile, onBack }) => {
 
               {/* Fixed Floating Scroll Navigation Buttons */}
               {messages.length > 3 && (
-                <div className="fixed bottom-20 right-6 z-50 flex flex-col gap-3">
+                <div className="fixed bottom-24 right-6 z-50 flex flex-col gap-3">
                   {/* Back to Top Button */}
                   <button
                     onClick={scrollToTop}
