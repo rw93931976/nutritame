@@ -1291,6 +1291,9 @@ const Dashboard = ({ userProfile, onBack }) => {
   const [lastMealPlan, setLastMealPlan] = useState("");
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  const [savedChats, setSavedChats] = useState([]);
+  const [currentChatId, setCurrentChatId] = useState(null);
+  const [showSavedChats, setShowSavedChats] = useState(false);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
