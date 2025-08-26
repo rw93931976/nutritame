@@ -2237,7 +2237,7 @@ function App() {
     return <AdminDashboard adminToken={adminToken} />;
   }
 
-  // Main App Mode (existing GlucoPlanner functionality with SaaS enhancements)
+  // Main App Mode (existing NutriTame functionality with SaaS enhancements)
   if (appMode === 'app') {
     return (
       <BrowserRouter>
