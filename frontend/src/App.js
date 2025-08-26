@@ -943,7 +943,7 @@ const RestaurantDetails = ({ restaurant, onGetAIAnalysis, onBack }) => {
 
   const handleSendToPhone = async () => {
     // Get user profile to check if phone number is saved
-    const userId = localStorage.getItem('glucoplanner_user_id');
+    const userId = localStorage.getItem('nutritame_user_id');
     if (!userId) {
       toast.error("Please create a profile first");
       return;
