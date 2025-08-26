@@ -933,7 +933,7 @@ const Dashboard = ({ userProfile, onBack }) => {
                     </Button>
                   </div>
                   <div className="text-sm text-gray-600 mt-3 bg-gradient-to-r from-emerald-50 to-blue-50 px-4 py-2 rounded-full inline-block">
-                    💡 Ask me about restaurants, nutrition, meal planning, or diabetic-friendly recipes!
+                    💡 Ask me about meal plans, restaurants, nutrition, or recipes with Imperial measurements (cups, lbs, oz)!
                   </div>
                 </CardContent>
               </Card>
