@@ -1906,11 +1906,11 @@ const Dashboard = ({ userProfile, onBack }) => {
             )}
 
             {/* Chat Interface */}
-            <div className="h-[calc(100vh-380px)] flex flex-col relative">
+            <div className="h-[calc(100vh-320px)] flex flex-col relative">
               {/* Messages */}
               <div 
                 ref={messagesContainerRef}
-                className="flex-1 space-y-4 overflow-y-auto mb-4 pr-2 min-h-[600px]"
+                className="flex-1 space-y-4 overflow-y-auto mb-4 pr-2 max-h-[500px]"
               >
                 {messages.map((msg, index) => (
                   <div key={msg.id || index} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'} message-enter`}>
