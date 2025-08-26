@@ -1316,6 +1316,71 @@ const Dashboard = ({ userProfile, onBack }) => {
     }
   };
 
+  // New Chat functionality
+  const startNewChat = () => {
+    setMessages([{
+      id: 'welcome-' + Date.now(),
+      message: `Hi! I'm your AI health coach. I can help you with meal planning, restaurant recommendations, and nutrition analysis. What would you like to explore today?`,
+      response: '',
+      isWelcome: true
+    }]);
+    setCurrentChatId(null);
+    setLastMealPlan("");
+    setShowShoppingListButton(false);
+    toast.success("Started new chat session");
+  };
+
+  // Save current chat
+  const saveCurrentChat = () => {
+    if (messages.length <= 1) {
+      toast.error("No conversation to save");
+      return;
+    }
+
+    const chatTitle = messages[1]?.message?.substring(0, 50) + '...' || 'Untitled Chat';
+    const chatId = currentChatId || 'chat-' + Date.now();
+    
+    const chatData = {
+      id: chatId,
+      title: chatTitle,
+      messages: messages,
+      timestamp: new Date().toISOString(),
+      lastMealPlan: lastMealPlan
+    };
+
+    // Save to localStorage
+    const existingChats = JSON.parse(localStorage.getItem('glucoplanner_chats') || '[]');
+    const updatedChats = existingChats.filter(chat => chat.id !== chatId);
+    updatedChats.unshift(chatData);
+    
+    // Keep only last 10 chats
+    if (updatedChats.length > 10) {
+      updatedChats.splice(10);
+    }
+    
+    localStorage.setItem('glucoplanner_chats', JSON.stringify(updatedChats));
+    setSavedChats(updatedChats);
+    setCurrentChatId(chatId);
+    
+    toast.success("Chat saved successfully!");
+  };
+
+  // Load saved chat
+  const loadSavedChat = (chatData) => {
+    setMessages(chatData.messages);
+    setCurrentChatId(chatData.id);
+    setLastMealPlan(chatData.lastMealPlan || "");
+    setShowSavedChats(false);
+    toast.success("Chat loaded successfully!");
+  };
+
+  // Load saved chats from localStorage
+  const loadSavedChats = () => {
+    const saved = JSON.parse(localStorage.getItem('glucoplanner_chats') || '[]');
+    setSavedChats(saved);
+    setShowSavedChats(!showSavedChats);
+  };
+
   // Scroll to top function
   const scrollToTop = () => {
     if (messagesContainerRef.current) {
