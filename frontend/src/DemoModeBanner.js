@@ -138,7 +138,12 @@ const DemoModeBanner = ({ isMinimized = false, onToggleMinimize = null }) => {
             </div>
 
             {/* Mobile-friendly content */}
-            <div className="flex sm:hidden items-center text-xs font-medium">
+            <div 
+              className="flex sm:hidden items-center text-xs font-medium cursor-pointer hover:bg-white/10 px-2 py-1 rounded transition-colors"
+              onClick={() => {
+                alert('🚀 FREE DEMO: Full premium features available during pre-launch demo period. No account required!');
+              }}
+            >
               <span>🚀 FREE DEMO • Full Features</span>
             </div>
 
