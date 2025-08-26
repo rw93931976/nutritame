@@ -633,6 +633,8 @@ const Dashboard = ({ userProfile, onBack }) => {
   const [currentMessage, setCurrentMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+  const [showShoppingListButton, setShowShoppingListButton] = useState(false);
+  const [lastMealPlan, setLastMealPlan] = useState("");
 
   useEffect(() => {
     // Load chat history
@@ -660,6 +662,30 @@ const Dashboard = ({ userProfile, onBack }) => {
     }
   };
 
+  const generateShoppingList = async () => {
+    if (!lastMealPlan) {
+      toast.error("No meal plan found to generate shopping list");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await axios.post(`${API}/shopping-lists/generate`, {
+        user_id: userProfile.id,
+        meal_plan_text: lastMealPlan
+      });
+
+      toast.success("Shopping list created successfully!");
+      setActiveTab("shopping");
+      setShowShoppingListButton(false);
+    } catch (error) {
+      console.error("Shopping list generation error:", error);
+      toast.error("Failed to create shopping list");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const sendMessage = async (messageText = currentMessage) => {
     if (!messageText.trim() || loading) return;
 
@@ -681,9 +707,30 @@ const Dashboard = ({ userProfile, onBack }) => {
         message: messageText
       });
 
+      // Clean up AI response - remove markdown formatting
+      const cleanedResponse = response.data.response
+        .replace(/\*\*(.*?)\*\*/g, '$1')  // Remove **bold**
+        .replace(/\*(.*?)\*/g, '$1')     // Remove *italic*
+        .replace(/#{1,6}\s/g, '')        // Remove # headers
+        .replace(/^\s*[-*+]\s/gm, '- ') // Normalize bullet points
+        .trim();
+
+      // Check if response contains meal planning and show shopping list button
+      const containsMealPlan = cleanedResponse.toLowerCase().includes('meal') && 
+                              (cleanedResponse.toLowerCase().includes('plan') || 
+                               cleanedResponse.toLowerCase().includes('breakfast') || 
+                               cleanedResponse.toLowerCase().includes('lunch') || 
+                               cleanedResponse.toLowerCase().includes('dinner'));
+      
+      if (containsMealPlan) {
+        setLastMealPlan(cleanedResponse);
+        setShowShoppingListButton(true);
+      }
+
       // Add AI response to UI
       setMessages(prev => [...prev.slice(0, -1), {
         ...response.data,
+        response: cleanedResponse,
         isUser: false
       }]);
 
