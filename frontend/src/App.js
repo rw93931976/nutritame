@@ -237,7 +237,8 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
       }
 
       console.log('Profile save response:', response.data);
-      toast.success(existingProfile?.id ? "Profile updated successfully!" : "Profile created successfully!");
+      const isUpdate = existingProfile?.id && existingProfile?.diabetes_type;
+      toast.success(isUpdate ? "Profile updated successfully!" : "Profile created successfully!");
       onProfileComplete(response.data);
     } catch (error) {
       console.error("Profile save error details:", {
