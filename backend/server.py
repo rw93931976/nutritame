@@ -409,6 +409,12 @@ class GooglePlacesClient:
         if not can_proceed:
             logging.error(f"API limit exceeded for geocoding: {usage_message}")
             return None
+        
+        # Clean and validate the location input
+        location = location.strip()
+        if not location:
+            logging.error("Empty location provided for geocoding")
+            return None
             
         async with httpx.AsyncClient() as client:
             params = {
@@ -417,7 +423,7 @@ class GooglePlacesClient:
             }
             
             try:
-                logging.info(f"Making Google Geocoding API request for: {location}")
+                logging.info(f"Making Google Geocoding API request for: '{location}'")
                 response = await client.get(f"{self.geocoding_url}/json", params=params)
                 response.raise_for_status()
                 
@@ -425,23 +431,28 @@ class GooglePlacesClient:
                 await self._increment_usage()
                 
                 data = response.json()
+                logging.info(f"Geocoding API response status: {data.get('status')}")
                 
                 if data.get('status') == 'OK' and data.get('results'):
                     result = data['results'][0]
                     geometry = result.get('geometry', {})
                     location_data = geometry.get('location', {})
+                    formatted_address = result.get('formatted_address')
+                    
+                    logging.info(f"Geocoding successful: '{location}' -> '{formatted_address}' ({location_data.get('lat')}, {location_data.get('lng')})")
                     
                     return {
                         'latitude': location_data.get('lat'),
                         'longitude': location_data.get('lng'),
-                        'formatted_address': result.get('formatted_address')
+                        'formatted_address': formatted_address
                     }
                 else:
-                    logging.error(f"Geocoding failed: {data.get('status')} - {data.get('error_message', 'Unknown error')}")
+                    error_msg = data.get('error_message', 'Unknown error')
+                    logging.error(f"Geocoding failed for '{location}': {data.get('status')} - {error_msg}")
                     return None
                     
             except Exception as e:
-                logging.error(f"Geocoding API error: {e}")
+                logging.error(f"Geocoding API error for '{location}': {e}")
                 return None
         
     async def _check_usage_limits(self):
