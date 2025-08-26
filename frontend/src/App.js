@@ -2289,6 +2289,11 @@ function App() {
       });
       setShowForm(true); // Show profile setup for demo users
       
+      // Scroll to top of page when profile form loads
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
+      
       toast.success("Welcome to NutriTame Demo! All premium features unlocked.");
     } catch (error) {
       console.error('Demo access error:', error);
