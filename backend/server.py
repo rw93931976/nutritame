@@ -34,8 +34,28 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# Create the main app without a prefix
-app = FastAPI()
+# Create the main app
+app = FastAPI(title="GlucoPlanner SaaS", version="2.0.0")
+
+# Initialize SaaS on startup
+@app.on_event("startup")
+async def startup_event():
+    """Initialize database and create default admin user"""
+    try:
+        # Create default admin user (change password in production!)
+        try:
+            await admin_service.create_admin_user(
+                email="admin@glucoplanner.com",
+                password="admin123",  # CHANGE IN PRODUCTION!
+                role="super_admin"
+            )
+            logging.info("Default admin user created")
+        except ValueError:
+            logging.info("Admin user already exists")
+        
+        logging.info("GlucoPlanner SaaS started successfully")
+    except Exception as e:
+        logging.error(f"Startup error: {e}")
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
