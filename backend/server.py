@@ -121,6 +121,7 @@ class UserProfile(BaseModel):
     allergies: List[str] = []
     dislikes: List[str] = []
     cooking_skill: Optional[str] = None  # "beginner", "intermediate", "advanced"
+    phone_number: Optional[str] = None  # For SMS notifications
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class UserProfileCreate(BaseModel):
@@ -134,6 +135,7 @@ class UserProfileCreate(BaseModel):
     allergies: List[str] = []
     dislikes: List[str] = []
     cooking_skill: Optional[str] = None
+    phone_number: Optional[str] = None
 
 class UserProfileUpdate(BaseModel):
     diabetes_type: Optional[str] = None
@@ -146,6 +148,7 @@ class UserProfileUpdate(BaseModel):
     allergies: Optional[List[str]] = None
     dislikes: Optional[List[str]] = None
     cooking_skill: Optional[str] = None
+    phone_number: Optional[str] = None
 
 class ChatMessage(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
