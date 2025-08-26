@@ -1528,13 +1528,20 @@ const Dashboard = ({ userProfile, onBack }) => {
     }
   };
 
-  // Auto scroll to bottom when new messages arrive
+  // Auto scroll to show start of latest response when new messages arrive
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (messagesContainerRef.current) {
-        messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      if (messagesContainerRef.current && messages.length > 0) {
+        // For AI responses, scroll to show the beginning of the response
+        const lastMessage = messages[messages.length - 1];
+        if (lastMessage && !lastMessage.isUser) {
+          scrollToLatestResponse();
+        } else {
+          // For user messages, scroll to bottom
+          messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+        }
       }
-    }, 100);
+    }, 200);
     return () => clearTimeout(timer);
   }, [messages]);
 
