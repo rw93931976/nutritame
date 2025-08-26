@@ -1495,7 +1495,10 @@ const Dashboard = ({ userProfile, onBack }) => {
             {/* Chat Interface */}
             <div className="h-[calc(100vh-200px)] flex flex-col">
               {/* Messages */}
-              <div className="flex-1 space-y-4 overflow-y-auto mb-4 pr-2 min-h-[600px]">
+              <div 
+                ref={messagesContainerRef}
+                className="flex-1 space-y-4 overflow-y-auto mb-4 pr-2 min-h-[600px]"
+              >
                 {messages.map((msg, index) => (
                   <div key={msg.id || index} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'} message-enter`}>
                     <Card className={`max-w-[85%] transition-all duration-300 ${
@@ -1545,6 +1548,8 @@ const Dashboard = ({ userProfile, onBack }) => {
                     </Card>
                   </div>
                 )}
+                {/* Auto-scroll anchor */}
+                <div ref={messagesEndRef} />
               </div>
 
               {/* Shopping List Generation Button */}
