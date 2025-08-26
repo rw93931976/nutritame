@@ -822,6 +822,362 @@ class USDANutritionClient:
 google_places = GooglePlacesClient()
 usda_nutrition = USDANutritionClient()
 
+# =============================================
+# SAAS AUTHENTICATION & SUBSCRIPTION ENDPOINTS
+# =============================================
+
+@api_router.post("/auth/register", response_model=UserRegistrationResponse)
+async def register_user(subscription_request: SubscriptionRequest, request: Request):
+    """Register new user and create Stripe checkout session"""
+    try:
+        host_url = str(request.base_url).rstrip('/')
+        
+        # Check if user already exists
+        existing_user = await db_manager.get_user_by_email(subscription_request.email)
+        if existing_user:
+            raise HTTPException(status_code=400, detail="User already exists")
+        
+        # Create checkout session
+        session, transaction = await payment_service.create_subscription_checkout(
+            email=subscription_request.email,
+            plan=subscription_request.plan,
+            origin_url=subscription_request.origin_url,
+            host_url=host_url
+        )
+        
+        # Get created user
+        user = await db_manager.get_user_by_email(subscription_request.email)
+        
+        return UserRegistrationResponse(
+            user=user,
+            checkout_url=session.url,
+            session_id=session.session_id
+        )
+        
+    except Exception as e:
+        logging.error(f"Registration error: {e}")
+        raise HTTPException(status_code=500, detail="Registration failed")
+
+@api_router.post("/auth/login")
+async def login_user(email: str = Form(...), password: str = Form(...)):
+    """Login user (for development - in production use proper OAuth)"""
+    try:
+        # For now, auto-login any registered user (development only)
+        user = await db_manager.get_user_by_email(email)
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+        # Check if subscription is active or in trial
+        if user.subscription_status not in ["trial", "active"]:
+            raise HTTPException(status_code=403, detail="Subscription required")
+        
+        # Update last login
+        await db_manager.update_user(user.id, {"last_login": datetime.utcnow()})
+        
+        # Create access token
+        token = AuthService.create_access_token(user)
+        
+        return {
+            "access_token": token.token,
+            "token_type": "bearer",
+            "user": user,
+            "expires_at": token.expires_at
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Login error: {e}")
+        raise HTTPException(status_code=500, detail="Login failed")
+
+@api_router.get("/auth/me")
+async def get_current_user_info(current_user: dict = Depends(get_current_active_user)):
+    """Get current user information"""
+    user = await db_manager.get_user_by_id(current_user["user_id"])
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {
+        "user": user,
+        "tenant_id": current_user["tenant_id"],
+        "subscription_info": await payment_service.get_subscription_info(user.id)
+    }
+
+@api_router.get("/subscription/plans")
+async def get_subscription_plans():
+    """Get available subscription plans"""
+    return {
+        "plans": SUBSCRIPTION_PLANS,
+        "trial_period_days": 15
+    }
+
+@api_router.post("/payments/checkout")
+async def create_checkout_session(
+    subscription_request: SubscriptionRequest,
+    request: Request
+):
+    """Create Stripe checkout session for subscription"""
+    try:
+        host_url = str(request.base_url).rstrip('/')
+        
+        session, transaction = await payment_service.create_subscription_checkout(
+            email=subscription_request.email,
+            plan=subscription_request.plan,
+            origin_url=subscription_request.origin_url,
+            host_url=host_url
+        )
+        
+        return {
+            "checkout_url": session.url,
+            "session_id": session.session_id
+        }
+        
+    except Exception as e:
+        logging.error(f"Checkout creation error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create checkout session")
+
+@api_router.get("/payments/status/{session_id}")
+async def check_payment_status(session_id: str, request: Request):
+    """Check payment status"""
+    try:
+        host_url = str(request.base_url).rstrip('/')
+        return await payment_service.check_payment_status(session_id, host_url)
+    except Exception as e:
+        logging.error(f"Payment status check error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to check payment status")
+
+@api_router.get("/subscription/info")
+async def get_subscription_info_endpoint(current_user: dict = Depends(get_current_active_user)):
+    """Get current user's subscription information"""
+    return await payment_service.get_subscription_info(current_user["user_id"])
+
+@api_router.post("/webhook/stripe")
+async def stripe_webhook(request: Request):
+    """Handle Stripe webhooks"""
+    try:
+        return await payment_service.handle_webhook(request)
+    except Exception as e:
+        logging.error(f"Webhook processing error: {e}")
+        raise HTTPException(status_code=400, detail="Webhook processing failed")
+
+# =============================================
+# SAAS ADMIN ENDPOINTS
+# =============================================
+
+@api_router.post("/admin/login")
+async def admin_login(email: str = Form(...), password: str = Form(...)):
+    """Admin login"""
+    try:
+        admin = await admin_service.authenticate_admin(email, password)
+        if not admin:
+            raise HTTPException(status_code=401, detail="Invalid admin credentials")
+        
+        # Create admin token (simplified for demo)
+        from models import User
+        token = AuthService.create_access_token(User(
+            id=admin.id,
+            email=admin.email,
+            tenant_id="admin"  # Special tenant for admin
+        ))
+        
+        return {
+            "access_token": token.token,
+            "token_type": "bearer",
+            "admin": admin,
+            "expires_at": token.expires_at
+        }
+        
+    except Exception as e:
+        logging.error(f"Admin login error: {e}")
+        raise HTTPException(status_code=500, detail="Admin login failed")
+
+@api_router.get("/admin/dashboard")
+async def get_admin_dashboard():
+    """Get admin dashboard statistics"""
+    try:
+        return await admin_service.get_dashboard_stats()
+    except Exception as e:
+        logging.error(f"Admin dashboard error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get dashboard stats")
+
+@api_router.get("/admin/users")
+async def get_admin_users(skip: int = 0, limit: int = 50, search: str = None):
+    """Get users list for admin"""
+    try:
+        return await admin_service.get_users_list(skip, limit, search)
+    except Exception as e:
+        logging.error(f"Admin users error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get users")
+
+@api_router.get("/admin/users/{user_id}")
+async def get_admin_user_details(user_id: str):
+    """Get detailed user information for admin"""
+    try:
+        return await admin_service.get_user_details(user_id)
+    except Exception as e:
+        logging.error(f"Admin user details error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get user details")
+
+@api_router.get("/admin/analytics/revenue")
+async def get_admin_revenue_analytics(days: int = 30):
+    """Get revenue analytics for admin"""
+    try:
+        return await admin_service.get_revenue_analytics(days)
+    except Exception as e:
+        logging.error(f"Admin revenue analytics error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get revenue analytics")
+
+# =============================================
+# SAAS GDPR/HIPAA COMPLIANCE ENDPOINTS
+# =============================================
+
+@api_router.post("/data/export")
+async def export_user_data(
+    export_request: DataExportRequest,
+    current_user: dict = Depends(get_current_active_user)
+):
+    """Export user data for GDPR compliance"""
+    try:
+        # Verify user can only export their own data
+        if export_request.user_id != current_user["user_id"]:
+            raise HTTPException(status_code=403, detail="Can only export your own data")
+        
+        tenant_id = current_user["tenant_id"]
+        data = await db_manager.export_user_data(export_request.user_id, tenant_id)
+        
+        return {
+            "export_data": data,
+            "export_timestamp": datetime.utcnow().isoformat(),
+            "export_type": export_request.export_type
+        }
+        
+    except Exception as e:
+        logging.error(f"Data export error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to export data")
+
+@api_router.post("/data/delete")
+async def delete_user_data(
+    deletion_request: DataDeletionRequest,
+    current_user: dict = Depends(get_current_active_user)
+):
+    """Delete user data for GDPR compliance"""
+    try:
+        # Verify user can only delete their own data
+        if deletion_request.user_id != current_user["user_id"]:
+            raise HTTPException(status_code=403, detail="Can only delete your own data")
+        
+        # In production, implement proper confirmation token verification
+        if not deletion_request.confirmation_token:
+            raise HTTPException(status_code=400, detail="Confirmation token required")
+        
+        tenant_id = current_user["tenant_id"]
+        success = await db_manager.delete_user_data(deletion_request.user_id, tenant_id)
+        
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to delete data")
+        
+        return {
+            "message": "Data deleted successfully",
+            "deletion_timestamp": datetime.utcnow().isoformat(),
+            "deletion_type": deletion_request.deletion_type
+        }
+        
+    except Exception as e:
+        logging.error(f"Data deletion error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to delete data")
+
+# =============================================
+# UPDATED GLUCOPLANNER ENDPOINTS (Now with Multi-Tenancy)
+# =============================================
+
+# Update the chat endpoint to support tenant isolation
+@api_router.post("/chat/send-saas")
+async def send_chat_message_saas(
+    message: dict,
+    current_user: dict = Depends(get_current_active_user)
+):
+    """Send message to AI health coach (tenant-isolated SaaS version)"""
+    try:
+        tenant_id = current_user["tenant_id"]
+        user_id = current_user["user_id"]
+        
+        # Get user profile for context
+        user = await db_manager.get_user_by_id(user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Build context from user profile
+        user_context = f"""
+        User Profile:
+        - Age: {user.age or 'Not specified'}
+        - Gender: {user.gender or 'Not specified'}  
+        - Diabetes Type: {user.diabetes_type or 'Not specified'}
+        - Activity Level: {user.activity_level or 'Not specified'}
+        - Health Goals: {', '.join(user.health_goals) if user.health_goals else 'Not specified'}
+        - Food Preferences: {', '.join(user.food_preferences) if user.food_preferences else 'Not specified'}
+        - Allergies: {', '.join(user.allergies) if user.allergies else 'None specified'}
+        - Cooking Skill: {user.cooking_skill or 'Not specified'}
+        """
+        
+        # Create AI prompt
+        ai_prompt = f"""{HEALTH_COACH_PROMPT}
+        
+        {user_context}
+        
+        User Message: {message.get('message', '')}
+        """
+        
+        # Call AI service
+        llm_chat = LlmChat(api_key=os.environ.get('EMERGENT_LLM_KEY'))
+        ai_response = await llm_chat.call_llm_async(
+            messages=[UserMessage(content=ai_prompt)],
+            model="gpt-4o-mini"
+        )
+        
+        # Save chat session (tenant-isolated)
+        chat_data = {
+            "user_message": message.get('message', ''),
+            "ai_response": ai_response,
+            "timestamp": datetime.utcnow()
+        }
+        
+        # Get or create chat session
+        chat_sessions = await db_manager.get_chat_sessions(user_id, tenant_id)
+        if chat_sessions:
+            # Update existing session
+            session = chat_sessions[0]
+            session.messages.append(chat_data)
+            await db_manager.update_chat_session(session.id, tenant_id, {"messages": session.messages})
+        else:
+            # Create new session
+            from models import ChatSession
+            new_session = ChatSession(
+                tenant_id=tenant_id,
+                user_id=user_id,
+                messages=[chat_data]
+            )
+            await db_manager.create_chat_session(new_session, tenant_id)
+        
+        return {"response": ai_response}
+        
+    except Exception as e:
+        logging.error(f"Chat error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to process chat message")
+
+@api_router.get("/chat/history-saas")
+async def get_chat_history_saas(current_user: dict = Depends(get_current_active_user)):
+    """Get chat history (tenant-isolated SaaS version)"""
+    try:
+        tenant_id = current_user["tenant_id"]
+        user_id = current_user["user_id"]
+        
+        chat_sessions = await db_manager.get_chat_sessions(user_id, tenant_id)
+        return {"chat_sessions": chat_sessions}
+        
+    except Exception as e:
+        logging.error(f"Chat history error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get chat history")
+
 # User Profile Endpoints
 @api_router.post("/users", response_model=UserProfile)
 async def create_user_profile(profile: UserProfileCreate):
