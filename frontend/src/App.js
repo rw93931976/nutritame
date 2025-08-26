@@ -1368,7 +1368,7 @@ const Dashboard = ({ userProfile, onBack }) => {
     };
 
     // Save to localStorage
-    const existingChats = JSON.parse(localStorage.getItem('glucoplanner_chats') || '[]');
+    const existingChats = JSON.parse(localStorage.getItem('nutritame_chats') || '[]');
     const updatedChats = existingChats.filter(chat => chat.id !== chatId);
     updatedChats.unshift(chatData);
     
