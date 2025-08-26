@@ -1460,9 +1460,9 @@ const Dashboard = ({ userProfile, onBack }) => {
   // Delete favorite
   const deleteFavorite = (favId, event) => {
     event.stopPropagation();
-    const existingFavorites = JSON.parse(localStorage.getItem('glucoplanner_favorites') || '[]');
+    const existingFavorites = JSON.parse(localStorage.getItem('nutritame_favorites') || '[]');
     const updatedFavorites = existingFavorites.filter(fav => fav.id !== favId);
-    localStorage.setItem('glucoplanner_favorites', JSON.stringify(updatedFavorites));
+    localStorage.setItem('nutritame_favorites', JSON.stringify(updatedFavorites));
     setFavoriteRecipes(updatedFavorites);
     toast.success("Favorite deleted");
   };
