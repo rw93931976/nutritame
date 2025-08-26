@@ -46,8 +46,8 @@ class DatabaseManager:
         """Create a new user with tenant isolation"""
         user_dict = user.dict()
         result = self.db.users.insert_one(user_dict)
-        user.id = str(result.inserted_id) if hasattr(result, 'inserted_id') else user.id
-        logging.info(f"Created user: {user.email} with tenant_id: {user.tenant_id}")
+        # Keep the original UUID in user.id, don't overwrite with MongoDB _id
+        logging.info(f"Created user: {user.email} with ID: {user.id} and tenant_id: {user.tenant_id}")
         return user
     
     async def get_user_by_email(self, email: str) -> Optional[User]:
