@@ -290,12 +290,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Demo Mode Backend Configuration"
-    - "Demo Mode Banner Component"  
-    - "App.js Demo Integration"
-    - "Demo Landing Page"
+    - "Profile Page Navigation Links"
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
