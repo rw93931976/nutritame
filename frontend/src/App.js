@@ -634,24 +634,24 @@ const Dashboard = ({ userProfile, onBack }) => {
               <div className="flex-1 space-y-4 overflow-y-auto mb-4 pr-2 min-h-[600px]">
                 {messages.map((msg, index) => (
                   <div key={msg.id || index} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'} message-enter`}>
-                    <Card className={`max-w-[80%] transition-all duration-300 ${
+                    <Card className={`max-w-[85%] transition-all duration-300 ${
                       msg.isUser 
                         ? 'bg-gradient-to-r from-emerald-600 to-blue-600 text-white shadow-lg' 
                         : msg.isWelcome 
                           ? 'bg-gradient-to-r from-emerald-50 via-blue-50 to-purple-50 border-emerald-200 shadow-lg' 
                           : 'bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200/50'
                     }`}>
-                      <CardContent className="p-4">
-                        <div className="flex items-start gap-3">
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-4">
                           {!msg.isUser && (
                             <div className="flex-shrink-0">
-                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-100 to-blue-100 flex items-center justify-center shadow-md">
-                                <ChefHat className="h-4 w-4 text-emerald-600" />
+                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-100 to-blue-100 flex items-center justify-center shadow-md">
+                                <ChefHat className="h-5 w-5 text-emerald-600" />
                               </div>
                             </div>
                           )}
                           <div className="flex-1">
-                            <p className="whitespace-pre-wrap">
+                            <p className="whitespace-pre-wrap leading-relaxed text-base">
                               {msg.isUser ? msg.message : (msg.response || msg.message)}
                             </p>
                           </div>
