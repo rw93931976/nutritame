@@ -287,7 +287,7 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
           <CardHeader className="bg-gradient-to-r from-emerald-50 to-blue-50 rounded-t-lg">
             <CardTitle className="flex items-center gap-2 text-gray-800">
               <User className="h-5 w-5 text-emerald-600" />
-              {existingProfile?.id ? "Update Your Profile" : "Create Your Profile"}
+              {(existingProfile?.id && existingProfile?.diabetes_type) ? "Update Your Profile" : "Create Your Profile"}
             </CardTitle>
             <CardDescription className="text-gray-600">
               Help us understand your needs so we can provide the best meal recommendations and restaurant suggestions
