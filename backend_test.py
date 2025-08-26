@@ -57,7 +57,7 @@ class GlucoPlannerAPITester:
         return self.run_test("Health Check", "GET", "", 200)
 
     def test_create_user_profile(self):
-        """Test creating a user profile"""
+        """Test creating a user profile - FOCUS: Profile save functionality"""
         test_profile = {
             "diabetes_type": "type2",
             "age": 45,
@@ -68,7 +68,8 @@ class GlucoPlannerAPITester:
             "cultural_background": "Mediterranean",
             "allergies": ["nuts", "shellfish"],
             "dislikes": ["liver", "brussels_sprouts"],
-            "cooking_skill": "intermediate"
+            "cooking_skill": "intermediate",
+            "phone_number": "+15551234567"
         }
         
         success, response = self.run_test(
@@ -82,8 +83,66 @@ class GlucoPlannerAPITester:
         if success and 'id' in response:
             self.created_user_id = response['id']
             print(f"   Created user ID: {self.created_user_id}")
+            
+            # Verify all fields were saved correctly
+            print("   Verifying all profile fields were saved:")
+            for field, expected_value in test_profile.items():
+                actual_value = response.get(field)
+                if actual_value == expected_value:
+                    print(f"   ✅ {field}: {actual_value}")
+                else:
+                    print(f"   ❌ {field}: Expected {expected_value}, got {actual_value}")
+                    return False
+            
             return True
-        return False
+        else:
+            print(f"   ❌ Profile creation failed: {response}")
+            return False
+
+    def test_comprehensive_profile_fields(self):
+        """Test all profile fields can be saved properly"""
+        comprehensive_profile = {
+            "diabetes_type": "type1",
+            "age": 32,
+            "gender": "male", 
+            "activity_level": "high",
+            "health_goals": ["blood_sugar_control", "weight_loss", "energy_boost"],
+            "food_preferences": ["vegetarian", "gluten_free", "organic"],
+            "cultural_background": "Asian",
+            "allergies": ["dairy", "eggs", "soy"],
+            "dislikes": ["spicy_food", "raw_fish"],
+            "cooking_skill": "advanced",
+            "phone_number": "+15559876543"
+        }
+        
+        success, response = self.run_test(
+            "Create Comprehensive Profile",
+            "POST", 
+            "users",
+            200,
+            data=comprehensive_profile
+        )
+        
+        if success and 'id' in response:
+            comprehensive_user_id = response['id']
+            print(f"   Created comprehensive profile ID: {comprehensive_user_id}")
+            
+            # Verify all comprehensive fields
+            all_fields_correct = True
+            for field, expected_value in comprehensive_profile.items():
+                actual_value = response.get(field)
+                if actual_value == expected_value:
+                    print(f"   ✅ {field}: Saved correctly")
+                else:
+                    print(f"   ❌ {field}: Expected {expected_value}, got {actual_value}")
+                    all_fields_correct = False
+            
+            # Store for update testing
+            self.comprehensive_user_id = comprehensive_user_id
+            return all_fields_correct
+        else:
+            print(f"   ❌ Comprehensive profile creation failed: {response}")
+            return False
 
     def test_get_user_profile(self):
         """Test getting a user profile"""
