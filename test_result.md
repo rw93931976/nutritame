@@ -121,7 +121,7 @@ backend:
         comment: "✅ FIXED: API rate limiting working correctly. Monthly limit set to exactly 9,000 calls. Usage tracking functional (14/9000 calls used). Rate limiting logic properly enforces strict limit. All tests passed."
   - task: "Location Geocoding Service"
     implemented: true
-    working: false
+    working: true
     file: "backend/server.py"
     stuck_count: 3
     priority: "high"
@@ -136,6 +136,9 @@ backend:
       - working: false
         agent: "testing"
         comment: "❌ URGENT TESTING RESULTS: Despite user reporting that Geocoding API service was enabled, the API key (AIzaSyAyf8zKG6TwOQ9m-D6YId0EwA7ZHZHQB0I) is STILL not authorized for Geocoding API. Direct API test confirms: 'REQUEST_DENIED - This API key is not authorized to use this service or API.' Both Dallas, Texas and New York, NY geocoding fail with 404 errors. Places API works fine (status: OK). The Geocoding API service is NOT properly enabled on the Google Cloud Console for this API key."
+      - working: true
+        agent: "testing"
+        comment: "✅ FIXED: Geocoding API service is now properly enabled! Dallas, Texas geocoding returns correct coordinates (32.7766642, -96.79698789999999) with formatted address 'Dallas, TX, USA'. New York, NY geocoding returns correct coordinates (40.7127753, -74.0059728) with formatted address 'New York, NY, USA'. All geocoding tests pass with status 200. The Dallas location bug is completely resolved."
   - task: "Restaurant Search API"
     implemented: true
     working: false
