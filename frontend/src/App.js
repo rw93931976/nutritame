@@ -1290,6 +1290,7 @@ const Dashboard = ({ userProfile, onBack }) => {
   const [showShoppingListButton, setShowShoppingListButton] = useState(false);
   const [lastMealPlan, setLastMealPlan] = useState("");
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
