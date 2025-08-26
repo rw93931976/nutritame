@@ -2059,7 +2059,8 @@ const Dashboard = ({ userProfile, onBack }) => {
                     💡 Ask me about meal plans, restaurants, nutrition, or recipes with Imperial measurements (cups, lbs, oz)!
                   </div>
                 </CardContent>
-              </Card>
+                </Card>
+              </div>
             </div>
           </TabsContent>
 
