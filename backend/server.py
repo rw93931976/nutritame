@@ -755,6 +755,151 @@ async def analyze_restaurant_for_user(analysis_request: RestaurantAnalysisReques
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Restaurant analysis error: {str(e)}")
 
+# Shopping List Endpoints
+@api_router.post("/shopping-lists", response_model=ShoppingList)
+async def create_shopping_list(shopping_list: ShoppingListCreate):
+    """Create a new shopping list"""
+    shopping_list_obj = ShoppingList(**shopping_list.dict())
+    shopping_list_data = prepare_for_mongo(shopping_list_obj.dict())
+    await db.shopping_lists.insert_one(shopping_list_data)
+    return shopping_list_obj
+
+@api_router.get("/shopping-lists/{user_id}", response_model=List[ShoppingList])
+async def get_user_shopping_lists(user_id: str):
+    """Get shopping lists for a user"""
+    lists = await db.shopping_lists.find({"user_id": user_id}).sort("created_at", -1).to_list(100)
+    return [ShoppingList(**parse_from_mongo(shopping_list)) for shopping_list in lists]
+
+@api_router.get("/shopping-lists/detail/{list_id}", response_model=ShoppingList)
+async def get_shopping_list(list_id: str):
+    """Get a specific shopping list"""
+    shopping_list = await db.shopping_lists.find_one({"id": list_id})
+    if not shopping_list:
+        raise HTTPException(status_code=404, detail="Shopping list not found")
+    shopping_list = parse_from_mongo(shopping_list)
+    return ShoppingList(**shopping_list)
+
+@api_router.put("/shopping-lists/{list_id}", response_model=ShoppingList)
+async def update_shopping_list(list_id: str, updates: ShoppingListUpdate):
+    """Update a shopping list"""
+    existing_list = await db.shopping_lists.find_one({"id": list_id})
+    if not existing_list:
+        raise HTTPException(status_code=404, detail="Shopping list not found")
+    
+    update_data = {k: v for k, v in updates.dict().items() if v is not None}
+    if update_data:
+        await db.shopping_lists.update_one(
+            {"id": list_id},
+            {"$set": update_data}
+        )
+    
+    updated_list = await db.shopping_lists.find_one({"id": list_id})
+    updated_list = parse_from_mongo(updated_list)
+    return ShoppingList(**updated_list)
+
+@api_router.delete("/shopping-lists/{list_id}")
+async def delete_shopping_list(list_id: str):
+    """Delete a shopping list"""
+    result = await db.shopping_lists.delete_one({"id": list_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Shopping list not found")
+    return {"message": "Shopping list deleted successfully"}
+
+@api_router.post("/shopping-lists/generate")
+async def generate_shopping_list(request: dict):
+    """Generate a shopping list from AI meal plan using AI"""
+    try:
+        user_id = request.get('user_id')
+        meal_plan_text = request.get('meal_plan_text', '')
+        
+        if not user_id or not meal_plan_text:
+            raise HTTPException(status_code=400, detail="user_id and meal_plan_text are required")
+        
+        # Use AI to parse the meal plan and generate shopping list
+        shopping_list_prompt = f"""
+        Based on this meal plan, create a shopping list organized by store sections. 
+        Format the response as a simple list without any markdown formatting.
+        
+        Meal Plan:
+        {meal_plan_text}
+        
+        Please organize items into these categories:
+        - Fresh Produce
+        - Proteins (Meat/Fish/Dairy) 
+        - Pantry Items
+        - Frozen Foods
+        - Other Items
+        
+        For each item, estimate reasonable quantities for the meals described.
+        """
+        
+        # Get AI response for shopping list
+        chat = LlmChat(
+            api_key=os.environ.get('EMERGENT_LLM_KEY'),
+            session_id=f"shopping_list_{user_id}",
+            system_message="You are a helpful assistant that creates organized shopping lists from meal plans. Use clear, simple formatting without markdown."
+        ).with_model("openai", "gpt-4o-mini")
+        
+        user_message = UserMessage(text=shopping_list_prompt)
+        ai_response = await chat.send_message(user_message)
+        
+        # Parse AI response into shopping list items (simplified parsing)
+        items = []
+        current_category = "other"
+        category_mapping = {
+            "produce": "produce",
+            "fresh produce": "produce", 
+            "proteins": "proteins",
+            "meat": "proteins",
+            "fish": "proteins",
+            "dairy": "proteins",
+            "pantry": "pantry",
+            "pantry items": "pantry",
+            "frozen": "frozen",
+            "frozen foods": "frozen",
+            "other": "other"
+        }
+        
+        for line in ai_response.split('\n'):
+            line = line.strip()
+            if not line or line.startswith('-') and len(line) < 3:
+                continue
+                
+            # Check if this line indicates a category
+            line_lower = line.lower().replace(':', '').replace('-', '').strip()
+            if line_lower in category_mapping:
+                current_category = category_mapping[line_lower]
+                continue
+            
+            # If line starts with dash or number, it's probably an item
+            if line.startswith('-') or line[0].isdigit():
+                item_text = line.lstrip('- 1234567890.').strip()
+                if item_text and len(item_text) > 2:
+                    items.append(ShoppingListItem(
+                        item=item_text,
+                        category=current_category,
+                        checked=False
+                    ))
+        
+        # Create shopping list
+        shopping_list = ShoppingList(
+            user_id=user_id,
+            title=f"Shopping List - {datetime.now().strftime('%m/%d/%Y')}",
+            items=items
+        )
+        
+        # Save to database
+        shopping_list_data = prepare_for_mongo(shopping_list.dict())
+        await db.shopping_lists.insert_one(shopping_list_data)
+        
+        return {
+            "shopping_list": shopping_list,
+            "ai_response": ai_response
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Shopping list generation error: {str(e)}")
+
 # Meal Plan Endpoints
 @api_router.get("/meal-plans/{user_id}", response_model=List[MealPlan])
 async def get_user_meal_plans(user_id: str):
