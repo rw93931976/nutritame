@@ -1621,8 +1621,91 @@ const Dashboard = ({ userProfile, onBack }) => {
           </TabsList>
 
           <TabsContent value="chat" className="space-y-4">
+            {/* Chat Controls Header */}
+            <div className="flex items-center justify-between bg-white/90 backdrop-blur-sm rounded-lg p-4 shadow-sm border border-gray-200/50">
+              <div className="flex items-center gap-2">
+                <ChefHat className="h-6 w-6 text-emerald-600" />
+                <h2 className="text-lg font-semibold text-gray-800">
+                  AI Health Coach {currentChatId && <span className="text-sm text-gray-500">(Saved)</span>}
+                </h2>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                {/* New Chat Button */}
+                <button
+                  onClick={startNewChat}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-all duration-200"
+                  title="Start new chat"
+                >
+                  <MessageSquarePlus className="h-4 w-4" />
+                  New Chat
+                </button>
+                
+                {/* Save Chat Button */}
+                <button
+                  onClick={saveCurrentChat}
+                  disabled={messages.length <= 1}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Save current chat"
+                >
+                  <Save className="h-4 w-4" />
+                  Save
+                </button>
+                
+                {/* Load Chats Button */}
+                <button
+                  onClick={loadSavedChats}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-lg transition-all duration-200"
+                  title="Load saved chats"
+                >
+                  <FolderOpen className="h-4 w-4" />
+                  Saved ({savedChats.length})
+                </button>
+              </div>
+            </div>
+
+            {/* Saved Chats Panel */}
+            {showSavedChats && (
+              <Card className="mb-4">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FolderOpen className="h-5 w-5 text-purple-600" />
+                    Saved Chats
+                  </CardTitle>
+                  <CardDescription>
+                    Load a previously saved conversation
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {savedChats.length === 0 ? (
+                    <p className="text-gray-500 text-center py-4">No saved chats yet. Start a conversation and save it!</p>
+                  ) : (
+                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                      {savedChats.map((chat) => (
+                        <div
+                          key={chat.id}
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+                          onClick={() => loadSavedChat(chat)}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-gray-900 truncate">
+                              {chat.title}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {new Date(chat.timestamp).toLocaleDateString()} • {chat.messages.length} messages
+                            </p>
+                          </div>
+                          <ChevronDown className="h-4 w-4 text-gray-400 transform -rotate-90" />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
             {/* Chat Interface */}
-            <div className="h-[calc(100vh-200px)] flex flex-col relative">
+            <div className="h-[calc(100vh-300px)] flex flex-col relative">
               {/* Messages */}
               <div 
                 ref={messagesContainerRef}
