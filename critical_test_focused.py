@@ -11,7 +11,7 @@ import json
 from datetime import datetime
 
 class CriticalIssueTester:
-    def __init__(self, base_url="https://diabeticmeal-app.preview.emergentagent.com"):
+    def __init__(self, base_url="https://nutriplanner-1.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.tests_run = 0
