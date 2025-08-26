@@ -650,6 +650,207 @@ const ShoppingListView = ({ userProfile }) => {
     </div>
   );
 };
+
+// Restaurant Details Component
+const RestaurantDetails = ({ restaurant, onGetAIAnalysis, onBack }) => {
+  const [loading, setLoading] = useState(false);
+
+  const getDiabeticRatingColor = (score) => {
+    if (score >= 4) return "bg-gradient-to-r from-green-500 to-emerald-500 text-white";
+    if (score >= 3) return "bg-gradient-to-r from-blue-500 to-cyan-500 text-white";
+    if (score >= 2) return "bg-gradient-to-r from-yellow-500 to-orange-500 text-white";
+    return "bg-gradient-to-r from-red-500 to-pink-500 text-white";
+  };
+
+  const getDiabeticRatingText = (score) => {
+    if (score >= 4) return "Excellent for Diabetics";
+    if (score >= 3) return "Good for Diabetics";
+    if (score >= 2) return "Fair - Use Caution";
+    return "Requires Careful Selection";
+  };
+
+  const handleAIAnalysis = async () => {
+    setLoading(true);
+    await onGetAIAnalysis(restaurant);
+    setLoading(false);
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Back Button */}
+      <Button 
+        variant="outline" 
+        onClick={onBack}
+        className="mb-4"
+      >
+        ← Back to Restaurant Search
+      </Button>
+
+      {/* Restaurant Header */}
+      <Card className="shadow-xl bg-white/90 backdrop-blur-sm">
+        <CardHeader className="bg-gradient-to-r from-emerald-50 to-blue-50">
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle className="text-2xl text-gray-800">{restaurant.name}</CardTitle>
+              <CardDescription className="flex items-center gap-2 text-gray-600 mt-2">
+                <MapPin className="h-4 w-4" />
+                {restaurant.address}
+              </CardDescription>
+            </div>
+            {restaurant.diabetic_friendly_score && (
+              <Badge className={`px-4 py-2 text-sm font-semibold ${getDiabeticRatingColor(restaurant.diabetic_friendly_score)}`}>
+                {getDiabeticRatingText(restaurant.diabetic_friendly_score)}
+              </Badge>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Restaurant Info */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                {restaurant.rating && (
+                  <div className="flex items-center gap-1 bg-yellow-50 px-3 py-2 rounded-full">
+                    <Star className="h-5 w-5 text-yellow-500 fill-current" />
+                    <span className="font-semibold text-yellow-700">{restaurant.rating}</span>
+                    <span className="text-sm text-yellow-600">Google Rating</span>
+                  </div>
+                )}
+                {restaurant.price_level && (
+                  <div className="bg-gray-50 px-3 py-2 rounded-full">
+                    <span className="font-semibold text-gray-700">
+                      {"$".repeat(restaurant.price_level)} Price Level
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {restaurant.phone_number && (
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Phone className="h-4 w-4" />
+                  <span>{restaurant.phone_number}</span>
+                </div>
+              )}
+
+              {restaurant.website && (
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Globe className="h-4 w-4" />
+                  <a 
+                    href={restaurant.website} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    Visit Website
+                  </a>
+                </div>
+              )}
+
+              {restaurant.opening_hours && (
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="font-semibold text-gray-800 mb-2">Hours</h4>
+                  <div className="text-sm text-gray-600">
+                    {restaurant.opening_hours.open_now ? (
+                      <span className="text-green-600 font-medium">🟢 Open Now</span>
+                    ) : (
+                      <span className="text-red-600 font-medium">🔴 Closed</span>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Diabetic Score Details */}
+            <div className="space-y-4">
+              <div className="bg-gradient-to-br from-emerald-50 to-blue-50 p-4 rounded-lg border border-emerald-200">
+                <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                  <Target className="h-5 w-5 text-emerald-600" />
+                  Diabetic Friendliness
+                </h4>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Overall Score</span>
+                    <span className="font-bold text-lg">
+                      {restaurant.diabetic_friendly_score?.toFixed(1) || "N/A"}/5.0
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div 
+                      className={`h-3 rounded-full ${
+                        (restaurant.diabetic_friendly_score || 0) >= 4 ? 'bg-green-500' :
+                        (restaurant.diabetic_friendly_score || 0) >= 3 ? 'bg-blue-500' :
+                        (restaurant.diabetic_friendly_score || 0) >= 2 ? 'bg-yellow-500' : 'bg-red-500'
+                      }`}
+                      style={{ width: `${((restaurant.diabetic_friendly_score || 0) / 5) * 100}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-gray-600">
+                    Score based on menu options, preparation methods, and customer reviews
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="mt-8 flex flex-col sm:flex-row gap-4">
+            <Button 
+              onClick={handleAIAnalysis}
+              disabled={loading}
+              className="flex-1 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white shadow-lg"
+            >
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                  Getting AI Analysis...
+                </>
+              ) : (
+                <>
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  Get AI Diabetic Analysis
+                </>
+              )}
+            </Button>
+            
+            {restaurant.website && (
+              <Button 
+                variant="outline"
+                onClick={() => window.open(restaurant.website, '_blank')}
+                className="flex-1"
+              >
+                <Globe className="h-4 w-4 mr-2" />
+                View Menu Online
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Photos */}
+      {restaurant.photos && restaurant.photos.length > 0 && (
+        <Card className="shadow-lg">
+          <CardHeader>
+            <CardTitle>Photos</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {restaurant.photos.slice(0, 6).map((photo, index) => (
+                <div key={index} className="aspect-square overflow-hidden rounded-lg">
+                  <img 
+                    src={photo} 
+                    alt={`${restaurant.name} photo ${index + 1}`}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+};
+
 const RestaurantCard = ({ restaurant, onSelect }) => {
   const getDiabeticRatingColor = (score) => {
     if (score >= 4) return "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg";
