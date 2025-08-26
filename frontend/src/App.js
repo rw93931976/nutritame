@@ -2264,6 +2264,11 @@ function App() {
     toast.success("Logged out successfully");
   };
 
+  // Demo Mode Rendering
+  if (appMode === 'demo') {
+    return <DemoLandingPage onDemoAccess={handleDemoAccess} />;
+  }
+
   // SaaS Mode Rendering
   if (appMode === 'landing') {
     return (
