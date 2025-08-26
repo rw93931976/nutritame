@@ -1768,7 +1768,7 @@ const Dashboard = ({ userProfile, onBack }) => {
                       {savedChats.map((chat) => (
                         <div
                           key={chat.id}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors group"
                           onClick={() => loadSavedChat(chat)}
                         >
                           <div className="flex-1 min-w-0">
@@ -1779,7 +1779,20 @@ const Dashboard = ({ userProfile, onBack }) => {
                               {new Date(chat.timestamp).toLocaleDateString()} • {chat.messages.length} messages
                             </p>
                           </div>
-                          <ChevronDown className="h-4 w-4 text-gray-400 transform -rotate-90" />
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={(e) => deleteSavedChat(chat.id, e)}
+                              className={`p-1 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100 ${
+                                deleteConfirmId === chat.id 
+                                  ? 'bg-red-100 text-red-700 hover:bg-red-200' 
+                                  : 'text-gray-400 hover:text-red-600 hover:bg-red-50'
+                              }`}
+                              title={deleteConfirmId === chat.id ? "Click again to confirm delete" : "Delete chat"}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                            <ChevronDown className="h-4 w-4 text-gray-400 transform -rotate-90" />
+                          </div>
                         </div>
                       ))}
                     </div>
