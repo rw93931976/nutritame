@@ -240,7 +240,13 @@ const SaaSHeader = ({ user, subscriptionInfo, onLogout }) => {
                   Trial expires in {subscriptionInfo.remaining_days} day{subscriptionInfo.remaining_days !== 1 ? 's' : ''}!
                 </span>
               </div>
-              <Button size="sm" className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700">
+              <Button 
+                size="sm" 
+                className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700"
+                onClick={() => {
+                  alert('Upgrade functionality coming soon! Contact support@nutritame.com for early upgrade options.');
+                }}
+              >
                 Upgrade Now
               </Button>
             </div>
