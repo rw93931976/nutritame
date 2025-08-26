@@ -125,7 +125,7 @@ const DemoLandingPage = ({ onDemoAccess }) => {
       </header>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-16 text-center">
+      <section id="demo" className="container mx-auto px-4 py-16 text-center">
         <div className="max-w-4xl mx-auto">
           <Badge className="mb-6 bg-gradient-to-r from-orange-500 to-pink-500 text-white hover:from-orange-600 hover:to-pink-600">
             <Rocket className="h-4 w-4 mr-2" />
