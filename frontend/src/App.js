@@ -629,9 +629,9 @@ const Dashboard = ({ userProfile, onBack }) => {
 
           <TabsContent value="chat" className="space-y-4">
             {/* Chat Interface */}
-            <div className="h-[calc(100vh-250px)] flex flex-col">
+            <div className="h-[calc(100vh-200px)] flex flex-col">
               {/* Messages */}
-              <div className="flex-1 space-y-4 overflow-y-auto mb-4 pr-2">
+              <div className="flex-1 space-y-4 overflow-y-auto mb-4 pr-2 min-h-[600px]">
                 {messages.map((msg, index) => (
                   <div key={msg.id || index} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'} message-enter`}>
                     <Card className={`max-w-[80%] transition-all duration-300 ${
