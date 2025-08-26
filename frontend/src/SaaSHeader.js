@@ -51,7 +51,7 @@ const SaaSHeader = ({ user, subscriptionInfo, onLogout }) => {
   };
 
   const getWelcomeMessage = () => {
-    if (!subscriptionInfo) return "Welcome to GlucoPlanner";
+    if (!subscriptionInfo) return "Welcome to NutriTame";
 
     const { subscription_status, remaining_days } = subscriptionInfo;
 
@@ -63,7 +63,7 @@ const SaaSHeader = ({ user, subscriptionInfo, onLogout }) => {
     }
 
     if (subscription_status === 'active') {
-      return "Welcome back to GlucoPlanner";
+      return "Welcome back to NutriTame";
     }
 
     return "Please renew your subscription to continue";
