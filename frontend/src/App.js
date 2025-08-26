@@ -2085,11 +2085,13 @@ const Dashboard = ({ userProfile, onBack }) => {
 // Main App Component
 function App() {
   // SaaS State Management
-  const [appMode, setAppMode] = useState('landing'); // landing, success, app, admin
+  const [appMode, setAppMode] = useState('landing'); // landing, demo, success, app, admin
   const [user, setUser] = useState(null);
   const [authToken, setAuthToken] = useState(null);
   const [adminToken, setAdminToken] = useState(null);
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
+  const [demoMode, setDemoMode] = useState(false);
+  const [demoUser, setDemoUser] = useState(null);
 
   // Existing state (preserve all original functionality)
   const [currentUser, setCurrentUser] = useState(null);
