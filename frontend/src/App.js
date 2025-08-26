@@ -175,6 +175,8 @@ const RestaurantMap = ({ center, restaurants, selectedRestaurant, onRestaurantSe
 
 // User Profile Setup Component
 const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
+  console.log('UserProfileSetup initialized with existingProfile:', existingProfile);
+  
   const [profile, setProfile] = useState({
     diabetes_type: existingProfile?.diabetes_type || "",
     age: existingProfile?.age || "",
@@ -188,6 +190,8 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
     cooking_skill: existingProfile?.cooking_skill || "",
     phone_number: existingProfile?.phone_number || ""
   });
+
+  console.log('Initial profile state:', profile);
 
   const [loading, setLoading] = useState(false);
 
