@@ -140,34 +140,50 @@ backend:
         comment: "Updated demo user email domain from 'glucoplanner.com' to 'nutritame.com' to reflect new branding."
 
 frontend:
-  - task: "Map Display Integration"
+  - task: "Demo Landing Page"
+    implemented: true
+    working: true
+    file: "frontend/src/DemoLandingPage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Created comprehensive demo landing page with features showcase, pricing preview, and demo access form. Updated branding to NutriTame throughout."
+  - task: "Demo Mode Banner Component"
+    implemented: true
+    working: true
+    file: "frontend/src/DemoModeBanner.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Created DemoModeBanner component with collapsible/minimizable design, demo notice alerts, and integration with demo configuration from backend."
+  - task: "App.js Demo Integration"
     implemented: true
     working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-      - working: "NA"
-        agent: "user"
-        comment: "User requested map display for restaurant search results. Not yet implemented."
-      - working: "NA"
-        agent: "main"
-        comment: "Added RestaurantMap component with Google Maps integration, interactive markers, and search center display. Added Google Maps API script to HTML. Ready for testing."
       - working: true
         agent: "main"
-        comment: "✅ COMPLETED: Interactive Google Maps fully functional! Found 10 Dallas restaurants with correct markers. Map displays with blue restaurant markers (clickable), red search center marker, proper Dallas area view (zoom 13), and Restaurant Locations section. Console logs show: Map initialized successfully, Added 10 restaurant markers, Added search center marker. All map features working perfectly after user enabled Maps JavaScript API service."
-  - task: "Restaurant Search UI"
+        comment: "Integrated demo mode state management, demo access handler, auto-detection of demo mode from backend, and DemoModeBanner integration in main app flow."
+  - task: "Branding Update - Frontend"
     implemented: true
     working: true
-    file: "frontend/src/App.js"
+    file: "frontend/src/App.js, frontend/src/DemoLandingPage.js"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: true
         agent: "main"
-        comment: "Restaurant search UI functional but missing map display component."
+        comment: "Updated all references from 'GlucoPlanner' to 'NutriTame' including dashboard title, welcome messages, localStorage keys (nutritame_chats, nutritame_favorites), and all user-facing text."
 
 metadata:
   created_by: "main_agent"
