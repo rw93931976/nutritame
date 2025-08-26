@@ -467,6 +467,7 @@ class GooglePlacesClient:
             calls_made = usage_doc.get('calls_made', 0)
             
             # STRICT CHECK: Block if we've reached exactly 9,000 calls
+            # This check happens BEFORE incrementing, so if calls_made is 9000, we block the next call
             if calls_made >= self.monthly_limit:
                 logging.warning(f"Monthly Google Places API limit reached: {calls_made}/{self.monthly_limit}")
                 return False, f"Monthly API limit reached ({calls_made}/{self.monthly_limit}). Restaurant search disabled."
