@@ -2082,79 +2082,199 @@ const Dashboard = ({ userProfile, onBack }) => {
 
 // Main App Component
 function App() {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [showDashboard, setShowDashboard] = useState(false);
-  const [loading, setLoading] = useState(true);
+  // SaaS State Management
+  const [appMode, setAppMode] = useState('landing'); // landing, success, app, admin
+  const [user, setUser] = useState(null);
+  const [authToken, setAuthToken] = useState(null);
+  const [adminToken, setAdminToken] = useState(null);
+  const [subscriptionInfo, setSubscriptionInfo] = useState(null);
 
+  // Existing state (preserve all original functionality)
+  const [currentUser, setCurrentUser] = useState(null);
+  const [showForm, setShowForm] = useState(true);
+  const [restaurants, setRestaurants] = useState([]);
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+  const [searchCenter, setSearchCenter] = useState(null);
+  const [searchRadius, setSearchRadius] = useState(8047); // 5 miles in meters
+  const [apiUsage, setApiUsage] = useState(null);
+  const [shoppingLists, setShoppingLists] = useState([]);
+  const [showShoppingListButton, setShowShoppingListButton] = useState(false);
+  const [lastMealPlan, setLastMealPlan] = useState("");
+
+  // Check authentication on app load
   useEffect(() => {
-    // Check if there's an existing user profile
-    checkExistingProfile();
+    const checkAuthentication = async () => {
+      const token = localStorage.getItem('authToken');
+      const adminTokenStored = localStorage.getItem('adminToken');
+      
+      if (adminTokenStored) {
+        setAdminToken(adminTokenStored);
+        setAppMode('admin');
+        return;
+      }
+      
+      if (token) {
+        try {
+          const response = await axios.get(`${API}/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          
+          if (response.data.user && response.data.subscription_info) {
+            setUser(response.data.user);
+            setAuthToken(token);
+            setSubscriptionInfo(response.data.subscription_info);
+            setAppMode('app');
+            
+            // Set up existing user profile for backward compatibility
+            setCurrentUser({
+              id: response.data.user.id,
+              email: response.data.user.email,
+              diabetes_type: response.data.user.diabetes_type,
+              age: response.data.user.age,
+              gender: response.data.user.gender,
+              activity_level: response.data.user.activity_level,
+              health_goals: response.data.user.health_goals || [],
+              food_preferences: response.data.user.food_preferences || [],
+              allergies: response.data.user.allergies || [],
+              cooking_skill: response.data.user.cooking_skill,
+              phone_number: response.data.user.phone_number
+            });
+            setShowForm(false);
+          }
+        } catch (error) {
+          console.error('Authentication check failed:', error);
+          localStorage.removeItem('authToken');
+          setAppMode('landing');
+        }
+      } else {
+        setAppMode('landing');
+      }
+    };
+
+    checkAuthentication();
   }, []);
 
-  const checkExistingProfile = async () => {
+  // Handle successful payment and app access
+  const handleAppAccess = async (paymentData) => {
     try {
-      // For demo purposes, we'll use localStorage to track the current user
-      const savedUserId = localStorage.getItem('glucoplanner_user_id');
-      
-      if (savedUserId) {
-        const response = await axios.get(`${API}/users/${savedUserId}`);
-        setCurrentUser(response.data);
-        setShowDashboard(true);
+      // For demo purposes, create a simple login
+      // In production, this would be handled by the payment success flow
+      const response = await axios.post(`${API}/auth/login`, {
+        email: paymentData.email || 'demo@example.com'
+      }, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      });
+
+      if (response.data.access_token) {
+        localStorage.setItem('authToken', response.data.access_token);
+        setAuthToken(response.data.access_token);
+        setUser(response.data.user);
+        setAppMode('app');
+        
+        // Set up profile for backward compatibility
+        setCurrentUser({
+          id: response.data.user.id,
+          email: response.data.user.email,
+          diabetes_type: response.data.user.diabetes_type || 'type2',
+          age: response.data.user.age,
+          gender: response.data.user.gender,
+          activity_level: response.data.user.activity_level,
+          health_goals: response.data.user.health_goals || [],
+          food_preferences: response.data.user.food_preferences || [],
+          allergies: response.data.user.allergies || [],
+          cooking_skill: response.data.user.cooking_skill,
+          phone_number: response.data.user.phone_number
+        });
+        setShowForm(false);
+        
+        toast.success("Welcome to GlucoPlanner! Your account is ready.");
       }
     } catch (error) {
-      console.error("Error checking existing profile:", error);
-      localStorage.removeItem('glucoplanner_user_id');
-    } finally {
-      setLoading(false);
+      console.error('App access error:', error);
+      toast.error("There was an issue accessing your account. Please contact support.");
     }
   };
 
-  const handleProfileComplete = (userProfile) => {
-    setCurrentUser(userProfile);
-    localStorage.setItem('glucoplanner_user_id', userProfile.id);
-    setShowDashboard(true);
-    toast.success("Welcome to GlucoPlanner! Let's explore restaurants and plan your meals.");
+  // Handle admin login
+  const handleAdminLogin = (token) => {
+    localStorage.setItem('adminToken', token);
+    setAdminToken(token);
+    setAppMode('admin');
   };
 
-  const handleBackToProfile = () => {
-    setShowDashboard(false);
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('adminToken');
+    setUser(null);
+    setAuthToken(null);
+    setAdminToken(null);
+    setCurrentUser(null);
+    setSubscriptionInfo(null);
+    setAppMode('landing');
+    toast.success("Logged out successfully");
   };
 
-  if (loading) {
+  // SaaS Mode Rendering
+  if (appMode === 'landing') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading GlucoPlanner...</p>
-        </div>
-      </div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LandingPage onStartTrial={() => setAppMode('landing')} />} />
+          <Route path="/success" element={<PaymentSuccess onAccessApp={handleAppAccess} />} />
+          <Route path="/cancel" element={<LandingPage onStartTrial={() => setAppMode('landing')} />} />
+          <Route path="/admin" element={<AdminLogin onAdminLogin={handleAdminLogin} />} />
+        </Routes>
+      </BrowserRouter>
     );
   }
 
-  return (
-    <BrowserRouter>
-      <div className="App">
-        <Routes>
-          <Route
-            path="/"
-            element={
-              showDashboard && currentUser ? (
-                <Dashboard 
-                  userProfile={currentUser} 
-                  onBack={handleBackToProfile}
-                />
-              ) : (
-                <UserProfileSetup 
-                  onProfileComplete={handleProfileComplete}
-                  existingProfile={currentUser}
-                />
-              )
-            }
+  if (appMode === 'success') {
+    return <PaymentSuccess onAccessApp={handleAppAccess} />;
+  }
+
+  if (appMode === 'admin') {
+    return <AdminDashboard adminToken={adminToken} />;
+  }
+
+  // Main App Mode (existing GlucoPlanner functionality with SaaS enhancements)
+  if (appMode === 'app') {
+    return (
+      <BrowserRouter>
+        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50">
+          {/* SaaS Header */}
+          <SaaSHeader 
+            user={user} 
+            subscriptionInfo={subscriptionInfo} 
+            onLogout={handleLogout} 
           />
-        </Routes>
-      </div>
-    </BrowserRouter>
-  );
+          
+          {/* Main Content */}
+          <div className="container mx-auto px-4 py-8">
+            {showForm ? (
+              <UserProfileSetup 
+                onComplete={(profile) => {
+                  setCurrentUser(profile);
+                  setShowForm(false);
+                }}
+                existingProfile={currentUser}
+              />
+            ) : (
+              <Dashboard 
+                userProfile={currentUser} 
+                onBack={() => setShowForm(true)}
+                authToken={authToken}
+                subscriptionInfo={subscriptionInfo}
+              />
+            )}
+          </div>
+        </div>
+      </BrowserRouter>
+    );
+  }
+
+  // Fallback
+  return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 }
 
 export default App;
