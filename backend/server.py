@@ -262,19 +262,40 @@ class MockSMSService:
         self.sent_messages = []
     
     def validate_phone_number(self, phone_number: str) -> bool:
-        """Validate phone number format"""
+        """Validate phone number format (simplified for mock)"""
         try:
-            parsed = phonenumbers.parse(phone_number, None)
-            return phonenumbers.is_valid_number(parsed)
-        except NumberParseException:
+            # Remove all non-digit characters except +
+            cleaned = ''.join(c for c in phone_number if c.isdigit() or c == '+')
+            
+            # Check basic format: starts with +1 and has 11 digits total
+            if cleaned.startswith('+1') and len(cleaned) == 12:
+                return True
+            # Or just starts with 1 and has 11 digits
+            elif cleaned.startswith('1') and len(cleaned) == 11:
+                return True
+            # Or has 10 digits (assume US)
+            elif len(cleaned) == 10:
+                return True
+                
+            return False
+        except Exception:
             return False
     
     def format_phone_number(self, phone_number: str) -> str:
-        """Format phone number to E.164 format"""
+        """Format phone number to E.164 format (simplified for mock)"""
         try:
-            parsed = phonenumbers.parse(phone_number, "US")  # Default to US if no country code
-            return phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.E164)
-        except NumberParseException:
+            # Remove all non-digit characters except +
+            cleaned = ''.join(c for c in phone_number if c.isdigit() or c == '+')
+            
+            if cleaned.startswith('+1'):
+                return cleaned
+            elif cleaned.startswith('1') and len(cleaned) == 11:
+                return '+' + cleaned
+            elif len(cleaned) == 10:
+                return '+1' + cleaned
+            else:
+                return phone_number
+        except Exception:
             return phone_number
     
     async def send_restaurant_sms(self, phone_number: str, restaurant: dict) -> dict:
