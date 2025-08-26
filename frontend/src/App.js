@@ -372,6 +372,7 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect }) => {
   const [restaurants, setRestaurants] = useState([]);
   const [loading, setLoading] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
 
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
@@ -425,6 +426,30 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect }) => {
     const defaultCoords = { lat: 37.7749, lng: -122.4194 };
     await searchRestaurants(defaultCoords.lat, defaultCoords.lng);
   };
+
+  const handleRestaurantClick = (restaurant) => {
+    setSelectedRestaurant(restaurant);
+  };
+
+  const handleGetAIAnalysis = async (restaurant) => {
+    // Call the parent's onRestaurantSelect which will switch to chat and get AI analysis
+    onRestaurantSelect(restaurant);
+  };
+
+  const handleBackToSearch = () => {
+    setSelectedRestaurant(null);
+  };
+
+  // If a restaurant is selected, show details
+  if (selectedRestaurant) {
+    return (
+      <RestaurantDetails 
+        restaurant={selectedRestaurant}
+        onGetAIAnalysis={handleGetAIAnalysis}
+        onBack={handleBackToSearch}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -503,7 +528,7 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect }) => {
           <RestaurantCard 
             key={restaurant.place_id} 
             restaurant={restaurant} 
-            onSelect={onRestaurantSelect}
+            onSelect={handleRestaurantClick}
           />
         ))}
       </div>
