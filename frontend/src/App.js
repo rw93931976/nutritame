@@ -389,6 +389,7 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect }) => {
   const [loading, setLoading] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+  const [searchCenter, setSearchCenter] = useState(null);
 
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
@@ -400,6 +401,7 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect }) => {
             longitude: position.coords.longitude
           };
           setUserLocation(location);
+          setSearchCenter(location);
           searchRestaurants(location.latitude, location.longitude);
         },
         (error) => {
@@ -425,7 +427,12 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect }) => {
       toast.success(`Found ${response.data.length} restaurants`);
     } catch (error) {
       console.error("Restaurant search error:", error);
-      toast.error("Failed to search restaurants. Please try again.");
+      if (error.response?.data?.detail?.includes("Monthly API limit reached")) {
+        toast.error("🚫 Restaurant search temporarily unavailable - monthly limit reached");
+        setRestaurants([]);
+      } else {
+        toast.error("Failed to search restaurants. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -437,10 +444,39 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect }) => {
       return;
     }
     
-    // For demo, we'll use a default location (San Francisco)
-    // In production, you'd use a geocoding service to convert address to coordinates
-    const defaultCoords = { lat: 37.7749, lng: -122.4194 };
-    await searchRestaurants(defaultCoords.lat, defaultCoords.lng);
+    setLoading(true);
+    try {
+      // Use the new location-based search API
+      const response = await axios.post(`${API}/restaurants/search-by-location`, {
+        location: searchLocation,
+        radius: searchRadius,
+        keyword: searchKeyword
+      });
+      
+      // Also get the geocoded coordinates for the map
+      const locationResponse = await axios.post(`${API}/geocode`, {
+        location: searchLocation
+      });
+      
+      setSearchCenter({
+        latitude: locationResponse.data.latitude,
+        longitude: locationResponse.data.longitude
+      });
+      
+      setRestaurants(response.data);
+      toast.success(`Found ${response.data.length} restaurants in ${searchLocation}`);
+    } catch (error) {
+      console.error("Location search error:", error);
+      if (error.response?.data?.detail?.includes("Monthly API limit reached")) {
+        toast.error("🚫 Restaurant search temporarily unavailable - monthly limit reached");
+      } else if (error.response?.data?.detail?.includes("Could not find location")) {
+        toast.error(`Could not find location: ${searchLocation}. Please try a different search term.`);
+      } else {
+        toast.error("Failed to search restaurants. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRestaurantClick = (restaurant) => {
@@ -494,10 +530,11 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect }) => {
             </Button>
             <div className="flex-1 flex gap-2">
               <Input
-                placeholder="Or enter a location (e.g., San Francisco, CA)"
+                placeholder="Enter city or address (e.g., Dallas, Texas)"
                 value={searchLocation}
                 onChange={(e) => setSearchLocation(e.target.value)}
                 className="flex-1"
+                onKeyPress={(e) => e.key === 'Enter' && handleManualSearch()}
               />
               <Button onClick={handleManualSearch} disabled={loading}>
                 Search
@@ -513,10 +550,11 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect }) => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1000">1 km</SelectItem>
-                  <SelectItem value="2000">2 km</SelectItem>
-                  <SelectItem value="5000">5 km</SelectItem>
-                  <SelectItem value="10000">10 km</SelectItem>
+                  <SelectItem value="1609">1 mile</SelectItem>
+                  <SelectItem value="3218">2 miles</SelectItem>
+                  <SelectItem value="8047">5 miles</SelectItem>
+                  <SelectItem value="16093">10 miles</SelectItem>
+                  <SelectItem value="32186">20 miles</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -539,6 +577,35 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect }) => {
         </div>
       )}
 
+      {/* Map Display */}
+      {searchCenter && restaurants.length > 0 && (
+        <Card className="shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MapPin className="h-5 w-5 text-emerald-600" />
+              Restaurant Locations
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="bg-gray-100 rounded-lg p-4 h-96 flex items-center justify-center">
+              <div className="text-center">
+                <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+                <p className="text-gray-600 font-semibold">Interactive Map</p>
+                <p className="text-sm text-gray-500">
+                  Center: {searchCenter.latitude.toFixed(4)}, {searchCenter.longitude.toFixed(4)}
+                </p>
+                <p className="text-xs text-gray-400 mt-2">
+                  📍 {restaurants.length} restaurants within {(searchRadius/1609).toFixed(1)} miles
+                </p>
+                <div className="mt-4 text-xs text-blue-600">
+                  🗺️ Full interactive map coming soon - showing restaurant locations with diabetic ratings
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {restaurants.map((restaurant) => (
           <RestaurantCard 
@@ -548,6 +615,14 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect }) => {
           />
         ))}
       </div>
+
+      {restaurants.length === 0 && !loading && searchCenter && (
+        <div className="text-center py-8">
+          <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-600 mb-2">No restaurants found</h3>
+          <p className="text-gray-500">Try expanding your search radius or using different keywords</p>
+        </div>
+      )}
     </div>
   );
 };
