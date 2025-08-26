@@ -427,7 +427,145 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect }) => {
   );
 };
 
-// Restaurant Card Component
+// Shopping List Component
+const ShoppingListView = ({ userProfile }) => {
+  const [shoppingLists, setShoppingLists] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    loadShoppingLists();
+  }, []);
+
+  const loadShoppingLists = async () => {
+    try {
+      const response = await axios.get(`${API}/shopping-lists/${userProfile.id}`);
+      setShoppingLists(response.data);
+    } catch (error) {
+      console.error("Failed to load shopping lists:", error);
+    }
+  };
+
+  const toggleItem = async (listId, itemIndex) => {
+    try {
+      const list = shoppingLists.find(l => l.id === listId);
+      const updatedItems = [...list.items];
+      updatedItems[itemIndex].checked = !updatedItems[itemIndex].checked;
+      
+      await axios.put(`${API}/shopping-lists/${listId}`, {
+        items: updatedItems
+      });
+      
+      setShoppingLists(prev => prev.map(l => 
+        l.id === listId ? {...l, items: updatedItems} : l
+      ));
+    } catch (error) {
+      console.error("Failed to update item:", error);
+      toast.error("Failed to update item");
+    }
+  };
+
+  const getCategoryIcon = (category) => {
+    switch(category) {
+      case 'produce': return '🥬';
+      case 'proteins': return '🥩';
+      case 'pantry': return '🥫';
+      case 'frozen': return '🧊';
+      default: return '📦';
+    }
+  };
+
+  const getCategoryColor = (category) => {
+    switch(category) {
+      case 'produce': return 'bg-green-100 text-green-700';
+      case 'proteins': return 'bg-red-100 text-red-700';
+      case 'pantry': return 'bg-yellow-100 text-yellow-700';
+      case 'frozen': return 'bg-blue-100 text-blue-700';
+      default: return 'bg-gray-100 text-gray-700';
+    }
+  };
+
+  if (shoppingLists.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <ShoppingCart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-gray-600 mb-2">No Shopping Lists Yet</h3>
+        <p className="text-gray-500">Ask the AI health coach for meal planning to generate shopping lists!</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+          <ShoppingCart className="h-6 w-6 text-emerald-600" />
+          My Shopping Lists
+        </h2>
+      </div>
+
+      <div className="grid gap-6">
+        {shoppingLists.map((list) => (
+          <Card key={list.id} className="bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200/50">
+            <CardHeader className="bg-gradient-to-r from-emerald-50 to-blue-50">
+              <CardTitle className="flex items-center justify-between">
+                <span>{list.title}</span>
+                <Badge variant="outline" className="bg-white">
+                  {list.items.filter(item => item.checked).length} / {list.items.length} completed
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              {['produce', 'proteins', 'pantry', 'frozen', 'other'].map(category => {
+                const categoryItems = list.items.filter(item => item.category === category);
+                if (categoryItems.length === 0) return null;
+                
+                return (
+                  <div key={category} className="mb-6">
+                    <h4 className={`font-semibold mb-3 px-3 py-1 rounded-full inline-block capitalize ${getCategoryColor(category)}`}>
+                      {getCategoryIcon(category)} {category === 'proteins' ? 'Proteins (Meat/Fish/Dairy)' : category.replace('_', ' ')}
+                    </h4>
+                    <div className="space-y-2 ml-4">
+                      {categoryItems.map((item, index) => {
+                        const globalIndex = list.items.findIndex(i => i === item);
+                        return (
+                          <div 
+                            key={globalIndex}
+                            className={`flex items-center gap-3 p-2 rounded-lg transition-all duration-200 ${
+                              item.checked ? 'bg-gray-50 opacity-60' : 'hover:bg-gray-50'
+                            }`}
+                          >
+                            <button
+                              onClick={() => toggleItem(list.id, globalIndex)}
+                              className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200 ${
+                                item.checked 
+                                  ? 'bg-emerald-500 border-emerald-500 text-white' 
+                                  : 'border-gray-300 hover:border-emerald-400'
+                              }`}
+                            >
+                              {item.checked && <Check className="h-3 w-3" />}
+                            </button>
+                            <span className={`flex-1 ${item.checked ? 'line-through text-gray-500' : 'text-gray-800'}`}>
+                              {item.item}
+                            </span>
+                            {item.quantity && (
+                              <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                {item.quantity}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
 const RestaurantCard = ({ restaurant, onSelect }) => {
   const getDiabeticRatingColor = (score) => {
     if (score >= 4) return "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg";
