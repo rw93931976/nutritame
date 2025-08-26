@@ -80,7 +80,7 @@ const SaaSHeader = ({ user, subscriptionInfo, onLogout }) => {
             </div>
             <div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
-                GlucoPlanner
+                NutriTame
               </h1>
               <p className="text-xs text-gray-600 hidden sm:block">
                 {getWelcomeMessage()}
