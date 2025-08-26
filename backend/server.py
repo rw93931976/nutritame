@@ -212,9 +212,15 @@ class GooglePlacesClient:
                 params['keyword'] = "healthy diabetic-friendly"
             
             try:
+                logging.info(f"Making Google Places API request with params: {params}")
                 response = await client.get(f"{self.base_url}/nearbysearch/json", params=params)
                 response.raise_for_status()
                 data = response.json()
+                
+                logging.info(f"Google Places API response status: {data.get('status')}")
+                if data.get('status') != 'OK':
+                    logging.error(f"Google Places API error: {data.get('error_message', data.get('status'))}")
+                    return []
                 
                 restaurants = []
                 for place in data.get('results', [])[:10]:  # Limit to 10 results
@@ -222,6 +228,7 @@ class GooglePlacesClient:
                     if restaurant:
                         restaurants.append(restaurant)
                 
+                logging.info(f"Successfully parsed {len(restaurants)} restaurants")
                 return restaurants
             except Exception as e:
                 logging.error(f"Google Places API error: {e}")
