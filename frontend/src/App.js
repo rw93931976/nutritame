@@ -1294,6 +1294,9 @@ const Dashboard = ({ userProfile, onBack }) => {
   const [savedChats, setSavedChats] = useState([]);
   const [currentChatId, setCurrentChatId] = useState(null);
   const [showSavedChats, setShowSavedChats] = useState(false);
+  const [favoriteRecipes, setFavoriteRecipes] = useState([]);
+  const [showFavorites, setShowFavorites] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
