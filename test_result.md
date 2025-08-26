@@ -140,7 +140,7 @@ backend:
     implemented: true
     working: false
     file: "backend/server.py"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
     needs_retesting: false
     status_history:
@@ -150,6 +150,9 @@ backend:
       - working: false
         agent: "testing"
         comment: "❌ Restaurant search by location fails because it depends on geocoding service. /api/restaurants/search-by-location returns 400 'Could not find location: Dallas, Texas'. Direct coordinate search (/api/restaurants/search) works fine. Issue is blocked by geocoding API key configuration problem."
+      - working: false
+        agent: "testing"
+        comment: "❌ URGENT TESTING RESULTS: Restaurant search by location still fails with 400 'Could not find location: Dallas, Texas' because geocoding dependency is broken. Direct coordinate-based restaurant search works perfectly (found 10 restaurants in San Francisco test). The issue remains blocked by the Geocoding API authorization problem."
 
 frontend:
   - task: "Map Display Integration"
