@@ -1408,7 +1408,7 @@ const Dashboard = ({ userProfile, onBack }) => {
       // Actually delete
       const existingChats = JSON.parse(localStorage.getItem('nutritame_chats') || '[]');
       const updatedChats = existingChats.filter(chat => chat.id !== chatId);
-      localStorage.setItem('glucoplanner_chats', JSON.stringify(updatedChats));
+      localStorage.setItem('nutritame_chats', JSON.stringify(updatedChats));
       setSavedChats(updatedChats);
       setDeleteConfirmId(null);
       
