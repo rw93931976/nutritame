@@ -254,14 +254,74 @@ def parse_from_mongo(item):
                     pass  # Keep original value if parsing fails
     return item
 
-# Google Places API Client
+# Google Places API Client with Rate Limiting
 class GooglePlacesClient:
     def __init__(self):
         self.api_key = os.environ.get('GOOGLE_PLACES_API_KEY')
         self.base_url = "https://maps.googleapis.com/maps/api/place"
+        self.monthly_limit = 9000  # Set monthly limit to 9,000 calls
+        self.daily_limit = 300     # Approximately 9,000 / 30 days
+        
+    async def _check_usage_limits(self):
+        """Check if we're within API usage limits"""
+        try:
+            # Get current month's usage from database
+            current_month = datetime.now(timezone.utc).strftime("%Y-%m")
+            usage_doc = await db.api_usage.find_one({
+                "api": "google_places",
+                "month": current_month
+            })
+            
+            if not usage_doc:
+                # Create new usage tracking document
+                usage_doc = {
+                    "api": "google_places", 
+                    "month": current_month,
+                    "calls_made": 0,
+                    "last_updated": datetime.now(timezone.utc).isoformat()
+                }
+                await db.api_usage.insert_one(usage_doc)
+                
+            calls_made = usage_doc.get('calls_made', 0)
+            
+            # Check monthly limit
+            if calls_made >= self.monthly_limit:
+                logging.warning(f"Monthly Google Places API limit reached: {calls_made}/{self.monthly_limit}")
+                return False, f"Monthly API limit reached ({calls_made}/{self.monthly_limit})"
+            
+            # Check if approaching limit (90%)
+            if calls_made >= (self.monthly_limit * 0.9):
+                logging.warning(f"Approaching Google Places API monthly limit: {calls_made}/{self.monthly_limit}")
+            
+            return True, f"Usage: {calls_made}/{self.monthly_limit} calls this month"
+            
+        except Exception as e:
+            logging.error(f"Error checking API usage: {e}")
+            return True, "Usage check failed, proceeding"
+    
+    async def _increment_usage(self):
+        """Increment API usage counter"""
+        try:
+            current_month = datetime.now(timezone.utc).strftime("%Y-%m")
+            await db.api_usage.update_one(
+                {"api": "google_places", "month": current_month},
+                {
+                    "$inc": {"calls_made": 1},
+                    "$set": {"last_updated": datetime.now(timezone.utc).isoformat()}
+                },
+                upsert=True
+            )
+        except Exception as e:
+            logging.error(f"Error incrementing API usage: {e}")
         
     async def search_restaurants(self, latitude: float, longitude: float, radius: int = 2000, keyword: str = None):
-        """Search for restaurants using Google Places API"""
+        """Search for restaurants using Google Places API with rate limiting"""
+        # Check usage limits before making API call
+        can_proceed, usage_message = await self._check_usage_limits()
+        if not can_proceed:
+            logging.error(f"API limit exceeded: {usage_message}")
+            return []
+        
         async with httpx.AsyncClient() as client:
             # Nearby search for restaurants
             params = {
@@ -277,9 +337,13 @@ class GooglePlacesClient:
                 params['keyword'] = "healthy diabetic-friendly"
             
             try:
-                logging.info(f"Making Google Places API request with params: {params}")
+                logging.info(f"Making Google Places API request. {usage_message}")
                 response = await client.get(f"{self.base_url}/nearbysearch/json", params=params)
                 response.raise_for_status()
+                
+                # Increment usage counter
+                await self._increment_usage()
+                
                 data = response.json()
                 
                 logging.info(f"Google Places API response status: {data.get('status')}")
@@ -300,7 +364,13 @@ class GooglePlacesClient:
                 return []
     
     async def get_restaurant_details(self, place_id: str):
-        """Get detailed restaurant information"""
+        """Get detailed restaurant information with rate limiting"""
+        # Check usage limits before making API call
+        can_proceed, usage_message = await self._check_usage_limits()
+        if not can_proceed:
+            logging.error(f"API limit exceeded: {usage_message}")
+            return None
+            
         async with httpx.AsyncClient() as client:
             params = {
                 'place_id': place_id,
@@ -309,8 +379,13 @@ class GooglePlacesClient:
             }
             
             try:
+                logging.info(f"Making Google Places Details API request. {usage_message}")
                 response = await client.get(f"{self.base_url}/details/json", params=params)
                 response.raise_for_status()
+                
+                # Increment usage counter
+                await self._increment_usage()
+                
                 data = response.json()
                 
                 if data.get('status') == 'OK':
