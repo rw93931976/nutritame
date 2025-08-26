@@ -2042,13 +2042,13 @@ const Dashboard = ({ userProfile, onBack }) => {
                       onChange={(e) => setCurrentMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Ask about meal planning, restaurant recommendations, nutrition analysis..."
-                      className="min-h-[80px] resize-none border-2 border-gray-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200 transition-all duration-300 text-base"
+                      className="min-h-[60px] resize-none border-2 border-gray-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200 transition-all duration-300 text-base"
                       disabled={loading}
                     />
                     <Button 
                       onClick={() => sendMessage()}
                       disabled={!currentMessage.trim() || loading}
-                      className="bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 min-h-[80px]"
+                      className="bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 min-h-[60px]"
                     >
                       <MessageCircle className="h-5 w-5" />
                     </Button>
