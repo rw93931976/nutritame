@@ -23,8 +23,7 @@ import {
   Gift
 } from 'lucide-react';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://diabeticmeal-app.preview.emergentagent.com';
-const API = `${BACKEND_URL}/api`;
+import { BACKEND_URL, API } from './config';
 
 const DemoLandingPage = ({ onDemoAccess }) => {
   const [email, setEmail] = useState('');
