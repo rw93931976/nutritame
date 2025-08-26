@@ -972,12 +972,21 @@ class GlucoPlannerAPITester:
 
 def main():
     print("🧪 Starting GlucoPlanner API Tests")
-    print("=" * 50)
+    print("🎯 FOCUS: Testing 3 Critical Issues from Review Request")
+    print("=" * 60)
     
     tester = GlucoPlannerAPITester()
     
-    # Test sequence
-    tests = [
+    # CRITICAL TESTS FIRST - As requested in review
+    critical_tests = [
+        ("🚨 Google Places API Usage Tracking", tester.test_google_places_api_usage_tracking),
+        ("🚨 API Rate Limiting Enforcement", tester.test_api_rate_limiting_enforcement),
+        ("🚨 Dallas Geocoding Bug Fix", tester.test_location_geocoding_dallas),
+        ("🚨 Dallas Restaurant Search Bug Fix", tester.test_restaurant_search_by_dallas_location),
+    ]
+    
+    # Standard test sequence
+    standard_tests = [
         ("Health Check", tester.test_health_check),
         ("Health Endpoint", tester.test_health_endpoint),
         ("Create User Profile", tester.test_create_user_profile),
@@ -993,6 +1002,9 @@ def main():
         ("Nutrition Search", tester.test_nutrition_search),
         ("Nutrition Details", tester.test_nutrition_details),
     ]
+    
+    # Combine all tests - critical tests first
+    tests = critical_tests + standard_tests
     
     failed_tests = []
     
