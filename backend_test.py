@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 class GlucoPlannerAPITester:
-    def __init__(self, base_url="https://gluco-planner.preview.emergentagent.com"):
+    def __init__(self, base_url="https://smart-meal-plan-2.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.tests_run = 0
