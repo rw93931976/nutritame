@@ -105,60 +105,39 @@
 user_problem_statement: "Complete Demo Mode implementation for NutriTame (rebranded from GlucoPlanner), create DemoModeBanner component, integrate demo mode functionality, and update branding throughout the application."
 
 backend:
-  - task: "Google Places API Rate Limiting"
+  - task: "Demo Mode Backend Configuration"
     implemented: true
     working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: false
-        agent: "user"
-        comment: "User reported API limit should be exactly 9,000 calls, not allowing 9,001. Need stricter enforcement."
-      - working: true
-        agent: "testing"
-        comment: "✅ FIXED: API rate limiting working correctly. Monthly limit set to exactly 9,000 calls. Usage tracking functional (14/9000 calls used). Rate limiting logic properly enforces strict limit. All tests passed."
-  - task: "Location Geocoding Service"
-    implemented: true
-    working: true
-    file: "backend/server.py"
-    stuck_count: 3
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: false
-        agent: "user"
-        comment: "Dallas, Texas search returns San Francisco results. Geocoding logic needs debugging."
-      - working: false
-        agent: "testing"
-        comment: "❌ CRITICAL ISSUE: Google Geocoding API returns 'REQUEST_DENIED - This API key is not authorized to use this service or API.' The Google Places API key needs Geocoding API service enabled. This is a configuration issue, not a code bug. Backend logs show clear error: geocoding requests fail with REQUEST_DENIED status."
-      - working: false
-        agent: "testing"
-        comment: "❌ URGENT TESTING RESULTS: Despite user reporting that Geocoding API service was enabled, the API key (AIzaSyAyf8zKG6TwOQ9m-D6YId0EwA7ZHZHQB0I) is STILL not authorized for Geocoding API. Direct API test confirms: 'REQUEST_DENIED - This API key is not authorized to use this service or API.' Both Dallas, Texas and New York, NY geocoding fail with 404 errors. Places API works fine (status: OK). The Geocoding API service is NOT properly enabled on the Google Cloud Console for this API key."
-      - working: true
-        agent: "testing"
-        comment: "✅ FIXED: Geocoding API service is now properly enabled! Dallas, Texas geocoding returns correct coordinates (32.7766642, -96.79698789999999) with formatted address 'Dallas, TX, USA'. New York, NY geocoding returns correct coordinates (40.7127753, -74.0059728) with formatted address 'New York, NY, USA'. All geocoding tests pass with status 200. The Dallas location bug is completely resolved."
-  - task: "Restaurant Search API"
-    implemented: true
-    working: true
-    file: "backend/server.py"
-    stuck_count: 2
-    priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: true
         agent: "main"
-        comment: "Basic restaurant search functionality working but location issue exists."
-      - working: false
-        agent: "testing"
-        comment: "❌ Restaurant search by location fails because it depends on geocoding service. /api/restaurants/search-by-location returns 400 'Could not find location: Dallas, Texas'. Direct coordinate search (/api/restaurants/search) works fine. Issue is blocked by geocoding API key configuration problem."
-      - working: false
-        agent: "testing"
-        comment: "❌ URGENT TESTING RESULTS: Restaurant search by location still fails with 400 'Could not find location: Dallas, Texas' because geocoding dependency is broken. Direct coordinate-based restaurant search works perfectly (found 10 restaurants in San Francisco test). The issue remains blocked by the Geocoding API authorization problem."
+        comment: "Implemented demo mode endpoints (/demo/config and /demo/access) with DEMO_MODE environment variable. Added demo user creation with premium access and JWT token generation."
+  - task: "Demo Mode Environment Setup"
+    implemented: true
+    working: true
+    file: "backend/.env"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
       - working: true
-        agent: "testing"
-        comment: "✅ FIXED: Restaurant search by location now works perfectly! Dallas, Texas search successfully found 8 Dallas restaurants with correct Dallas addresses and coordinates. Sample restaurants: 'Snap Kitchen - Uptown' at (32.792887, -96.802009), 'Packin' Bowls (Keto Friendly)' at (32.7734831, -96.83719359999999). All restaurants are properly located in Dallas area (32.6-32.9 lat, -97.1 to -96.6 lng). The Dallas→San Francisco bug is completely resolved."
+        agent: "main"
+        comment: "Added DEMO_MODE=true to backend .env file and fixed STRIPE_API_KEY formatting issue."
+  - task: "Branding Update - Backend"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "low"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Updated demo user email domain from 'glucoplanner.com' to 'nutritame.com' to reflect new branding."
 
 frontend:
   - task: "Map Display Integration"
