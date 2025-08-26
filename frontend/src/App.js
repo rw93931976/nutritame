@@ -1633,6 +1633,7 @@ const Dashboard = ({ userProfile, onBack }) => {
   const sendMessage = async (messageText = currentMessage) => {
     if (!messageText.trim() || loading) return;
 
+    console.log('Sending message:', messageText);
     setCurrentMessage("");
     setLoading(true);
 
