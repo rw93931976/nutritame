@@ -1523,7 +1523,7 @@ const Dashboard = ({ userProfile, onBack }) => {
     setSavedChats(saved);
     
     // Load favorites from localStorage
-    const favorites = JSON.parse(localStorage.getItem('glucoplanner_favorites') || '[]');
+    const favorites = JSON.parse(localStorage.getItem('nutritame_favorites') || '[]');
     setFavoriteRecipes(favorites);
     
     // Add welcome message
