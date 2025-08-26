@@ -1436,7 +1436,7 @@ const Dashboard = ({ userProfile, onBack }) => {
       messageIndex: messageIndex
     };
 
-    const existingFavorites = JSON.parse(localStorage.getItem('glucoplanner_favorites') || '[]');
+    const existingFavorites = JSON.parse(localStorage.getItem('nutritame_favorites') || '[]');
     existingFavorites.unshift(favoriteItem);
     
     // Keep only last 20 favorites
