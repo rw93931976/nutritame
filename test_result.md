@@ -177,16 +177,19 @@ user_problem_statement: "Complete Demo Mode implementation for NutriTame (rebran
         comment: "Added click handlers to navigation links in SaaSHeader component: Account Settings (shows alert and profile guidance), Help & Support (opens email), Notifications (shows trial alerts), and Upgrade buttons (shows upgrade info). All links now have proper functionality."
 
   - task: "Profile Page Scroll Position"
-    implemented: false
-    working: false
+    implemented: true
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "user"
         comment: "When clicking 'Free Demo Now', the profile page loads too far down in the window. Need to ensure page loads at the top."
+      - working: true
+        agent: "main"
+        comment: "Fixed by adding scroll to top behavior in handleDemoAccess function. Added setTimeout with window.scrollTo({ top: 0, behavior: 'smooth' }) after profile form loads. Profile page now loads at proper viewport position."
   - task: "AI Health Coach Response Window & Shopping List"
     implemented: false
     working: false
