@@ -2025,6 +2025,52 @@ const Dashboard = ({ userProfile, onBack }) => {
             <ShoppingListView userProfile={userProfile} />
           </TabsContent>
         </Tabs>
+
+        {/* Footer Navigation - Duplicate of header tabs for accessibility */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200/50 shadow-lg z-40">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex items-center justify-center">
+              <TabsList className="grid w-full max-w-md grid-cols-3 h-14 bg-gradient-to-r from-emerald-50 to-blue-50 rounded-xl p-1">
+                <TabsTrigger 
+                  value="chat" 
+                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-all duration-300 ${
+                    activeTab === 'chat'
+                      ? 'bg-gradient-to-r from-emerald-600 to-blue-600 text-white shadow-lg transform scale-105' 
+                      : 'hover:bg-gradient-to-r hover:from-emerald-100 hover:to-blue-100 hover:text-emerald-700'
+                  }`}
+                  onClick={() => setActiveTab('chat')}
+                >
+                  <ChefHat className="h-4 w-4" />
+                  AI Coach
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="restaurants" 
+                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-all duration-300 ${
+                    activeTab === 'restaurants'
+                      ? 'bg-gradient-to-r from-emerald-600 to-blue-600 text-white shadow-lg transform scale-105' 
+                      : 'hover:bg-gradient-to-r hover:from-emerald-100 hover:to-blue-100 hover:text-emerald-700'
+                  }`}
+                  onClick={() => setActiveTab('restaurants')}
+                >
+                  <Search className="h-4 w-4" />
+                  Restaurants
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="shopping" 
+                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-all duration-300 ${
+                    activeTab === 'shopping'
+                      ? 'bg-gradient-to-r from-emerald-600 to-blue-600 text-white shadow-lg transform scale-105' 
+                      : 'hover:bg-gradient-to-r hover:from-emerald-100 hover:to-blue-100 hover:text-emerald-700'
+                  }`}
+                  onClick={() => setActiveTab('shopping')}
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                  Shopping
+                </TabsTrigger>
+              </TabsList>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
