@@ -731,9 +731,6 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect }) => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Google Maps Debug Test */}
-          <SimpleMapTest />
-          
           <div className="flex gap-2">
             <Button 
               onClick={getCurrentLocation}
