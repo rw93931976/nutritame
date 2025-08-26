@@ -105,9 +105,9 @@
 user_problem_statement: "Complete Demo Mode implementation for NutriTame (rebranded from GlucoPlanner), create DemoModeBanner component, integrate demo mode functionality, and update branding throughout the application."
 
   - task: "Try Demo Button Functionality"
-    implemented: false
-    working: false
-    file: "frontend/src/DemoLandingPage.js"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
     stuck_count: 0
     priority: "high"
     needs_retesting: true
@@ -115,6 +115,9 @@ user_problem_statement: "Complete Demo Mode implementation for NutriTame (rebran
       - working: false
         agent: "user"
         comment: "User reports 'Try Demo' button does nothing when clicked. Need to investigate demo access creation functionality."
+      - working: true
+        agent: "main"
+        comment: "Fixed demo access token issue - backend returns 'access_token' but frontend was looking for 'token'. Updated handleDemoAccess to use correct field name. Also added demo section id for navigation links."
   - task: "Profile Creation vs Update Logic"
     implemented: false
     working: false
