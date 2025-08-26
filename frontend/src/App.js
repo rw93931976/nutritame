@@ -171,13 +171,17 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
 
               {/* Health Goals */}
               <div className="space-y-3">
-                <Label>Health Goals</Label>
+                <Label className="text-gray-700 font-medium">Health Goals</Label>
                 <div className="flex flex-wrap gap-2">
                   {healthGoals.map(goal => (
                     <Badge
                       key={goal}
                       variant={profile.health_goals.includes(goal) ? "default" : "outline"}
-                      className="cursor-pointer px-3 py-1 capitalize"
+                      className={`cursor-pointer px-4 py-2 capitalize transition-all duration-300 ${
+                        profile.health_goals.includes(goal)
+                          ? 'bg-gradient-to-r from-emerald-500 to-blue-500 text-white shadow-lg hover:from-emerald-600 hover:to-blue-600 transform hover:scale-105'
+                          : 'border-2 border-emerald-200 text-emerald-700 hover:border-emerald-400 hover:bg-emerald-50 hover:scale-105'
+                      }`}
                       onClick={() => handleArrayField('health_goals', goal)}
                     >
                       {goal.replace('_', ' ')}
@@ -188,13 +192,17 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
 
               {/* Food Preferences */}
               <div className="space-y-3">
-                <Label>Food Preferences</Label>
+                <Label className="text-gray-700 font-medium">Food Preferences</Label>
                 <div className="flex flex-wrap gap-2">
                   {foodPreferences.map(pref => (
                     <Badge
                       key={pref}
                       variant={profile.food_preferences.includes(pref) ? "default" : "outline"}
-                      className="cursor-pointer px-3 py-1 capitalize"
+                      className={`cursor-pointer px-4 py-2 capitalize transition-all duration-300 ${
+                        profile.food_preferences.includes(pref)
+                          ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg hover:from-purple-600 hover:to-pink-600 transform hover:scale-105'
+                          : 'border-2 border-purple-200 text-purple-700 hover:border-purple-400 hover:bg-purple-50 hover:scale-105'
+                      }`}
                       onClick={() => handleArrayField('food_preferences', pref)}
                     >
                       {pref.replace('_', ' ')}
