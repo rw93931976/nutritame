@@ -2029,7 +2029,7 @@ const Dashboard = ({ userProfile, onBack }) => {
         {/* Footer Navigation - Independent navigation buttons */}
         <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200/50 shadow-lg z-40">
           <div className="container mx-auto px-4 py-3">
-            <divClassName="flex items-center justify-center">
+            <div className="flex items-center justify-center">
               <div className="grid grid-cols-3 gap-1 w-full max-w-md bg-gradient-to-r from-emerald-50 to-blue-50 rounded-xl p-1">
                 <button
                   onClick={() => setActiveTab('chat')}
