@@ -24,84 +24,137 @@ const RestaurantMap = ({ center, restaurants, selectedRestaurant, onRestaurantSe
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
+  const [isGoogleMapsLoaded, setIsGoogleMapsLoaded] = useState(false);
 
   useEffect(() => {
-    if (!mapRef.current || !window.google) return;
-
-    // Initialize map
-    const map = new window.google.maps.Map(mapRef.current, {
-      center: center ? { lat: center.latitude, lng: center.longitude } : { lat: 32.7767, lng: -96.7970 }, // Default to Dallas
-      zoom: 13,
-      styles: [
-        {
-          featureType: "poi",
-          elementType: "labels",
-          stylers: [{ visibility: "off" }]
-        }
-      ]
-    });
-
-    mapInstanceRef.current = map;
-
-    // Clear existing markers
-    markersRef.current.forEach(marker => marker.setMap(null));
-    markersRef.current = [];
-
-    // Add markers for restaurants
-    restaurants.forEach((restaurant, index) => {
-      const marker = new window.google.maps.Marker({
-        position: { lat: restaurant.latitude, lng: restaurant.longitude },
-        map: map,
-        title: restaurant.name,
-        icon: {
-          url: selectedRestaurant?.place_id === restaurant.place_id 
-            ? 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-              <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="16" cy="16" r="12" fill="#059669" stroke="#ffffff" stroke-width="3"/>
-                <circle cx="16" cy="16" r="6" fill="#ffffff"/>
-              </svg>
-            `)
-            : 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-              <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="8" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
-                <circle cx="12" cy="12" r="4" fill="#ffffff"/>
-              </svg>
-            `),
-          scaledSize: new window.google.maps.Size(
-            selectedRestaurant?.place_id === restaurant.place_id ? 32 : 24, 
-            selectedRestaurant?.place_id === restaurant.place_id ? 32 : 24
-          )
-        }
-      });
-
-      // Add click listener
-      marker.addListener('click', () => {
-        onRestaurantSelect(restaurant);
-      });
-
-      markersRef.current.push(marker);
-    });
-
-    // Center search location marker
-    if (center) {
-      const centerMarker = new window.google.maps.Marker({
-        position: { lat: center.latitude, lng: center.longitude },
-        map: map,
-        title: 'Search Center',
-        icon: {
-          url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="8" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
-              <circle cx="12" cy="12" r="3" fill="#ffffff"/>
-            </svg>
-          `),
-          scaledSize: new window.google.maps.Size(24, 24)
-        }
-      });
-      markersRef.current.push(centerMarker);
+    // Check if Google Maps is already loaded
+    if (window.google && window.google.maps) {
+      setIsGoogleMapsLoaded(true);
+      return;
     }
 
-  }, [center, restaurants, selectedRestaurant]);
+    // Listen for Google Maps loaded event
+    const handleGoogleMapsLoaded = () => {
+      setIsGoogleMapsLoaded(true);
+    };
+
+    window.addEventListener('google-maps-loaded', handleGoogleMapsLoaded);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('google-maps-loaded', handleGoogleMapsLoaded);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!mapRef.current || !isGoogleMapsLoaded || !window.google || !window.google.maps) {
+      console.log('Map not ready:', { 
+        mapRef: !!mapRef.current, 
+        isGoogleMapsLoaded, 
+        hasGoogle: !!window.google,
+        hasMaps: !!(window.google && window.google.maps)
+      });
+      return;
+    }
+
+    console.log('Initializing Google Map with:', { center, restaurantCount: restaurants.length });
+
+    try {
+      // Initialize map
+      const map = new window.google.maps.Map(mapRef.current, {
+        center: center ? { lat: center.latitude, lng: center.longitude } : { lat: 32.7767, lng: -96.7970 }, // Default to Dallas
+        zoom: 13,
+        styles: [
+          {
+            featureType: "poi",
+            elementType: "labels",
+            stylers: [{ visibility: "off" }]
+          }
+        ]
+      });
+
+      mapInstanceRef.current = map;
+      console.log('Map initialized successfully');
+
+      // Clear existing markers
+      markersRef.current.forEach(marker => marker.setMap(null));
+      markersRef.current = [];
+
+      // Add markers for restaurants
+      restaurants.forEach((restaurant, index) => {
+        const marker = new window.google.maps.Marker({
+          position: { lat: restaurant.latitude, lng: restaurant.longitude },
+          map: map,
+          title: restaurant.name,
+          icon: {
+            url: selectedRestaurant?.place_id === restaurant.place_id 
+              ? 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="16" cy="16" r="12" fill="#059669" stroke="#ffffff" stroke-width="3"/>
+                  <circle cx="16" cy="16" r="6" fill="#ffffff"/>
+                </svg>
+              `)
+              : 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="8" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+                  <circle cx="12" cy="12" r="4" fill="#ffffff"/>
+                </svg>
+              `),
+            scaledSize: new window.google.maps.Size(
+              selectedRestaurant?.place_id === restaurant.place_id ? 32 : 24, 
+              selectedRestaurant?.place_id === restaurant.place_id ? 32 : 24
+            )
+          }
+        });
+
+        // Add click listener
+        marker.addListener('click', () => {
+          onRestaurantSelect(restaurant);
+        });
+
+        markersRef.current.push(marker);
+      });
+
+      console.log(`Added ${restaurants.length} restaurant markers`);
+
+      // Center search location marker
+      if (center) {
+        const centerMarker = new window.google.maps.Marker({
+          position: { lat: center.latitude, lng: center.longitude },
+          map: map,
+          title: 'Search Center',
+          icon: {
+            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+              <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="8" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
+                <circle cx="12" cy="12" r="3" fill="#ffffff"/>
+              </svg>
+            `),
+            scaledSize: new window.google.maps.Size(24, 24)
+          }
+        });
+        markersRef.current.push(centerMarker);
+        console.log('Added search center marker');
+      }
+    } catch (error) {
+      console.error('Error initializing Google Map:', error);
+    }
+
+  }, [center, restaurants, selectedRestaurant, isGoogleMapsLoaded]);
+
+  if (!isGoogleMapsLoaded) {
+    return (
+      <div 
+        className="w-full h-64 md:h-80 rounded-lg border border-gray-200 shadow-sm bg-gray-100 flex items-center justify-center"
+        style={{ minHeight: '300px' }}
+      >
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto mb-2"></div>
+          <p className="text-gray-600">Loading map...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div 
