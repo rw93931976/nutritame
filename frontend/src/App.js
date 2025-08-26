@@ -1584,10 +1584,10 @@ const Dashboard = ({ userProfile, onBack }) => {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Scroll Navigation Buttons */}
-              <div className="absolute right-4 top-4 z-10 flex flex-col gap-2">
-                {/* Back to Top Button */}
-                {showBackToTop && (
+              {/* Scroll Navigation Buttons - Always show when there are multiple messages */}
+              {messages.length > 3 && (
+                <div className="absolute right-4 top-4 z-10 flex flex-col gap-2">
+                  {/* Back to Top Button */}
                   <button
                     onClick={scrollToTop}
                     className="bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
@@ -1595,10 +1595,8 @@ const Dashboard = ({ userProfile, onBack }) => {
                   >
                     <ChevronUp className="h-5 w-5" />
                   </button>
-                )}
-                
-                {/* Scroll to Bottom Button */}
-                {showScrollToBottom && (
+                  
+                  {/* Scroll to Bottom Button */}
                   <button
                     onClick={scrollToBottom}
                     className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
@@ -1606,8 +1604,8 @@ const Dashboard = ({ userProfile, onBack }) => {
                   >
                     <ChevronDown className="h-5 w-5" />
                   </button>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* Shopping List Generation Button */}
               {showShoppingListButton && (
