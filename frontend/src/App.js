@@ -1289,6 +1289,20 @@ const Dashboard = ({ userProfile, onBack }) => {
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [showShoppingListButton, setShowShoppingListButton] = useState(false);
   const [lastMealPlan, setLastMealPlan] = useState("");
+  const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
+
+  // Auto-scroll to bottom when messages change
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  // Scroll to bottom when messages update
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, loading]);
 
   useEffect(() => {
     // Load chat history
