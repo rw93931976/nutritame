@@ -94,7 +94,19 @@ const SaaSHeader = ({ user, subscriptionInfo, onLogout }) => {
             {getSubscriptionBadge()}
 
             {/* Notifications (placeholder) */}
-            <Button variant="ghost" size="sm" className="relative">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="relative"
+              onClick={() => {
+                // Show notifications or alert
+                if (subscriptionInfo?.subscription_status === 'trial' && subscriptionInfo?.remaining_days <= 3) {
+                  alert(`Trial notification: Your trial expires in ${subscriptionInfo.remaining_days} day${subscriptionInfo.remaining_days !== 1 ? 's' : ''}! Consider upgrading to continue using NutriTame.`);
+                } else {
+                  alert('No new notifications. Notification system coming soon!');
+                }
+              }}
+            >
               <Bell className="h-4 w-4" />
               {subscriptionInfo?.subscription_status === 'trial' && subscriptionInfo?.remaining_days <= 3 && (
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
