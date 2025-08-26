@@ -695,6 +695,9 @@ const ShoppingListView = ({ userProfile }) => {
 // Restaurant Details Component
 const RestaurantDetails = ({ restaurant, onGetAIAnalysis, onBack }) => {
   const [loading, setLoading] = useState(false);
+  const [smsLoading, setSmsLoading] = useState(false);
+  const [showPhoneInput, setShowPhoneInput] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   const getDiabeticRatingColor = (score) => {
     if (score >= 4) return "bg-gradient-to-r from-green-500 to-emerald-500 text-white";
@@ -714,6 +717,54 @@ const RestaurantDetails = ({ restaurant, onGetAIAnalysis, onBack }) => {
     setLoading(true);
     await onGetAIAnalysis(restaurant);
     setLoading(false);
+  };
+
+  const handleSendToPhone = async () => {
+    // Get user profile to check if phone number is saved
+    const userId = localStorage.getItem('glucoplanner_user_id');
+    if (!userId) {
+      toast.error("Please create a profile first");
+      return;
+    }
+
+    let phoneToUse = phoneNumber;
+    
+    // If no phone number entered, try to get from profile
+    if (!phoneToUse) {
+      try {
+        const response = await axios.get(`${API}/users/${userId}`);
+        phoneToUse = response.data.phone_number;
+      } catch (error) {
+        console.error("Error getting user profile:", error);
+      }
+    }
+
+    if (!phoneToUse) {
+      setShowPhoneInput(true);
+      return;
+    }
+
+    setSmsLoading(true);
+    try {
+      const response = await axios.post(`${API}/sms/send-restaurant`, {
+        user_id: userId,
+        phone_number: phoneToUse,
+        restaurant_place_id: restaurant.place_id
+      });
+
+      toast.success(`📱 Restaurant info sent to ${phoneToUse}!`);
+      setShowPhoneInput(false);
+      setPhoneNumber("");
+    } catch (error) {
+      console.error("SMS sending error:", error);
+      if (error.response?.data?.detail?.includes("Invalid phone number")) {
+        toast.error("Invalid phone number format. Please use format: +1234567890");
+      } else {
+        toast.error("Failed to send SMS. Please try again.");
+      }
+    } finally {
+      setSmsLoading(false);
+    }
   };
 
   return (
@@ -833,6 +884,50 @@ const RestaurantDetails = ({ restaurant, onGetAIAnalysis, onBack }) => {
             </div>
           </div>
 
+          {/* Phone Number Input (if needed) */}
+          {showPhoneInput && (
+            <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Smartphone className="h-5 w-5 text-blue-600" />
+                  <h4 className="font-semibold text-gray-800">Enter Phone Number</h4>
+                </div>
+                <Input
+                  type="tel"
+                  placeholder="+1 (555) 123-4567"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  className="border-blue-300 focus:border-blue-500"
+                />
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={handleSendToPhone}
+                    disabled={smsLoading || !phoneNumber.trim()}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    {smsLoading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Smartphone className="h-4 w-4 mr-2" />
+                        Send SMS
+                      </>
+                    )}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowPhoneInput(false)}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Action Buttons */}
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
             <Button 
@@ -849,6 +944,24 @@ const RestaurantDetails = ({ restaurant, onGetAIAnalysis, onBack }) => {
                 <>
                   <MessageCircle className="h-4 w-4 mr-2" />
                   Get AI Diabetic Analysis
+                </>
+              )}
+            </Button>
+            
+            <Button 
+              onClick={handleSendToPhone}
+              disabled={smsLoading}
+              className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg"
+            >
+              {smsLoading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <Smartphone className="h-4 w-4 mr-2" />
+                  Send to Phone
                 </>
               )}
             </Button>
