@@ -246,7 +246,7 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
             </div>
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-            Welcome to GlucoPlanner
+            Welcome to NutriTame
           </h1>
           <p className="text-gray-700 text-lg">
             Your personalized AI health coach for diabetes-friendly meal planning with restaurant search
