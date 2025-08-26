@@ -826,7 +826,7 @@ async def list_user_profiles():
 # Restaurant Search Endpoints
 @api_router.post("/restaurants/search", response_model=List[Restaurant])
 async def search_restaurants(search_request: RestaurantSearchRequest):
-    """Search for restaurants near a location"""
+    """Search for restaurants near a location using coordinates"""
     try:
         restaurants = await google_places.search_restaurants(
             latitude=search_request.latitude,
@@ -847,6 +847,57 @@ async def search_restaurants(search_request: RestaurantSearchRequest):
         return restaurants
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Restaurant search error: {str(e)}")
+
+@api_router.post("/restaurants/search-by-location", response_model=List[Restaurant])
+async def search_restaurants_by_location(search_request: LocationSearchRequest):
+    """Search for restaurants by location name (city, address, etc.)"""
+    try:
+        # First geocode the location to get coordinates
+        location_data = await google_places.geocode_location(search_request.location)
+        
+        if not location_data:
+            raise HTTPException(status_code=400, detail=f"Could not find location: {search_request.location}")
+        
+        # Search restaurants using the geocoded coordinates
+        restaurants = await google_places.search_restaurants(
+            latitude=location_data['latitude'],
+            longitude=location_data['longitude'],
+            radius=search_request.radius,
+            keyword=search_request.keyword
+        )
+        
+        # Cache results in database
+        for restaurant in restaurants:
+            restaurant_data = prepare_for_mongo(restaurant.dict())
+            await db.restaurants.replace_one(
+                {"place_id": restaurant.place_id},
+                restaurant_data,
+                upsert=True
+            )
+        
+        return restaurants
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Location search error: {str(e)}")
+
+@api_router.post("/geocode")
+async def geocode_location_endpoint(location_data: dict):
+    """Convert a location string to coordinates"""
+    try:
+        location = location_data.get("location")
+        if not location:
+            raise HTTPException(status_code=400, detail="Location is required")
+        
+        result = await google_places.geocode_location(location)
+        if not result:
+            raise HTTPException(status_code=404, detail=f"Location not found: {location}")
+        
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Geocoding error: {str(e)}")
 
 @api_router.get("/restaurants/{place_id}", response_model=Restaurant)
 async def get_restaurant_details(place_id: str):
