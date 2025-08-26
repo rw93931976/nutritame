@@ -2199,6 +2199,37 @@ function App() {
     }
   };
 
+  // Handle demo access
+  const handleDemoAccess = async (demoData) => {
+    try {
+      setDemoMode(true);
+      setDemoUser(demoData.user);
+      setAuthToken(demoData.token);
+      setAppMode('app');
+      
+      // Set up profile for demo mode
+      setCurrentUser({
+        id: demoData.user.id,
+        email: demoData.user.email,
+        diabetes_type: 'type2', // Default for demo
+        age: null,
+        gender: null,
+        activity_level: null,
+        health_goals: [],
+        food_preferences: [],
+        allergies: [],
+        cooking_skill: null,
+        phone_number: null
+      });
+      setShowForm(true); // Show profile setup for demo users
+      
+      toast.success("Welcome to NutriTame Demo! All premium features unlocked.");
+    } catch (error) {
+      console.error('Demo access error:', error);
+      toast.error("Failed to create demo access. Please try again.");
+    }
+  };
+
   // Handle admin login
   const handleAdminLogin = (token) => {
     localStorage.setItem('adminToken', token);
