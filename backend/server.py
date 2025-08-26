@@ -393,13 +393,56 @@ def parse_from_mongo(item):
                     pass  # Keep original value if parsing fails
     return item
 
-# Google Places API Client with Rate Limiting
+# Google Places API Client with Rate Limiting and Geocoding
 class GooglePlacesClient:
     def __init__(self):
         self.api_key = os.environ.get('GOOGLE_PLACES_API_KEY')
         self.base_url = "https://maps.googleapis.com/maps/api/place"
+        self.geocoding_url = "https://maps.googleapis.com/maps/api/geocode"
         self.monthly_limit = 9000  # Set monthly limit to 9,000 calls
         self.daily_limit = 300     # Approximately 9,000 / 30 days
+        
+    async def geocode_location(self, location: str):
+        """Convert location string to coordinates using Google Geocoding API"""
+        # Check usage limits before making API call
+        can_proceed, usage_message = await self._check_usage_limits()
+        if not can_proceed:
+            logging.error(f"API limit exceeded for geocoding: {usage_message}")
+            return None
+            
+        async with httpx.AsyncClient() as client:
+            params = {
+                'address': location,
+                'key': self.api_key
+            }
+            
+            try:
+                logging.info(f"Making Google Geocoding API request for: {location}")
+                response = await client.get(f"{self.geocoding_url}/json", params=params)
+                response.raise_for_status()
+                
+                # Increment usage counter for geocoding call
+                await self._increment_usage()
+                
+                data = response.json()
+                
+                if data.get('status') == 'OK' and data.get('results'):
+                    result = data['results'][0]
+                    geometry = result.get('geometry', {})
+                    location_data = geometry.get('location', {})
+                    
+                    return {
+                        'latitude': location_data.get('lat'),
+                        'longitude': location_data.get('lng'),
+                        'formatted_address': result.get('formatted_address')
+                    }
+                else:
+                    logging.error(f"Geocoding failed: {data.get('status')} - {data.get('error_message', 'Unknown error')}")
+                    return None
+                    
+            except Exception as e:
+                logging.error(f"Geocoding API error: {e}")
+                return None
         
     async def _check_usage_limits(self):
         """Check if we're within API usage limits"""
