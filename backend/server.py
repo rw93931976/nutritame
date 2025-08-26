@@ -837,6 +837,7 @@ async def generate_shopping_list(request: dict):
         shopping_list_prompt = f"""
         Based on this meal plan, create a shopping list organized by store sections. 
         Format the response as a simple list without any markdown formatting.
+        Use ONLY Imperial measurements (cups, tablespoons, pounds, ounces).
         
         Meal Plan:
         {meal_plan_text}
@@ -848,7 +849,11 @@ async def generate_shopping_list(request: dict):
         - Frozen Foods
         - Other Items
         
-        For each item, estimate reasonable quantities for the meals described.
+        For each item, estimate reasonable quantities using Imperial measurements:
+        - Use pounds (lbs) and ounces (oz) for weight
+        - Use cups, tablespoons, teaspoons for volume
+        - Examples: "2 lbs chicken breast", "1 cup brown rice", "8 oz salmon"
+        - Never use grams, kilograms, or liters
         """
         
         # Get AI response for shopping list
