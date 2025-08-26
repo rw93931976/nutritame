@@ -1584,16 +1584,30 @@ const Dashboard = ({ userProfile, onBack }) => {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Back to Top Button - Always visible when there are messages */}
-              {messages.length > 2 && (
-                <button
-                  onClick={scrollToTop}
-                  className="absolute right-4 top-4 z-10 bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
-                  title="Back to top of conversation"
-                >
-                  <ChevronUp className="h-5 w-5" />
-                </button>
-              )}
+              {/* Scroll Navigation Buttons */}
+              <div className="absolute right-4 top-4 z-10 flex flex-col gap-2">
+                {/* Back to Top Button */}
+                {showBackToTop && (
+                  <button
+                    onClick={scrollToTop}
+                    className="bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
+                    title="Scroll to top of conversation"
+                  >
+                    <ChevronUp className="h-5 w-5" />
+                  </button>
+                )}
+                
+                {/* Scroll to Bottom Button */}
+                {showScrollToBottom && (
+                  <button
+                    onClick={scrollToBottom}
+                    className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
+                    title="Scroll to latest message"
+                  >
+                    <ChevronDown className="h-5 w-5" />
+                  </button>
+                )}
+              </div>
 
               {/* Shopping List Generation Button */}
               {showShoppingListButton && (
