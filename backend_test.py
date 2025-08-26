@@ -509,6 +509,278 @@ class GlucoPlannerAPITester:
             return True
         return False
 
+    # SMS Feature Tests
+    def test_phone_validation_valid_formats(self):
+        """Test phone validation API with valid phone number formats"""
+        test_cases = [
+            ("+15551234567", "Valid E.164 format"),
+            ("5551234567", "10-digit US format"),
+            ("555-123-4567", "Formatted US number"),
+            ("1-555-123-4567", "11-digit with country code"),
+            ("(555) 123-4567", "Parentheses format")
+        ]
+        
+        all_passed = True
+        for phone_number, description in test_cases:
+            print(f"\n   Testing {description}: {phone_number}")
+            success, response = self.run_test(
+                f"Phone Validation - {description}",
+                "POST",
+                "sms/validate-phone",
+                200,
+                data={"phone_number": phone_number}
+            )
+            
+            if success and response.get('valid'):
+                print(f"   ✅ Valid - Formatted as: {response.get('formatted')}")
+            else:
+                print(f"   ❌ Should be valid but got: {response}")
+                all_passed = False
+                
+        return all_passed
+
+    def test_phone_validation_invalid_formats(self):
+        """Test phone validation API with invalid phone number formats"""
+        test_cases = [
+            ("invalid", "Invalid text"),
+            ("123", "Too short"),
+            ("12345678901234567890", "Too long"),
+            ("", "Empty string"),
+            ("abc-def-ghij", "Letters only")
+        ]
+        
+        all_passed = True
+        for phone_number, description in test_cases:
+            print(f"\n   Testing {description}: {phone_number}")
+            success, response = self.run_test(
+                f"Phone Validation - {description}",
+                "POST",
+                "sms/validate-phone",
+                200,
+                data={"phone_number": phone_number}
+            )
+            
+            if success and not response.get('valid'):
+                print(f"   ✅ Correctly identified as invalid")
+            else:
+                print(f"   ❌ Should be invalid but got: {response}")
+                all_passed = False
+                
+        return all_passed
+
+    def test_update_user_profile_with_phone(self):
+        """Test updating user profile with phone number"""
+        if not self.created_user_id:
+            print("❌ No user ID available for testing")
+            return False
+            
+        update_data = {
+            "phone_number": "+15551234567"
+        }
+        
+        success, response = self.run_test(
+            "Update User Profile with Phone Number",
+            "PUT",
+            f"users/{self.created_user_id}",
+            200,
+            data=update_data
+        )
+        
+        if success and response.get('phone_number') == "+15551234567":
+            print("   ✅ Phone number successfully added to profile")
+            return True
+        else:
+            print(f"   ❌ Phone number not properly saved: {response}")
+            return False
+
+    def test_send_restaurant_sms_with_profile_phone(self):
+        """Test sending restaurant SMS using phone number from profile"""
+        if not self.created_user_id:
+            print("❌ No user ID available for testing")
+            return False
+            
+        if not hasattr(self, 'test_restaurant') or not self.test_restaurant:
+            print("❌ No restaurant available for SMS testing")
+            return False
+            
+        place_id = self.test_restaurant.get('place_id')
+        if not place_id:
+            print("❌ No place_id available for SMS testing")
+            return False
+            
+        sms_data = {
+            "user_id": self.created_user_id,
+            "phone_number": "+15551234567",  # Use the phone number we set in profile
+            "restaurant_place_id": place_id
+        }
+        
+        success, response = self.run_test(
+            "Send Restaurant SMS",
+            "POST",
+            "sms/send-restaurant",
+            200,
+            data=sms_data
+        )
+        
+        if success:
+            print(f"   ✅ SMS sent successfully")
+            print(f"   Message SID: {response.get('message_sid')}")
+            print(f"   Restaurant: {response.get('restaurant_name')}")
+            print(f"   Phone: {response.get('message', '').split('to ')[-1] if 'to ' in response.get('message', '') else 'N/A'}")
+            return True
+        else:
+            print(f"   ❌ SMS sending failed: {response}")
+            return False
+
+    def test_send_restaurant_sms_invalid_phone(self):
+        """Test sending restaurant SMS with invalid phone number"""
+        if not self.created_user_id:
+            print("❌ No user ID available for testing")
+            return False
+            
+        if not hasattr(self, 'test_restaurant') or not self.test_restaurant:
+            print("❌ No restaurant available for SMS testing")
+            return False
+            
+        place_id = self.test_restaurant.get('place_id')
+        if not place_id:
+            print("❌ No place_id available for SMS testing")
+            return False
+            
+        sms_data = {
+            "user_id": self.created_user_id,
+            "phone_number": "invalid_phone",
+            "restaurant_place_id": place_id
+        }
+        
+        success, response = self.run_test(
+            "Send Restaurant SMS - Invalid Phone",
+            "POST",
+            "sms/send-restaurant",
+            400,  # Should return 400 for invalid phone
+            data=sms_data
+        )
+        
+        if success:
+            print(f"   ✅ Correctly rejected invalid phone number")
+            return True
+        else:
+            print(f"   ❌ Should have rejected invalid phone: {response}")
+            return False
+
+    def test_send_restaurant_sms_invalid_restaurant(self):
+        """Test sending restaurant SMS with invalid restaurant ID"""
+        if not self.created_user_id:
+            print("❌ No user ID available for testing")
+            return False
+            
+        sms_data = {
+            "user_id": self.created_user_id,
+            "phone_number": "+15551234567",
+            "restaurant_place_id": "invalid_place_id_12345"
+        }
+        
+        success, response = self.run_test(
+            "Send Restaurant SMS - Invalid Restaurant",
+            "POST",
+            "sms/send-restaurant",
+            404,  # Should return 404 for invalid restaurant
+            data=sms_data
+        )
+        
+        if success:
+            print(f"   ✅ Correctly rejected invalid restaurant ID")
+            return True
+        else:
+            print(f"   ❌ Should have rejected invalid restaurant: {response}")
+            return False
+
+    def test_get_sms_history(self):
+        """Test getting SMS history for user"""
+        if not self.created_user_id:
+            print("❌ No user ID available for testing")
+            return False
+            
+        success, response = self.run_test(
+            "Get SMS History",
+            "GET",
+            f"sms/history/{self.created_user_id}",
+            200
+        )
+        
+        if success and isinstance(response, list):
+            print(f"   ✅ Retrieved {len(response)} SMS messages")
+            if len(response) > 0:
+                # Check the structure of the first SMS message
+                first_sms = response[0]
+                required_fields = ['id', 'user_id', 'phone_number', 'message_content', 'message_type', 'status', 'sent_at']
+                missing_fields = [field for field in required_fields if field not in first_sms]
+                
+                if not missing_fields:
+                    print(f"   ✅ SMS message structure is correct")
+                    print(f"   Message type: {first_sms.get('message_type')}")
+                    print(f"   Status: {first_sms.get('status')}")
+                    print(f"   Content preview: {first_sms.get('message_content', '')[:100]}...")
+                else:
+                    print(f"   ❌ Missing fields in SMS message: {missing_fields}")
+                    return False
+            return True
+        else:
+            print(f"   ❌ Failed to retrieve SMS history: {response}")
+            return False
+
+    def test_sms_content_format(self):
+        """Test that SMS content follows the expected format"""
+        if not self.created_user_id:
+            print("❌ No user ID available for testing")
+            return False
+            
+        # Get SMS history to check the format
+        success, response = self.run_test(
+            "Get SMS History for Format Check",
+            "GET",
+            f"sms/history/{self.created_user_id}",
+            200
+        )
+        
+        if success and isinstance(response, list) and len(response) > 0:
+            sms_message = response[0]
+            content = sms_message.get('message_content', '')
+            
+            # Check for expected SMS format elements
+            expected_elements = [
+                "🍽️ GlucoPlanner Restaurant Info",
+                "📍",  # Address icon
+                "⭐",  # Rating icon
+                "📞",  # Phone icon
+                "🩺 Diabetic Score:",
+                "Sent from GlucoPlanner"
+            ]
+            
+            missing_elements = []
+            for element in expected_elements:
+                if element not in content:
+                    missing_elements.append(element)
+            
+            if not missing_elements:
+                print(f"   ✅ SMS format is correct")
+                print(f"   Content preview: {content[:200]}...")
+                
+                # Check if diabetic score interpretation is included
+                if any(phrase in content.lower() for phrase in ["excellent for diabetics", "good for diabetics", "fair - use caution", "requires careful selection"]):
+                    print(f"   ✅ Diabetic score interpretation included")
+                else:
+                    print(f"   ⚠️  Diabetic score interpretation may be missing")
+                
+                return True
+            else:
+                print(f"   ❌ Missing SMS format elements: {missing_elements}")
+                print(f"   Actual content: {content}")
+                return False
+        else:
+            print(f"   ❌ No SMS messages found to check format")
+            return False
+
 def main():
     print("🧪 Starting GlucoPlanner API Tests")
     print("=" * 50)
