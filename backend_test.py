@@ -158,23 +158,106 @@ class GlucoPlannerAPITester:
         )[0]
 
     def test_update_user_profile(self):
-        """Test updating a user profile"""
+        """Test updating a user profile - FOCUS: Profile save functionality"""
         if not self.created_user_id:
             print("❌ No user ID available for testing")
             return False
             
         update_data = {
             "age": 46,
-            "health_goals": ["blood_sugar_control", "weight_loss", "energy_boost"]
+            "health_goals": ["blood_sugar_control", "weight_loss", "energy_boost"],
+            "food_preferences": ["mediterranean", "low_carb", "organic"],
+            "allergies": ["nuts", "shellfish", "dairy"],
+            "cooking_skill": "advanced"
         }
         
-        return self.run_test(
+        success, response = self.run_test(
             "Update User Profile",
             "PUT",
             f"users/{self.created_user_id}",
             200,
             data=update_data
-        )[0]
+        )
+        
+        if success:
+            print("   Verifying updated fields were saved:")
+            for field, expected_value in update_data.items():
+                actual_value = response.get(field)
+                if actual_value == expected_value:
+                    print(f"   ✅ {field}: Updated correctly to {actual_value}")
+                else:
+                    print(f"   ❌ {field}: Expected {expected_value}, got {actual_value}")
+                    return False
+            return True
+        else:
+            print(f"   ❌ Profile update failed: {response}")
+            return False
+
+    def test_update_profile_invalid_user_id(self):
+        """Test error handling for invalid user IDs in profile updates"""
+        invalid_user_id = "invalid-user-id-12345"
+        
+        update_data = {
+            "age": 30,
+            "diabetes_type": "type1"
+        }
+        
+        success, response = self.run_test(
+            "Update Profile - Invalid User ID",
+            "PUT",
+            f"users/{invalid_user_id}",
+            404,  # Should return 404 for invalid user ID
+            data=update_data
+        )
+        
+        if success:
+            print("   ✅ Correctly returned 404 for invalid user ID")
+            return True
+        else:
+            print(f"   ❌ Should have returned 404 for invalid user ID, got different response")
+            return False
+
+    def test_partial_profile_update(self):
+        """Test partial profile updates (only some fields)"""
+        if not hasattr(self, 'comprehensive_user_id') or not self.comprehensive_user_id:
+            print("❌ No comprehensive user ID available for partial update testing")
+            return False
+            
+        # Update only a few fields
+        partial_update = {
+            "age": 35,
+            "activity_level": "low"
+        }
+        
+        success, response = self.run_test(
+            "Partial Profile Update",
+            "PUT",
+            f"users/{self.comprehensive_user_id}",
+            200,
+            data=partial_update
+        )
+        
+        if success:
+            # Verify updated fields
+            for field, expected_value in partial_update.items():
+                actual_value = response.get(field)
+                if actual_value == expected_value:
+                    print(f"   ✅ {field}: Updated to {actual_value}")
+                else:
+                    print(f"   ❌ {field}: Expected {expected_value}, got {actual_value}")
+                    return False
+            
+            # Verify other fields remained unchanged
+            if response.get('diabetes_type') == 'type1':
+                print("   ✅ Unchanged fields preserved (diabetes_type still type1)")
+            else:
+                print(f"   ❌ Unchanged field modified: diabetes_type = {response.get('diabetes_type')}")
+                return False
+                
+            return True
+        else:
+            print(f"   ❌ Partial profile update failed: {response}")
+            return False
 
     def test_list_users(self):
         """Test listing all user profiles"""
