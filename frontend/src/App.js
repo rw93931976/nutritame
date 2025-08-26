@@ -2108,6 +2108,20 @@ function App() {
   // Check authentication on app load
   useEffect(() => {
     const checkAuthentication = async () => {
+      // First check if demo mode is enabled
+      try {
+        const demoResponse = await fetch(`${API}/demo/config`);
+        if (demoResponse.ok) {
+          const demoConfig = await demoResponse.json();
+          if (demoConfig.demo_mode) {
+            setAppMode('demo');
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('Failed to check demo mode:', error);
+      }
+
       const token = localStorage.getItem('authToken');
       const adminTokenStored = localStorage.getItem('adminToken');
       
