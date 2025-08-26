@@ -1585,100 +1585,62 @@ class GlucoPlannerAPITester:
 
 def main():
     print("🧪 Starting NutriTame API Tests")
-    print("🎯 FOCUS: Demo Mode Implementation Testing")
-    print("=" * 60)
+    print("🎯 FOCUS: Launch Date Configuration & Profile Save Functionality")
+    print("=" * 70)
     
     tester = GlucoPlannerAPITester()
     
-    # DEMO MODE TESTS - Primary focus as requested in review
+    # PRIORITY TESTS - As requested in review
+    priority_tests = [
+        ("🎯 Demo Config - Launch Date Check", tester.test_demo_config_endpoint),
+        ("🎯 Create User Profile", tester.test_create_user_profile),
+        ("🎯 Comprehensive Profile Fields", tester.test_comprehensive_profile_fields),
+        ("🎯 Get User Profile", tester.test_get_user_profile),
+        ("🎯 Update User Profile", tester.test_update_user_profile),
+        ("🎯 Partial Profile Update", tester.test_partial_profile_update),
+        ("🎯 Invalid User ID Error Handling", tester.test_update_profile_invalid_user_id),
+    ]
+    
+    # DEMO MODE TESTS - Secondary priority
     demo_tests = [
-        ("🎯 Demo Configuration Endpoint", tester.test_demo_config_endpoint),
-        ("🎯 Demo Access with Email", tester.test_demo_access_with_email),
-        ("🎯 Demo Access without Email", tester.test_demo_access_without_email),
-        ("🎯 Demo User Authentication", tester.test_demo_user_authentication),
-        ("🎯 Demo Environment Configuration", tester.test_demo_environment_configuration),
-        ("🎯 Demo Database Integration", tester.test_demo_database_integration),
-        ("🎯 Demo User App Functionality", tester.test_demo_user_app_functionality),
-        ("🎯 Demo Mode Disabled Check", tester.test_demo_mode_disabled_check),
+        ("Demo Access with Email", tester.test_demo_access_with_email),
+        ("Demo Access without Email", tester.test_demo_access_without_email),
+        ("Demo User Authentication", tester.test_demo_user_authentication),
     ]
     
-    # URGENT GEOCODING TESTS - Secondary priority
-    urgent_tests = [
-        ("🚨 URGENT: Dallas Geocoding Test", tester.test_location_geocoding_dallas),
-        ("🚨 URGENT: New York Geocoding Test", tester.test_location_geocoding_new_york),
-        ("🚨 Google Places API Usage Tracking", tester.test_google_places_api_usage_tracking),
-        ("🚨 API Rate Limiting Enforcement", tester.test_api_rate_limiting_enforcement),
-        ("🚨 Dallas Restaurant Search Bug Fix", tester.test_restaurant_search_by_dallas_location),
-    ]
-    
-    # Standard test sequence (reduced for focus)
-    standard_tests = [
-        ("Health Check", tester.test_health_check),
-        ("Create User Profile", tester.test_create_user_profile),
-        ("Restaurant Search", tester.test_restaurant_search),
-    ]
-    
-    # Run demo mode tests first (primary focus)
-    print("\n🎯 RUNNING DEMO MODE TESTS FIRST")
-    print("=" * 50)
+    # Run priority tests first
+    print("\n🎯 RUNNING PRIORITY TESTS (Launch Date & Profile Functionality)")
+    print("=" * 70)
     
     failed_tests = []
-    demo_failed = []
+    priority_failed = []
     
-    for test_name, test_func in demo_tests:
+    for test_name, test_func in priority_tests:
         try:
             if not test_func():
                 failed_tests.append(test_name)
-                demo_failed.append(test_name)
+                priority_failed.append(test_name)
         except Exception as e:
             print(f"❌ {test_name} failed with exception: {str(e)}")
             failed_tests.append(test_name)
-            demo_failed.append(test_name)
+            priority_failed.append(test_name)
     
-    # Print demo results immediately
-    print("\n" + "=" * 50)
-    print("🎯 DEMO MODE TEST RESULTS")
-    print("=" * 50)
+    # Print priority results immediately
+    print("\n" + "=" * 70)
+    print("🎯 PRIORITY TEST RESULTS")
+    print("=" * 70)
     
-    if demo_failed:
-        print(f"❌ DEMO MODE FAILURES:")
-        for test in demo_failed:
+    if priority_failed:
+        print(f"❌ PRIORITY FAILURES:")
+        for test in priority_failed:
             print(f"   - {test}")
     else:
-        print("✅ All demo mode tests passed!")
+        print("✅ All priority tests passed!")
     
-    # Run urgent geocoding tests (secondary priority)
-    print("\n🚨 RUNNING URGENT GEOCODING TESTS")
-    print("=" * 50)
-    
-    urgent_failed = []
-    
-    for test_name, test_func in urgent_tests:
-        try:
-            if not test_func():
-                failed_tests.append(test_name)
-                urgent_failed.append(test_name)
-        except Exception as e:
-            print(f"❌ {test_name} failed with exception: {str(e)}")
-            failed_tests.append(test_name)
-            urgent_failed.append(test_name)
-    
-    # Print urgent results
-    print("\n" + "=" * 50)
-    print("🚨 URGENT GEOCODING TEST RESULTS")
-    print("=" * 50)
-    
-    if urgent_failed:
-        print(f"❌ URGENT FAILURES:")
-        for test in urgent_failed:
-            print(f"   - {test}")
-    else:
-        print("✅ All urgent geocoding tests passed!")
-    
-    # Continue with standard tests only if demo tests pass
-    if not demo_failed:
-        print("\n📋 Running standard tests...")
-        for test_name, test_func in standard_tests:
+    # Run demo mode tests if priority tests pass
+    if not priority_failed:
+        print("\n🔄 Running additional demo mode tests...")
+        for test_name, test_func in demo_tests:
             try:
                 if not test_func():
                     failed_tests.append(test_name)
@@ -1687,9 +1649,9 @@ def main():
                 failed_tests.append(test_name)
     
     # Print final results
-    print("\n" + "=" * 50)
+    print("\n" + "=" * 70)
     print("📊 FINAL TEST RESULTS")
-    print("=" * 50)
+    print("=" * 70)
     print(f"Tests passed: {tester.tests_passed}/{tester.tests_run}")
     
     if failed_tests:
@@ -1701,6 +1663,26 @@ def main():
     
     if tester.created_user_id:
         print(f"\n📝 Created test user ID: {tester.created_user_id}")
+    
+    # Summary for main agent
+    print("\n" + "=" * 70)
+    print("📋 SUMMARY FOR MAIN AGENT")
+    print("=" * 70)
+    
+    if not priority_failed:
+        print("✅ LAUNCH DATE: Correctly set to 2025-10-01 (October 1, 2025)")
+        print("✅ PROFILE CREATION: All profile fields save correctly")
+        print("✅ PROFILE UPDATES: Profile update functionality working")
+        print("✅ ERROR HANDLING: Invalid user ID properly handled")
+    else:
+        print("❌ CRITICAL ISSUES FOUND:")
+        for test in priority_failed:
+            if "Launch Date" in test:
+                print("   - Launch date configuration issue")
+            elif "Profile" in test:
+                print("   - Profile save functionality issue")
+            elif "Invalid User ID" in test:
+                print("   - Error handling issue")
     
     return 0 if len(failed_tests) == 0 else 1
 
