@@ -25,6 +25,7 @@ import AdminDashboard from './AdminDashboard';
 import AdminLogin from './AdminLogin';
 import SaaSHeader from './SaaSHeader';
 import MedicalDisclaimer from './MedicalDisclaimer';
+import DemoCountdownTimer from './components/DemoCountdownTimer';
 
 import { BACKEND_URL, API } from './config';
 
