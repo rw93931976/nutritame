@@ -236,7 +236,7 @@ const DemoCountdownTimer = ({
       <CardContent className="p-4">
         <div className="space-y-4">
           {/* Header */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className={`p-2 ${colors.badge} rounded-full ${hasExpired ? 'animate-pulse' : ''}`}>
                 {hasExpired ? (
@@ -262,10 +262,10 @@ const DemoCountdownTimer = ({
               </div>
             </div>
 
-            {/* Time Display */}
+            {/* Time Display - Responsive */}
             {!hasExpired && (
-              <div className="text-right">
-                <div className={`text-2xl font-mono font-bold ${colors.text} ${warningState === 'critical' ? 'animate-pulse' : ''}`}>
+              <div className="text-center sm:text-right">
+                <div className={`text-xl sm:text-2xl font-mono font-bold ${colors.text} ${warningState === 'critical' ? 'animate-pulse' : ''}`}>
                   {formatTime(timeLeft)}
                 </div>
                 <Badge variant="outline" className={`${colors.text} text-xs`}>
