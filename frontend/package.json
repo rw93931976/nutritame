@@ -58,7 +58,7 @@
     "start": "craco start", 
     "build": "craco build && echo '/* /index.html 200' > build/_redirects",
     "test": "craco test",
-    "vercel-build": "rm -f package-lock.json && npm install --legacy-peer-deps && craco build"
+    "vercel-build": "npm install --legacy-peer-deps --no-audit && npm run build"
   },
   "browserslist": {
     "production": [
