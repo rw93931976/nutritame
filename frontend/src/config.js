@@ -11,7 +11,7 @@ const getEnvVar = (name, defaultValue) => {
   return defaultValue || '';
 };
 
-export const BACKEND_URL = getEnvVar('REACT_APP_BACKEND_URL', 'https://nutriplanner-1.preview.emergentagent.com');
+export const BACKEND_URL = getEnvVar('REACT_APP_BACKEND_URL', 'https://diabetic-meal-app.preview.emergentagent.com');
 export const API = `${BACKEND_URL}/api`;
 
 export default {
