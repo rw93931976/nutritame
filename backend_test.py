@@ -1906,6 +1906,13 @@ def main():
         ("Demo User Authentication", tester.test_demo_user_authentication),
     ]
     
+    # DEMO COUNTDOWN TIMER TESTS - High priority for review request
+    countdown_timer_tests = [
+        ("🎯 Demo Countdown Timer Backend Integration", tester.test_demo_countdown_timer_backend_integration),
+        ("🎯 Demo Countdown Timer Data Structure", tester.test_demo_countdown_timer_data_structure),
+        ("🎯 Demo Countdown Timer Session Persistence", tester.test_demo_countdown_timer_session_persistence),
+    ]
+    
     # Run priority tests first
     print("\n🎯 RUNNING PRIORITY TESTS (Launch Date & Profile Functionality)")
     print("=" * 70)
