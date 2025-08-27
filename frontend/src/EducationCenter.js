@@ -167,47 +167,51 @@ const EducationCenter = ({ className = "" }) => {
       </div>
 
       {/* Articles Grid */}
-      <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-6 mb-12">
+      <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-8 mb-12">
         {articles[selectedCategory].map((article) => (
-          <Card key={article.id} className="hover:shadow-xl transition-all duration-300 border-2 hover:border-emerald-200 flex flex-col">
-            <CardHeader className="pb-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="text-3xl">{article.image}</div>
-                <Badge className={`text-xs font-medium ${getDifficultyColor(article.difficulty)}`}>
+          <Card key={article.id} className="hover:shadow-xl transition-all duration-300 border-2 hover:border-emerald-200 flex flex-col min-h-[400px]">
+            <CardHeader className="pb-3 flex-shrink-0">
+              <div className="flex items-start justify-between mb-3">
+                <div className="text-3xl flex-shrink-0">{article.image}</div>
+                <Badge className={`text-xs font-medium flex-shrink-0 ${getDifficultyColor(article.difficulty)}`}>
                   {article.difficulty}
                 </Badge>
               </div>
-              <CardTitle className="text-lg leading-tight mb-2">{article.title}</CardTitle>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <Clock className="h-3 w-3" />
-                <span>{article.readTime}</span>
+              <CardTitle className="text-lg leading-tight mb-3 min-h-[3rem]">{article.title}</CardTitle>
+              <div className="flex items-center gap-2 text-xs text-gray-500 flex-wrap">
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  <span>{article.readTime}</span>
+                </div>
                 <span>•</span>
-                <User className="h-3 w-3" />
-                <span className="truncate">{article.author}</span>
+                <div className="flex items-center gap-1">
+                  <User className="h-3 w-3" />
+                  <span className="truncate max-w-[120px]">{article.author}</span>
+                </div>
               </div>
             </CardHeader>
             
-            <CardContent className="flex flex-col flex-1 p-4 pt-0">
-              <p className="text-gray-600 mb-4 text-sm leading-relaxed flex-1">{article.excerpt}</p>
+            <CardContent className="flex flex-col flex-1 p-4 pt-0 space-y-4">
+              <p className="text-gray-600 text-sm leading-relaxed flex-1">{article.excerpt}</p>
               
               {/* Topic Tags */}
-              <div className="mb-4">
-                <div className="flex flex-wrap gap-1">
+              <div className="flex-shrink-0">
+                <div className="flex flex-wrap gap-2">
                   {article.topics.slice(0, 2).map((topic, index) => (
-                    <Badge key={index} variant="secondary" className="text-xs">
+                    <Badge key={index} variant="secondary" className="text-xs whitespace-nowrap">
                       {topic}
                     </Badge>
                   ))}
                   {article.topics.length > 2 && (
                     <Badge variant="secondary" className="text-xs">
-                      +{article.topics.length - 2}
+                      +{article.topics.length - 2} more
                     </Badge>
                   )}
                 </div>
               </div>
 
               <Button 
-                className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white"
+                className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white flex-shrink-0"
                 size="sm"
               >
                 Read Full Article
