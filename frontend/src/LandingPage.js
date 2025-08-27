@@ -229,6 +229,20 @@ const LandingPage = ({ onGetStarted }) => {
         </div>
       </section>
 
+      {/* Recipe Preview Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <RecipePreview />
+        </div>
+      </section>
+
+      {/* Education Center Section */}
+      <section className="py-16 bg-gradient-to-br from-blue-50 to-emerald-50">
+        <div className="container mx-auto px-4">
+          <EducationCenter />
+        </div>
+      </section>
+
       {/* Pricing Section */}
       <section id="pricing" className="py-16">
         <div className="container mx-auto px-4">
