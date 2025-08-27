@@ -2341,6 +2341,15 @@ function App() {
     }, 1000);
   };
 
+  // Landing page handlers
+  const handleLandingGetStarted = (mode) => {
+    if (mode === 'demo') {
+      setAppMode('demo'); // Route to DemoLandingPage
+    } else {
+      setAppMode('signup'); // Route to normal signup flow
+    }
+  };
+
   // Medical Disclaimer Check - Show before any other content
   if (showDisclaimer && !disclaimerAccepted) {
     return (
