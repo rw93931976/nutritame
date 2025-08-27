@@ -312,7 +312,7 @@ const LandingPage = ({ onGetStarted }) => {
                   ))}
                 </ul>
                 
-                <Button onClick={onGetStarted} className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white">
+                <Button onClick={handleGetStarted} className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white">
                   Start Premium Trial
                 </Button>
               </CardContent>
