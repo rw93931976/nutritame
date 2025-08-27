@@ -2370,8 +2370,8 @@ function App() {
     return <LandingPage onGetStarted={handleLandingGetStarted} />;
   }
 
-  // SaaS Mode Rendering
-  if (appMode === 'landing') {
+  // SaaS Mode Rendering (Payment/Signup Flow)
+  if (appMode === 'signup') {
     return (
       <BrowserRouter>
         <Routes>
