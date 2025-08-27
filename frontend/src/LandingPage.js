@@ -203,9 +203,14 @@ const LandingPage = ({ onGetStarted }) => {
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Choose Your Plan
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Start free and upgrade when you're ready for advanced features
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
+              Less than one diabetes-friendly meal per month. Saves $200+ monthly on food waste and impulse purchases.
             </p>
+            <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-emerald-600 font-medium">
+              <span>✅ 30-Day Money-Back Guarantee</span>
+              <span>✅ Cancel Anytime</span>
+              <span>✅ No Setup Fees</span>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
