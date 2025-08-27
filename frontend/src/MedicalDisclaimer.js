@@ -66,6 +66,7 @@ const MedicalDisclaimer = ({ onAccept, onDecline }) => {
           <div 
             className="flex-1 overflow-y-auto pr-2 space-y-4 text-gray-700 leading-relaxed"
             onScroll={handleScroll}
+            data-disclaimer-scroll="true"
           >
             <div className="text-lg font-semibold text-red-600 mb-4">
               ⚠️ Please Read Carefully Before Using NutriTame
