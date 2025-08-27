@@ -24,6 +24,7 @@ import PaymentSuccess from './PaymentSuccess';
 import AdminDashboard from './AdminDashboard';
 import AdminLogin from './AdminLogin';
 import SaaSHeader from './SaaSHeader';
+import MedicalDisclaimer from './MedicalDisclaimer';
 
 import { BACKEND_URL, API } from './config';
 
