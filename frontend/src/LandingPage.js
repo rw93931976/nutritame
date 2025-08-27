@@ -56,119 +56,60 @@ const LandingPage = ({ onGetStarted }) => {
       </header>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-16 text-center">
-        <div className="max-w-4xl mx-auto">
-          <Badge className="mb-6 bg-gradient-to-r from-emerald-500 to-blue-500 text-white hover:from-emerald-600 hover:to-blue-600">
-            <Heart className="h-4 w-4 mr-2" />
-            AI-Powered Diabetes Management
-          </Badge>
-          
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-8">
-            Your Personal
-            <span className="block bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
-              Diabetes Health Coach
-            </span>
-          </h1>
-          
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Get personalized meal recommendations, find diabetic-friendly restaurants, and manage your health with AI-powered insights tailored specifically for diabetes management.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <Button
-              onClick={handleGetStarted}
-              className="px-8 py-4 text-lg font-semibold bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-            >
-              Start Free Demo Now
-              <ArrowRight className="h-5 w-5 ml-2" />
-            </Button>
-          </div>
-
-          {/* Demo Countdown Timer & Social Proof Combined */}
-          <div className="mb-12 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-8 border border-orange-200">
-            <div className="text-center mb-6">
-              <div className="flex items-center justify-center gap-2 mb-3">
-                <Clock className="h-5 w-5 text-orange-600" />
-                <span className="text-lg font-semibold text-gray-700">Demo ends in:</span>
-              </div>
-              
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <div className="text-center">
-                  <div className="bg-gradient-to-br from-orange-500 to-red-500 text-white rounded-lg p-3 min-w-[60px]">
-                    <div className="text-2xl font-bold">34</div>
-                  </div>
-                  <div className="text-sm text-gray-600 mt-1">Days</div>
-                </div>
-                
-                <div className="text-2xl font-bold text-gray-400">:</div>
-                
-                <div className="text-center">
-                  <div className="bg-gradient-to-br from-orange-500 to-red-500 text-white rounded-lg p-3 min-w-[60px]">
-                    <div className="text-2xl font-bold">12</div>
-                  </div>
-                  <div className="text-sm text-gray-600 mt-1">Hours</div>
-                </div>
-                
-                <div className="text-2xl font-bold text-gray-400">:</div>
-                
-                <div className="text-center">
-                  <div className="bg-gradient-to-br from-orange-500 to-red-500 text-white rounded-lg p-3 min-w-[60px]">
-                    <div className="text-2xl font-bold">23</div>
-                  </div>
-                  <div className="text-sm text-gray-600 mt-1">Minutes</div>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-center gap-1 text-sm text-gray-600">
-                <Calendar className="h-4 w-4" />
-                <span>Launch: October 1, 2025</span>
-              </div>
-            </div>
+      <section className="py-20">
+        <div className="container mx-auto px-4 text-center">
+          <div className="max-w-4xl mx-auto">
+            <Badge className="mb-6 bg-gradient-to-r from-emerald-600 to-blue-600 text-white">
+              AI-Powered Diabetes Management
+            </Badge>
             
-            {/* Social Proof Numbers */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-              <div>
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Users className="h-5 w-5 text-emerald-600" />
-                  <div className="text-2xl font-bold text-gray-800">2,847+</div>
-                </div>
-                <div className="text-gray-600 text-sm">people already testing NutriTame</div>
-                <div className="text-emerald-600 font-medium text-xs mt-1">Join the community!</div>
-              </div>
-              
-              <div>
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Utensils className="h-5 w-5 text-blue-600" />
-                  <div className="text-2xl font-bold text-gray-800">15,284+</div>
-                </div>
-                <div className="text-gray-600 text-sm">diabetes-friendly meals planned</div>
-                <div className="text-blue-600 font-medium text-xs mt-1">This month alone</div>
-              </div>
-              
-              <div>
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <MapPin className="h-5 w-5 text-purple-600" />
-                  <div className="text-2xl font-bold text-gray-800">8,942+</div>
-                </div>
-                <div className="text-gray-600 text-sm">diabetic-friendly restaurants found</div>
-                <div className="text-purple-600 font-medium text-xs mt-1">Nationwide coverage</div>
-              </div>
-            </div>
-          </div>
+            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+              Your Personal 
+              <span className="bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
+                Diabetes Health Coach
+              </span>
+            </h1>
+            
+            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+              Our AI-powered platform provides comprehensive tools to help you manage diabetes effectively 
+              through personalized meal planning, restaurant recommendations, and smart shopping lists.
+            </p>
 
-          {/* Security & Trust Badges */}
-          <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-gray-600">
-            <div className="flex items-center gap-2">
-              <Shield className="h-4 w-4 text-green-600" />
-              <span>HIPAA Compliant</span>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+              <Button
+                onClick={onGetStarted}
+                className="px-8 py-4 text-lg font-semibold bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              >
+                Start Your Health Journey
+                <ArrowRight className="h-5 w-5 ml-2" />
+              </Button>
+              
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex -space-x-2">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-blue-400 border-2 border-white flex items-center justify-center text-white text-xs font-bold">
+                      {i}
+                    </div>
+                  ))}
+                </div>
+                <span>Join {stats.users || '1,000+'} users managing their diabetes better</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Shield className="h-4 w-4 text-blue-600" />
-              <span>256-bit SSL Encryption</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Heart className="h-4 w-4 text-red-600" />
-              <span>30-Day Money-Back Guarantee</span>
+
+            {/* Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-emerald-600">{stats.users || '1,000+'}+</div>
+                <div className="text-gray-600">Active Users</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-blue-600">{stats.recipes || '5,000+'}+</div>
+                <div className="text-gray-600">Healthy Recipes</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-purple-600">{stats.restaurants || '10,000+'}+</div>
+                <div className="text-gray-600">Partner Restaurants</div>
+              </div>
             </div>
           </div>
         </div>
