@@ -339,19 +339,14 @@ const LandingPage = ({ onGetStarted }) => {
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-8">
         <div className="container mx-auto px-4 text-center">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-600 to-blue-600 flex items-center justify-center">
-              <ChefHat className="h-5 w-5 text-white" />
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="w-6 h-6 bg-gradient-to-r from-emerald-600 to-blue-600 rounded flex items-center justify-center">
+              <ChefHat className="h-4 w-4 text-white" />
             </div>
-            <h2 className="text-xl font-bold">NutriTame</h2>
+            <span className="text-lg font-bold">NutriTame</span>
           </div>
-          
-          <p className="text-gray-400 text-sm mb-4">
-            Empowering people with diabetes to live healthier, happier lives through AI-powered nutrition guidance.
-          </p>
-          
-          <p className="text-gray-500 text-xs">
-            © 2025 NutriTame. All rights reserved. | Privacy Policy | Terms of Service
+          <p className="text-gray-400">
+            © 2025 NutriTame. All rights reserved. Empowering healthier lives through AI.
           </p>
         </div>
       </footer>
