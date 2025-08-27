@@ -116,14 +116,14 @@ const LandingPage = ({ onGetStarted }) => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="bg-white/50 py-16">
+      <section id="features" className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Everything You Need for Diabetes Management
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Our AI-powered platform provides comprehensive tools to help you manage diabetes effectively
+              Our comprehensive platform provides all the tools you need to manage your diabetes effectively
             </p>
           </div>
 
@@ -133,22 +133,7 @@ const LandingPage = ({ onGetStarted }) => {
                 icon: ChefHat,
                 title: "AI Health Coach",
                 description: "Get personalized meal recommendations and nutrition advice from our diabetes-specialized AI coach.",
-                color: "emerald",
-                badge: "Featured"
-              },
-              {
-                icon: Target,
-                title: "Smart Carb Counter",
-                description: "Visual portion guides with carb estimates and blood sugar impact indicators (Low/Medium/High).",
-                color: "orange",
-                badge: "New"
-              },
-              {
-                icon: Clock,
-                title: "Meal Timing Guidance", 
-                description: "Optimal meal timing recommendations based on your medication schedule and activity levels.",
-                color: "purple",
-                badge: "Premium"
+                color: "emerald"
               },
               {
                 icon: MapPin,
@@ -160,27 +145,28 @@ const LandingPage = ({ onGetStarted }) => {
                 icon: ShoppingCart,
                 title: "Smart Shopping Lists",
                 description: "Generate organized shopping lists from your meal plans with healthy substitution suggestions.",
-                color: "green"
+                color: "purple"
+              },
+              {
+                icon: Target,
+                title: "Goal Tracking",
+                description: "Set and monitor your health goals with comprehensive progress tracking and insights.",
+                color: "pink"
               },
               {
                 icon: Smartphone,
-                title: "Works Offline",
-                description: "Access your meal plans and nutrition data even without internet connection - perfect for daily use.",
-                color: "indigo",
-                badge: "Essential"
+                title: "Mobile Friendly",
+                description: "Access all features on any device with our responsive, mobile-optimized interface.",
+                color: "indigo"
+              },
+              {
+                icon: Heart,
+                title: "Health Integration",
+                description: "Connect with popular health apps and devices to sync your health data automatically.",
+                color: "red"
               }
             ].map((feature, index) => (
-              <Card key={index} className="text-center hover:shadow-lg transition-shadow duration-300 border-2 hover:border-emerald-200 relative">
-                {feature.badge && (
-                  <Badge className={`absolute -top-2 -right-2 z-10 ${
-                    feature.badge === 'New' ? 'bg-orange-500' :
-                    feature.badge === 'Premium' ? 'bg-purple-500' :
-                    feature.badge === 'Essential' ? 'bg-blue-500' :
-                    'bg-emerald-500'
-                  }`}>
-                    {feature.badge}
-                  </Badge>
-                )}
+              <Card key={index} className="text-center hover:shadow-lg transition-shadow duration-300 border-2 hover:border-emerald-200">
                 <CardHeader>
                   <div className={`w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-${feature.color}-100 to-${feature.color}-200 flex items-center justify-center`}>
                     <feature.icon className={`h-8 w-8 text-${feature.color}-600`} />
