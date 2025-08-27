@@ -183,91 +183,81 @@ const LandingPage = ({ onGetStarted }) => {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-16">
+      <section id="pricing" className="py-16 bg-gradient-to-br from-emerald-50 to-blue-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Choose Your Plan
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
-              Less than one diabetes-friendly meal per month. Saves $200+ monthly on food waste and impulse purchases.
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Start free and upgrade when you're ready for advanced features
             </p>
-            <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-emerald-600 font-medium">
-              <span>✅ 30-Day Money-Back Guarantee</span>
-              <span>✅ Cancel Anytime</span>
-              <span>✅ No Setup Fees</span>
-            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Free Plan */}
-            <Card className="relative hover:shadow-xl transition-all duration-300">
-              <CardHeader className="text-center pb-8">
-                <CardTitle className="text-2xl font-bold">Free Plan</CardTitle>
-                <div className="mt-4">
-                  <span className="text-5xl font-bold text-gray-900">$0</span>
-                  <span className="text-xl text-gray-500">/month</span>
-                </div>
+            <Card className="border-2 border-gray-200 hover:border-emerald-300 transition-colors duration-300">
+              <CardHeader>
+                <CardTitle className="text-2xl">Basic</CardTitle>
+                <div className="text-4xl font-bold">$9<span className="text-lg text-gray-600">/month</span></div>
+                <CardDescription>Perfect for getting started with diabetes management</CardDescription>
               </CardHeader>
-              
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-4">
                 <ul className="space-y-3">
                   {[
-                    "Basic AI health coaching",
-                    "5 chat sessions per day", 
-                    "Basic restaurant search",
-                    "Simple meal planning",
-                    "Community support"
+                    "AI Health Coach consultations",
+                    "Basic meal planning",
+                    "Restaurant recommendations",
+                    "Mobile app access",
+                    "Basic progress tracking"
                   ].map((feature, index) => (
-                    <li key={index} className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-emerald-600 flex-shrink-0" />
-                      <span className="text-gray-700">{feature}</span>
+                    <li key={index} className="flex items-center gap-2">
+                      <Check className="h-5 w-5 text-emerald-600" />
+                      <span>{feature}</span>
                     </li>
                   ))}
                 </ul>
-                
-                <Button onClick={handleGetStarted} className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white">
-                  Get Started Free
+                <Button 
+                  className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700"
+                  onClick={onGetStarted}
+                >
+                  Start Free Trial
                 </Button>
               </CardContent>
             </Card>
 
             {/* Premium Plan */}
-            <Card className="relative hover:shadow-xl transition-all duration-300 ring-2 ring-emerald-500 scale-105">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <Badge className="bg-gradient-to-r from-emerald-600 to-blue-600 text-white px-4 py-1">
-                  <Crown className="h-4 w-4 mr-1" />
-                  Most Popular
-                </Badge>
-              </div>
-              
-              <CardHeader className="text-center pb-8">
-                <CardTitle className="text-2xl font-bold">Premium Plan</CardTitle>
-                <div className="mt-4">
-                  <span className="text-5xl font-bold text-gray-900">$19</span>
-                  <span className="text-xl text-gray-500">/month</span>
-                </div>
+            <Card className="border-2 border-emerald-300 relative">
+              <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-emerald-600 to-blue-600 text-white px-3 py-1">
+                <Crown className="h-4 w-4 mr-1" />
+                Most Popular
+              </Badge>
+              <CardHeader>
+                <CardTitle className="text-2xl">Premium</CardTitle>
+                <div className="text-4xl font-bold">$19<span className="text-lg text-gray-600">/month</span></div>
+                <CardDescription>Advanced features for comprehensive diabetes care</CardDescription>
               </CardHeader>
-              
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-4">
                 <ul className="space-y-3">
                   {[
-                    "Unlimited AI conversations",
-                    "Advanced restaurant search", 
+                    "Everything in Basic",
+                    "Unlimited AI consultations",
+                    "Advanced meal planning & recipes",
                     "Smart shopping lists",
-                    "Recipe favorites & export",
-                    "Progress tracking & analytics",
-                    "Priority support",
-                    "Health app integrations"
+                    "Detailed progress analytics",
+                    "Health data integration",
+                    "Priority customer support"
                   ].map((feature, index) => (
-                    <li key={index} className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-emerald-600 flex-shrink-0" />
-                      <span className="text-gray-700">{feature}</span>
+                    <li key={index} className="flex items-center gap-2">
+                      <Check className="h-5 w-5 text-emerald-600" />
+                      <span>{feature}</span>
                     </li>
                   ))}
                 </ul>
-                
-                <Button onClick={handleGetStarted} className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white">
+                <Button 
+                  className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700"
+                  onClick={onGetStarted}
+                >
                   Start Premium Trial
                 </Button>
               </CardContent>
