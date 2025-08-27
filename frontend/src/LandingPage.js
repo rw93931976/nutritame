@@ -318,55 +318,21 @@ const LandingPage = ({ onGetStarted }) => {
         </div>
       </section>
 
-      {/* Accessibility & Inclusivity */}
-      <section className="bg-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">
-              Designed for Everyone
-            </h3>
-            <div className="grid md:grid-cols-3 gap-6 text-sm text-gray-600">
-              <div className="flex items-center justify-center gap-2">
-                <Heart className="h-4 w-4 text-red-500" />
-                <span>Screen reader compatible</span>
-              </div>
-              <div className="flex items-center justify-center gap-2">
-                <Target className="h-4 w-4 text-blue-500" />
-                <span>High contrast mode available</span>
-              </div>
-              <div className="flex items-center justify-center gap-2">
-                <Zap className="h-4 w-4 text-emerald-500" />
-                <span>Large text and zoom options</span>
-              </div>
-            </div>
-            <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
-              NutriTame is committed to providing an inclusive experience for all users, 
-              regardless of ability or technology preferences. We continuously improve 
-              accessibility based on user feedback.
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-emerald-600 to-blue-600 text-white py-16">
+      <section className="py-16 bg-gradient-to-r from-emerald-600 to-blue-600 text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-6">Ready to Take Control of Your Health?</h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Join thousands of people who are successfully managing their diabetes with NutriTame's AI-powered platform.
+          <h2 className="text-4xl font-bold mb-4">Ready to Take Control of Your Health?</h2>
+          <p className="text-xl mb-8 max-w-2xl mx-auto text-emerald-100">
+            Join thousands of people successfully managing their diabetes with NutriTame's AI-powered platform.
           </p>
           
           <Button
-            onClick={handleGetStarted}
-            className="px-8 py-4 text-lg font-semibold bg-white text-emerald-600 hover:bg-gray-100 hover:text-emerald-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            onClick={onGetStarted}
+            size="lg"
+            className="bg-white text-emerald-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
           >
             Start Your Free Trial Today
-            <ArrowRight className="h-5 w-5 ml-2" />
           </Button>
-          
-          <p className="text-sm mt-4 opacity-90">
-            No credit card required • 15-day free trial • Cancel anytime
-          </p>
         </div>
       </section>
 
