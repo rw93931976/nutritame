@@ -115,7 +115,7 @@ const LandingPage = ({ onGetStarted }) => {
 
           {/* Demo Countdown Timer */}
           <div className="mb-12">
-            <CountdownTimer targetDate="2025-10-01" className="max-w-md mx-auto" />
+            <CountdownTimer targetDate="2025-10-01T00:00:00" className="max-w-md mx-auto" />
           </div>
 
           {/* Enhanced Social Proof */}
