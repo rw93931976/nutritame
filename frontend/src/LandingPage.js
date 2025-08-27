@@ -7,6 +7,8 @@ import { API } from './config';
 import CountdownTimer from './CountdownTimer';
 import SocialProof from './SocialProof';
 import InteractiveDemo from './InteractiveDemo';
+import RecipePreview from './RecipePreview';
+import EducationCenter from './EducationCenter';
 
 const LandingPage = ({ onGetStarted }) => {
   const [stats, setStats] = useState({
