@@ -12,25 +12,7 @@ const LandingPage = ({ onGetStarted }) => {
     restaurants: null
   });
 
-  const [isDemoModeEnabled, setIsDemoModeEnabled] = useState(false);
-
   useEffect(() => {
-    // Check if demo mode is available
-    const checkDemoMode = async () => {
-      try {
-        const response = await fetch(`${API}/demo/config`);
-        if (response.ok) {
-          const demoConfig = await response.json();
-          setIsDemoModeEnabled(demoConfig.demo_mode);
-        }
-      } catch (error) {
-        console.error('Failed to check demo mode:', error);
-      }
-    };
-
-    checkDemoMode();
-
-    // Fetch stats
     const fetchStats = async () => {
       try {
         const response = await fetch(`${API}/stats`);
@@ -45,16 +27,6 @@ const LandingPage = ({ onGetStarted }) => {
 
     fetchStats();
   }, []);
-
-  const handleGetStarted = () => {
-    if (isDemoModeEnabled) {
-      // Route to demo landing page for demo access
-      onGetStarted('demo');
-    } else {
-      // Route to normal signup/payment flow
-      onGetStarted('signup');
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-cyan-50 to-blue-50">
