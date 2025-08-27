@@ -2155,6 +2155,10 @@ function App() {
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
   const [demoMode, setDemoMode] = useState(false);
   const [demoUser, setDemoUser] = useState(null);
+  
+  // Medical Disclaimer State
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
 
   // Existing state (preserve all original functionality)
   const [currentUser, setCurrentUser] = useState(null);
