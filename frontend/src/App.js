@@ -2351,14 +2351,15 @@ function App() {
     );
   }
 
-  // Landing page handlers
-  const handleLandingGetStarted = (mode) => {
-    if (mode === 'demo') {
-      setAppMode('demo'); // Route to DemoLandingPage
-    } else {
-      setAppMode('signup'); // Route to normal signup flow
-    }
-  };
+  // Demo Mode Rendering
+  if (appMode === 'demo') {
+    return <DemoLandingPage onDemoAccess={handleDemoAccess} />;
+  }
+
+  // Landing Page (Default)
+  if (appMode === 'landing') {
+    return <LandingPage onGetStarted={handleLandingGetStarted} />;
+  }
 
   // SaaS Mode Rendering
   if (appMode === 'landing') {
