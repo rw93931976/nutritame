@@ -290,6 +290,103 @@ const LandingPage = ({ onGetStarted }) => {
         </div>
       </section>
 
+      {/* Coming Soon Premium Features */}
+      <section className="bg-gradient-to-br from-purple-50 to-blue-50 py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <Badge className="mb-4 bg-purple-500 text-white">
+              Coming Soon
+            </Badge>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Advanced Premium Features
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Even more powerful tools for comprehensive diabetes management
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <Card className="hover:shadow-lg transition-shadow duration-300 border-purple-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-6 w-6 text-purple-600" />
+                  Healthcare Provider Portal
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-gray-600">
+                  <li>• Share meal plans with your care team</li>
+                  <li>• Provider access and monitoring</li>
+                  <li>• Medical-grade integration</li>
+                  <li>• Collaborative care planning</li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow duration-300 border-blue-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Zap className="h-6 w-6 text-blue-600" />
+                  Device Integration
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-gray-600">
+                  <li>• Sync with CGMs and glucose meters</li>
+                  <li>• Fitness tracker integration</li>
+                  <li>• Real-time health data analysis</li>
+                  <li>• Automated meal suggestions based on readings</li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow duration-300 border-emerald-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-6 w-6 text-emerald-600" />
+                  Progress Tracking
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-gray-600">
+                  <li>• Comprehensive analytics dashboard</li>
+                  <li>• A1C improvement tracking</li>
+                  <li>• Nutrition journey monitoring</li>
+                  <li>• Weekly progress reports</li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow duration-300 border-orange-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-6 w-6 text-orange-600" />
+                  Community Hub
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-gray-600">
+                  <li>• Connect with other users</li>
+                  <li>• Recipe sharing and discussions</li>
+                  <li>• Local support groups</li>
+                  <li>• Expert Q&A sessions</li>
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="text-center mt-12">
+            <p className="text-gray-600 mb-4">Want early access to these features?</p>
+            <Button 
+              variant="outline" 
+              className="border-purple-500 text-purple-600 hover:bg-purple-50"
+            >
+              Join Waitlist
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Testimonials */}
       <section id="testimonials" className="bg-white/50 py-16">
         <div className="container mx-auto px-4">
