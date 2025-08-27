@@ -422,7 +422,8 @@ metadata:
 test_plan:
   current_focus:
     - "Demo Countdown Timer Feature"
-  stuck_tasks: []
+  stuck_tasks:
+    - "Demo Countdown Timer Feature"
   test_all: false
   test_priority: "high_first"
   completed_focus:
