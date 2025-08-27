@@ -2333,8 +2333,26 @@ function App() {
     setAdminToken(null);
     setCurrentUser(null);
     setSubscriptionInfo(null);
+    setDemoMode(false);
+    setDemoUser(null);
     setAppMode('landing');
     toast.success("Logged out successfully");
+  };
+
+  // Medical Disclaimer Handlers
+  const handleDisclaimerAccept = () => {
+    setDisclaimerAccepted(true);
+    setShowDisclaimer(false);
+  };
+
+  const handleDisclaimerDecline = () => {
+    // User declined - show warning and exit
+    alert('You must accept the medical disclaimer to use NutriTame. The application will now close.');
+    window.close(); // Close tab/window
+    // If window.close() doesn't work (some browsers block it), redirect to a safe page
+    setTimeout(() => {
+      window.location.href = 'about:blank';
+    }, 1000);
   };
 
   // Demo Mode Rendering
