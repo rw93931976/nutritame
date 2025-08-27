@@ -292,7 +292,7 @@ const DemoCountdownTimer = ({
           )}
 
           {/* Controls */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             {hasExpired ? (
               <>
                 <Button
@@ -305,7 +305,7 @@ const DemoCountdownTimer = ({
                 <Button
                   onClick={extendDemo}
                   variant="outline"
-                  className="border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+                  className="border-emerald-300 text-emerald-700 hover:bg-emerald-50 flex-1 sm:flex-initial"
                 >
                   <Zap className="h-4 w-4 mr-2" />
                   Extend (+15 min)
@@ -321,7 +321,7 @@ const DemoCountdownTimer = ({
                     className={`${colors.text} hover:bg-gray-100`}
                   >
                     <PauseCircle className="h-4 w-4 mr-1" />
-                    Pause
+                    <span className="hidden sm:inline">Pause</span>
                   </Button>
                 ) : isPaused ? (
                   <Button
@@ -330,7 +330,7 @@ const DemoCountdownTimer = ({
                     className={`${colors.badge} hover:opacity-90 text-white`}
                   >
                     <PlayCircle className="h-4 w-4 mr-1" />
-                    Resume
+                    <span className="hidden sm:inline">Resume</span>
                   </Button>
                 ) : null}
                 
@@ -347,7 +347,8 @@ const DemoCountdownTimer = ({
                 {warningState === 'critical' && (
                   <Badge className="bg-orange-500 text-white animate-pulse">
                     <AlertTriangle className="h-3 w-3 mr-1" />
-                    Hurry!
+                    <span className="hidden sm:inline">Hurry!</span>
+                    <span className="sm:hidden">!</span>
                   </Badge>
                 )}
               </>
