@@ -75,35 +75,34 @@ const LandingPage = ({ onGetStarted }) => {
               onClick={onGetStarted}
               className="px-8 py-4 text-lg font-semibold bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
             >
-              Start Your Health Journey
+              Start Free Demo Now
               <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
-            
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <div className="flex -space-x-2">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-blue-400 border-2 border-white flex items-center justify-center text-white text-xs font-bold">
-                    {i}
-                  </div>
-                ))}
-              </div>
-              <span>Join {stats.users || '1,000+'} users managing their diabetes better</span>
-            </div>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-emerald-600">{stats.users || '1,000+'}+</div>
-              <div className="text-gray-600">Active Users</div>
+          {/* Demo Countdown Timer */}
+          <div className="mb-12">
+            <CountdownTimer targetDate="2025-10-01" className="max-w-md mx-auto" />
+          </div>
+
+          {/* Enhanced Social Proof */}
+          <div className="mb-12">
+            <SocialProof />
+          </div>
+
+          {/* Security & Trust Badges */}
+          <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-gray-600">
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4 text-green-600" />
+              <span>HIPAA Compliant</span>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600">{stats.recipes || '5,000+'}+</div>
-              <div className="text-gray-600">Healthy Recipes</div>
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4 text-blue-600" />
+              <span>256-bit SSL Encryption</span>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-purple-600">{stats.restaurants || '10,000+'}+</div>
-              <div className="text-gray-600">Partner Restaurants</div>
+            <div className="flex items-center gap-2">
+              <Heart className="h-4 w-4 text-red-600" />
+              <span>30-Day Money-Back Guarantee</span>
             </div>
           </div>
         </div>
