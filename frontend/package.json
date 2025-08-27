@@ -55,7 +55,7 @@
     "zod": "^3.24.4"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "craco start", 
     "build": "craco build && echo '/* /index.html 200' > build/_redirects",
     "test": "craco test",
     "vercel-build": "craco build"
