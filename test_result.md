@@ -418,12 +418,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Profile Page Navigation Links"
+    - "Demo Countdown Timer Feature"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
   completed_focus:
-    - "Demo Countdown Timer Feature"
+    - "Profile Page Navigation Links"
 
 agent_communication:
   - agent: "main"
