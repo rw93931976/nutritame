@@ -509,7 +509,7 @@ const LandingPage = ({ onGetStarted }) => {
           </p>
           
           <Button
-            onClick={onGetStarted}
+            onClick={handleGetStarted}
             className="px-8 py-4 text-lg font-semibold bg-white text-emerald-600 hover:bg-gray-100 hover:text-emerald-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
           >
             Start Your Free Trial Today
