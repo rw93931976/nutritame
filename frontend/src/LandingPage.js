@@ -266,138 +266,41 @@ const LandingPage = ({ onGetStarted }) => {
         </div>
       </section>
 
-      {/* Coming Soon Premium Features */}
-      <section className="bg-gradient-to-br from-purple-50 to-blue-50 py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-purple-500 text-white">
-              Coming Soon
-            </Badge>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Advanced Premium Features
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Even more powerful tools for comprehensive diabetes management
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <Card className="hover:shadow-lg transition-shadow duration-300 border-purple-200">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield className="h-6 w-6 text-purple-600" />
-                  Healthcare Provider Portal
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-gray-600">
-                  <li>• Share meal plans with your care team</li>
-                  <li>• Provider access and monitoring</li>
-                  <li>• Medical-grade integration</li>
-                  <li>• Collaborative care planning</li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow duration-300 border-blue-200">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Zap className="h-6 w-6 text-blue-600" />
-                  Device Integration
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-gray-600">
-                  <li>• Sync with CGMs and glucose meters</li>
-                  <li>• Fitness tracker integration</li>
-                  <li>• Real-time health data analysis</li>
-                  <li>• Automated meal suggestions based on readings</li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow duration-300 border-emerald-200">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="h-6 w-6 text-emerald-600" />
-                  Progress Tracking
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-gray-600">
-                  <li>• Comprehensive analytics dashboard</li>
-                  <li>• A1C improvement tracking</li>
-                  <li>• Nutrition journey monitoring</li>
-                  <li>• Weekly progress reports</li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow duration-300 border-orange-200">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-6 w-6 text-orange-600" />
-                  Community Hub
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-gray-600">
-                  <li>• Connect with other users</li>
-                  <li>• Recipe sharing and discussions</li>
-                  <li>• Local support groups</li>
-                  <li>• Expert Q&A sessions</li>
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="text-center mt-12">
-            <p className="text-gray-600 mb-4">Want early access to these features?</p>
-            <Button 
-              variant="outline" 
-              className="border-purple-500 text-purple-600 hover:bg-purple-50"
-            >
-              Join Waitlist
-            </Button>
-          </div>
-        </div>
-      </section>
-
       {/* Testimonials */}
-      <section id="testimonials" className="bg-white/50 py-16">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              What Our Users Say
+              Trusted by Thousands
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Real stories from people managing their diabetes with NutriTame
+              See what our users say about successfully managing their diabetes with NutriTame's AI-powered platform.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {[
               {
-                name: "Sarah M.",
-                role: "Type 2 Diabetes",
-                content: "NutriTame has completely changed how I approach meal planning. The AI coach understands my dietary restrictions and always suggests delicious, healthy options.",
+                name: "Sarah Chen",
+                role: "Type 2 Diabetes Patient",
+                content: "NutriTame has completely transformed how I manage my diabetes. The AI coach provides personalized advice that actually works!",
                 rating: 5
               },
               {
-                name: "Michael R.",
-                role: "Type 1 Diabetes",
-                content: "Finding restaurants that cater to my needs used to be a nightmare. Now I can easily discover great places to eat with confidence.",
+                name: "Michael Rodriguez", 
+                role: "Pre-diabetes Management",
+                content: "The restaurant finder is incredible. I can finally eat out without worrying about my blood sugar levels.",
                 rating: 5
               },
               {
-                name: "Jennifer L.",
-                role: "Prediabetes",
-                content: "The shopping lists feature saves me so much time and helps me stick to my healthy eating goals. Highly recommend!",
+                name: "Jennifer Park",
+                role: "Type 1 Diabetes Patient", 
+                content: "The meal planning feature saves me hours every week and helps me maintain stable glucose levels.",
                 rating: 5
               }
             ].map((testimonial, index) => (
-              <Card key={index} className="text-center hover:shadow-lg transition-shadow duration-300">
-                <CardContent className="p-6">
+              <Card key={index} className="text-center">
+                <CardContent className="pt-6">
                   <div className="flex justify-center mb-4">
                     {[...Array(testimonial.rating)].map((_, i) => (
                       <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
@@ -405,8 +308,8 @@ const LandingPage = ({ onGetStarted }) => {
                   </div>
                   <p className="text-gray-600 mb-4 italic">"{testimonial.content}"</p>
                   <div>
-                    <p className="font-semibold text-gray-800">{testimonial.name}</p>
-                    <p className="text-sm text-gray-500">{testimonial.role}</p>
+                    <div className="font-semibold">{testimonial.name}</div>
+                    <div className="text-sm text-gray-500">{testimonial.role}</div>
                   </div>
                 </CardContent>
               </Card>
