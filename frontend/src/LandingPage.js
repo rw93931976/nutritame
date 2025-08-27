@@ -439,6 +439,36 @@ const LandingPage = ({ onGetStarted }) => {
         </div>
       </section>
 
+      {/* Accessibility & Inclusivity */}
+      <section className="bg-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">
+              Designed for Everyone
+            </h3>
+            <div className="grid md:grid-cols-3 gap-6 text-sm text-gray-600">
+              <div className="flex items-center justify-center gap-2">
+                <Heart className="h-4 w-4 text-red-500" />
+                <span>Screen reader compatible</span>
+              </div>
+              <div className="flex items-center justify-center gap-2">
+                <Target className="h-4 w-4 text-blue-500" />
+                <span>High contrast mode available</span>
+              </div>
+              <div className="flex items-center justify-center gap-2">
+                <Zap className="h-4 w-4 text-emerald-500" />
+                <span>Large text and zoom options</span>
+              </div>
+            </div>
+            <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
+              NutriTame is committed to providing an inclusive experience for all users, 
+              regardless of ability or technology preferences. We continuously improve 
+              accessibility based on user feedback.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="bg-gradient-to-r from-emerald-600 to-blue-600 text-white py-16">
         <div className="container mx-auto px-4 text-center">
