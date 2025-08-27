@@ -1942,6 +1942,21 @@ def main():
     else:
         print("✅ All priority tests passed!")
     
+    # Run demo countdown timer tests (high priority for review request)
+    print("\n🎯 RUNNING DEMO COUNTDOWN TIMER TESTS (Review Request Focus)")
+    print("=" * 70)
+    
+    countdown_failed = []
+    for test_name, test_func in countdown_timer_tests:
+        try:
+            if not test_func():
+                failed_tests.append(test_name)
+                countdown_failed.append(test_name)
+        except Exception as e:
+            print(f"❌ {test_name} failed with exception: {str(e)}")
+            failed_tests.append(test_name)
+            countdown_failed.append(test_name)
+    
     # Run demo mode tests if priority tests pass
     if not priority_failed:
         print("\n🔄 Running additional demo mode tests...")
