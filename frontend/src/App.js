@@ -1827,6 +1827,21 @@ const Dashboard = ({ userProfile, onBack }) => {
               </div>
             </div>
 
+            {/* Demo Countdown Timer - Only show in demo mode */}
+            {demoMode && (
+              <DemoCountdownTimer 
+                durationMinutes={30}
+                onTimeExpired={() => {
+                  // Handle when demo time expires
+                  const handleExpiry = () => {
+                    alert('🕐 Your 30-minute demo session has ended! You\'ve experienced all the premium features of NutriTame. Click "Extend Demo" to continue exploring, or "New Demo" to restart with a fresh 30-minute session.');
+                  };
+                  handleExpiry();
+                }}
+                className="mb-4"
+              />
+            )}
+
             {/* Saved Chats Panel */}
             {showSavedChats && (
               <Card className="mb-4">
