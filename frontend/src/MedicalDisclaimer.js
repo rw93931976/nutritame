@@ -23,6 +23,21 @@ const MedicalDisclaimer = ({ onAccept, onDecline }) => {
     if (disclaimerAccepted === 'true') {
       onAccept();
     }
+    
+    // Auto-detect if content is already fully visible (for smaller screens)
+    const checkIfContentVisible = () => {
+      const scrollContainer = document.querySelector('[data-disclaimer-scroll]');
+      if (scrollContainer) {
+        const { scrollHeight, clientHeight } = scrollContainer;
+        if (scrollHeight <= clientHeight + 20) {
+          // Content is already fully visible
+          setScrolledToBottom(true);
+        }
+      }
+    };
+    
+    // Check after a short delay to ensure DOM is ready
+    setTimeout(checkIfContentVisible, 100);
   }, [onAccept]);
 
   const handleAccept = () => {
