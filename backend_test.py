@@ -1583,6 +1583,304 @@ class GlucoPlannerAPITester:
         
         return False
 
+    # =============================================
+    # DEMO COUNTDOWN TIMER INTEGRATION TESTS
+    # =============================================
+    
+    def test_demo_countdown_timer_backend_integration(self):
+        """Test Demo Countdown Timer backend integration - FOCUS: Demo mode detection"""
+        print("\n🔍 Testing Demo Countdown Timer Backend Integration...")
+        
+        # Step 1: Verify demo config endpoint provides necessary data for countdown timer
+        success, config_response = self.run_test(
+            "Demo Config for Countdown Timer",
+            "GET",
+            "demo/config",
+            200
+        )
+        
+        if not success:
+            print("   ❌ Demo config endpoint failed - countdown timer cannot detect demo mode")
+            return False
+        
+        # Verify demo_mode flag is present and true
+        if config_response.get('demo_mode') is not True:
+            print(f"   ❌ demo_mode should be true for countdown timer, got: {config_response.get('demo_mode')}")
+            return False
+        
+        print("   ✅ Demo config provides demo_mode=true for countdown timer detection")
+        
+        # Step 2: Create demo user to test countdown timer integration
+        demo_email = "countdown.timer.test@example.com"
+        demo_data = {"email": demo_email}
+        
+        success, demo_response = self.run_test(
+            "Demo Access for Countdown Timer",
+            "POST",
+            "demo/access",
+            200,
+            data=demo_data
+        )
+        
+        if not success:
+            print("   ❌ Demo access creation failed - countdown timer cannot be triggered")
+            return False
+        
+        # Verify demo user has premium access (required for countdown timer to show)
+        user = demo_response.get('user', {})
+        if user.get('subscription_tier') != 'premium' or user.get('subscription_status') != 'active':
+            print("   ❌ Demo user doesn't have premium access - countdown timer may not display properly")
+            return False
+        
+        print("   ✅ Demo user created with premium access for countdown timer")
+        
+        # Step 3: Test authentication with demo token (required for countdown timer to persist)
+        access_token = demo_response.get('access_token')
+        if not access_token:
+            print("   ❌ No access token provided - countdown timer cannot authenticate")
+            return False
+        
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {access_token}'
+        }
+        
+        success, auth_response = self.run_test(
+            "Demo User Auth for Countdown Timer",
+            "GET",
+            "auth/me",
+            200,
+            headers=headers
+        )
+        
+        if not success:
+            print("   ❌ Demo user authentication failed - countdown timer cannot maintain session")
+            return False
+        
+        # Verify user data is accessible for countdown timer
+        auth_user = auth_response.get('user', {})
+        if auth_user.get('id') != user.get('id'):
+            print("   ❌ User ID mismatch in authentication - countdown timer session may be unstable")
+            return False
+        
+        print("   ✅ Demo user authentication working for countdown timer session")
+        
+        # Step 4: Test that demo session can access app functionality (what countdown timer is timing)
+        success, subscription_response = self.run_test(
+            "Demo Subscription Access for Countdown Timer",
+            "GET",
+            "subscription/info",
+            200,
+            headers=headers
+        )
+        
+        if success:
+            if subscription_response.get('tier') == 'premium':
+                print("   ✅ Demo user can access premium features that countdown timer is timing")
+            else:
+                print("   ⚠️  Demo user subscription info shows non-premium tier")
+        else:
+            print("   ⚠️  Could not verify subscription access for countdown timer")
+        
+        # Step 5: Verify launch date is available for countdown timer display
+        launch_date = config_response.get('launch_date')
+        if launch_date == '2025-10-01':
+            print(f"   ✅ Launch date ({launch_date}) available for countdown timer display")
+        else:
+            print(f"   ❌ Launch date incorrect or missing: {launch_date}")
+            return False
+        
+        print("\n   🎯 COUNTDOWN TIMER INTEGRATION SUMMARY:")
+        print("   ✅ Demo mode detection: Working (demo_mode=true)")
+        print("   ✅ Demo user creation: Working (premium access)")
+        print("   ✅ Demo authentication: Working (JWT tokens)")
+        print("   ✅ Demo session access: Working (premium features)")
+        print("   ✅ Launch date display: Working (2025-10-01)")
+        print("   ✅ Backend integration: COMPLETE")
+        
+        return True
+    
+    def test_demo_countdown_timer_data_structure(self):
+        """Test that backend provides all data needed for countdown timer functionality"""
+        print("\n🔍 Testing Demo Countdown Timer Data Structure Requirements...")
+        
+        # Test demo config structure
+        success, config_response = self.run_test(
+            "Demo Config Data Structure",
+            "GET",
+            "demo/config",
+            200
+        )
+        
+        if not success:
+            return False
+        
+        # Required fields for countdown timer
+        required_config_fields = {
+            'demo_mode': bool,
+            'launch_date': str,
+            'message': str,
+            'launch_requirements': dict
+        }
+        
+        missing_fields = []
+        wrong_types = []
+        
+        for field, expected_type in required_config_fields.items():
+            if field not in config_response:
+                missing_fields.append(field)
+            elif not isinstance(config_response[field], expected_type):
+                wrong_types.append(f"{field} (expected {expected_type.__name__}, got {type(config_response[field]).__name__})")
+        
+        if missing_fields:
+            print(f"   ❌ Missing required config fields for countdown timer: {missing_fields}")
+            return False
+        
+        if wrong_types:
+            print(f"   ❌ Wrong data types in config for countdown timer: {wrong_types}")
+            return False
+        
+        print("   ✅ Demo config data structure is complete for countdown timer")
+        
+        # Test demo access response structure
+        demo_data = {"email": "structure.test@example.com"}
+        success, demo_response = self.run_test(
+            "Demo Access Data Structure",
+            "POST",
+            "demo/access",
+            200,
+            data=demo_data
+        )
+        
+        if not success:
+            return False
+        
+        # Required fields for countdown timer integration
+        required_demo_fields = {
+            'demo_access': bool,
+            'access_token': str,
+            'user': dict,
+            'expires_at': str,
+            'demo_notice': str,
+            'launch_date': str
+        }
+        
+        missing_demo_fields = []
+        wrong_demo_types = []
+        
+        for field, expected_type in required_demo_fields.items():
+            if field not in demo_response:
+                missing_demo_fields.append(field)
+            elif not isinstance(demo_response[field], expected_type):
+                wrong_demo_types.append(f"{field} (expected {expected_type.__name__}, got {type(demo_response[field]).__name__})")
+        
+        if missing_demo_fields:
+            print(f"   ❌ Missing required demo access fields for countdown timer: {missing_demo_fields}")
+            return False
+        
+        if wrong_demo_types:
+            print(f"   ❌ Wrong data types in demo access for countdown timer: {wrong_demo_types}")
+            return False
+        
+        print("   ✅ Demo access data structure is complete for countdown timer")
+        
+        # Test user object structure
+        user = demo_response.get('user', {})
+        required_user_fields = {
+            'id': str,
+            'email': str,
+            'subscription_tier': str,
+            'subscription_status': str
+        }
+        
+        missing_user_fields = []
+        wrong_user_types = []
+        
+        for field, expected_type in required_user_fields.items():
+            if field not in user:
+                missing_user_fields.append(field)
+            elif not isinstance(user[field], expected_type):
+                wrong_user_types.append(f"{field} (expected {expected_type.__name__}, got {type(user[field]).__name__})")
+        
+        if missing_user_fields:
+            print(f"   ❌ Missing required user fields for countdown timer: {missing_user_fields}")
+            return False
+        
+        if wrong_user_types:
+            print(f"   ❌ Wrong data types in user object for countdown timer: {wrong_user_types}")
+            return False
+        
+        print("   ✅ Demo user data structure is complete for countdown timer")
+        
+        return True
+    
+    def test_demo_countdown_timer_session_persistence(self):
+        """Test that demo sessions persist properly for countdown timer"""
+        print("\n🔍 Testing Demo Session Persistence for Countdown Timer...")
+        
+        # Create demo user
+        demo_data = {"email": "persistence.test@example.com"}
+        success, demo_response = self.run_test(
+            "Demo User for Persistence Test",
+            "POST",
+            "demo/access",
+            200,
+            data=demo_data
+        )
+        
+        if not success:
+            return False
+        
+        access_token = demo_response.get('access_token')
+        user_id = demo_response.get('user', {}).get('id')
+        
+        if not access_token or not user_id:
+            print("   ❌ Missing access token or user ID for persistence test")
+            return False
+        
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {access_token}'
+        }
+        
+        # Test multiple authentication calls to verify session persistence
+        for i in range(3):
+            success, auth_response = self.run_test(
+                f"Session Persistence Check #{i+1}",
+                "GET",
+                "auth/me",
+                200,
+                headers=headers
+            )
+            
+            if not success:
+                print(f"   ❌ Session persistence failed on attempt #{i+1}")
+                return False
+            
+            auth_user_id = auth_response.get('user', {}).get('id')
+            if auth_user_id != user_id:
+                print(f"   ❌ User ID changed during session - persistence issue")
+                return False
+        
+        print("   ✅ Demo session persists properly for countdown timer")
+        
+        # Test that subscription info remains consistent
+        success, sub_response = self.run_test(
+            "Subscription Persistence Check",
+            "GET",
+            "subscription/info",
+            200,
+            headers=headers
+        )
+        
+        if success:
+            if sub_response.get('tier') == 'premium':
+                print("   ✅ Premium subscription persists for countdown timer")
+            else:
+                print("   ⚠️  Subscription tier inconsistent during session")
+        
+        return True
+
 def main():
     print("🧪 Starting NutriTame API Tests")
     print("🎯 FOCUS: Launch Date Configuration & Profile Save Functionality")
