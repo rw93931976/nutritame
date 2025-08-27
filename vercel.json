@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "name": "nutritame",
   "builds": [
     {
       "src": "frontend/package.json",
@@ -7,29 +8,16 @@
       "config": {
         "distDir": "build"
       }
-    },
-    {
-      "src": "backend/server.py",
-      "use": "@vercel/python"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/backend/server.py"
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
       "dest": "/frontend/build/index.html"
     }
   ],
-  "env": {
-    "PYTHONPATH": "/var/task/backend",
-    "NODE_ENV": "production"
-  },
-  "functions": {
-    "backend/server.py": {
-      "maxDuration": 30
-    }
-  }
+  "outputDirectory": "frontend/build"
 }
