@@ -9,11 +9,32 @@ import SocialProof from './SocialProof';
 import InteractiveDemo from './InteractiveDemo';
 
 const LandingPage = ({ onGetStarted }) => {
-  const [stats, setStats] = useState({ users: 0, recipes: 0, restaurants: 0 });
+  const [stats, setStats] = useState({
+    users: null,
+    recipes: null, 
+    restaurants: null
+  });
+
+  const [isDemoModeEnabled, setIsDemoModeEnabled] = useState(false);
 
   useEffect(() => {
-    // Load some basic stats
-    const loadStats = async () => {
+    // Check if demo mode is available
+    const checkDemoMode = async () => {
+      try {
+        const response = await fetch(`${API}/demo/config`);
+        if (response.ok) {
+          const demoConfig = await response.json();
+          setIsDemoModeEnabled(demoConfig.demo_mode);
+        }
+      } catch (error) {
+        console.error('Failed to check demo mode:', error);
+      }
+    };
+
+    checkDemoMode();
+
+    // Fetch stats
+    const fetchStats = async () => {
       try {
         const response = await fetch(`${API}/stats`);
         if (response.ok) {
@@ -21,12 +42,22 @@ const LandingPage = ({ onGetStarted }) => {
           setStats(data);
         }
       } catch (error) {
-        console.error('Failed to load stats:', error);
+        console.error('Failed to fetch stats:', error);
       }
     };
 
-    loadStats();
+    fetchStats();
   }, []);
+
+  const handleGetStarted = () => {
+    if (isDemoModeEnabled) {
+      // Route to demo landing page for demo access
+      onGetStarted('demo');
+    } else {
+      // Route to normal signup/payment flow
+      onGetStarted('signup');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-cyan-50 to-blue-50">
