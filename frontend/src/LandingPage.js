@@ -113,14 +113,76 @@ const LandingPage = ({ onGetStarted }) => {
             </Button>
           </div>
 
-          {/* Demo Countdown Timer */}
-          <div className="mb-12">
-            <CountdownTimer targetDate="2025-10-01T00:00:00" className="max-w-md mx-auto" />
-          </div>
-
-          {/* Enhanced Social Proof */}
-          <div className="mb-12">
-            <SocialProof />
+          {/* Demo Countdown Timer & Social Proof Combined */}
+          <div className="mb-12 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-8 border border-orange-200">
+            <div className="text-center mb-6">
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <Clock className="h-5 w-5 text-orange-600" />
+                <span className="text-lg font-semibold text-gray-700">Demo ends in:</span>
+              </div>
+              
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <div className="text-center">
+                  <div className="bg-gradient-to-br from-orange-500 to-red-500 text-white rounded-lg p-3 min-w-[60px]">
+                    <div className="text-2xl font-bold">34</div>
+                  </div>
+                  <div className="text-sm text-gray-600 mt-1">Days</div>
+                </div>
+                
+                <div className="text-2xl font-bold text-gray-400">:</div>
+                
+                <div className="text-center">
+                  <div className="bg-gradient-to-br from-orange-500 to-red-500 text-white rounded-lg p-3 min-w-[60px]">
+                    <div className="text-2xl font-bold">12</div>
+                  </div>
+                  <div className="text-sm text-gray-600 mt-1">Hours</div>
+                </div>
+                
+                <div className="text-2xl font-bold text-gray-400">:</div>
+                
+                <div className="text-center">
+                  <div className="bg-gradient-to-br from-orange-500 to-red-500 text-white rounded-lg p-3 min-w-[60px]">
+                    <div className="text-2xl font-bold">23</div>
+                  </div>
+                  <div className="text-sm text-gray-600 mt-1">Minutes</div>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-center gap-1 text-sm text-gray-600">
+                <Calendar className="h-4 w-4" />
+                <span>Launch: October 1, 2025</span>
+              </div>
+            </div>
+            
+            {/* Social Proof Numbers */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+              <div>
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Users className="h-5 w-5 text-emerald-600" />
+                  <div className="text-2xl font-bold text-gray-800">2,847+</div>
+                </div>
+                <div className="text-gray-600 text-sm">people already testing NutriTame</div>
+                <div className="text-emerald-600 font-medium text-xs mt-1">Join the community!</div>
+              </div>
+              
+              <div>
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Utensils className="h-5 w-5 text-blue-600" />
+                  <div className="text-2xl font-bold text-gray-800">15,284+</div>
+                </div>
+                <div className="text-gray-600 text-sm">diabetes-friendly meals planned</div>
+                <div className="text-blue-600 font-medium text-xs mt-1">This month alone</div>
+              </div>
+              
+              <div>
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <MapPin className="h-5 w-5 text-purple-600" />
+                  <div className="text-2xl font-bold text-gray-800">8,942+</div>
+                </div>
+                <div className="text-gray-600 text-sm">diabetic-friendly restaurants found</div>
+                <div className="text-purple-600 font-medium text-xs mt-1">Nationwide coverage</div>
+              </div>
+            </div>
           </div>
 
           {/* Security & Trust Badges */}
