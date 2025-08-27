@@ -389,6 +389,17 @@ frontend:
       - working: true
         agent: "testing"
         comment: "✅ CRITICAL FIX: Created config.js with safe environment variable access pattern to resolve React 19 compatibility where process.env was undefined. Updated all components to use new config pattern. This resolved the blank page issue and enabled full app functionality."
+  - task: "Demo Countdown Timer Feature"
+    implemented: false
+    working: "NA"
+    file: "frontend/src/components/DemoCountdownTimer.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Starting implementation of Demo Countdown Timer as in-app feature. Will create component with 30-minute session tracking, visual countdown display, warnings when time is low, and demo extension options. To be integrated into AI Health Coach dashboard."
 
 metadata:
   created_by: "main_agent"
