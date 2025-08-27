@@ -169,7 +169,7 @@ const EducationCenter = ({ className = "" }) => {
       {/* Articles Grid */}
       <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-6 mb-12">
         {articles[selectedCategory].map((article) => (
-          <Card key={article.id} className="hover:shadow-xl transition-all duration-300 border-2 hover:border-emerald-200 h-full">
+          <Card key={article.id} className="hover:shadow-xl transition-all duration-300 border-2 hover:border-emerald-200 flex flex-col">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-3xl">{article.image}</div>
@@ -177,37 +177,37 @@ const EducationCenter = ({ className = "" }) => {
                   {article.difficulty}
                 </Badge>
               </div>
-              <CardTitle className="text-lg line-clamp-2">{article.title}</CardTitle>
+              <CardTitle className="text-lg leading-tight mb-2">{article.title}</CardTitle>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <Clock className="h-3 w-3" />
                 <span>{article.readTime}</span>
                 <span>•</span>
                 <User className="h-3 w-3" />
-                <span>{article.author}</span>
+                <span className="truncate">{article.author}</span>
               </div>
             </CardHeader>
             
-            <CardContent className="flex flex-col h-full">
-              <p className="text-gray-600 mb-4 text-sm flex-1">{article.excerpt}</p>
+            <CardContent className="flex flex-col flex-1 p-4 pt-0">
+              <p className="text-gray-600 mb-4 text-sm leading-relaxed flex-1">{article.excerpt}</p>
               
               {/* Topic Tags */}
               <div className="mb-4">
                 <div className="flex flex-wrap gap-1">
-                  {article.topics.slice(0, 3).map((topic, index) => (
+                  {article.topics.slice(0, 2).map((topic, index) => (
                     <Badge key={index} variant="secondary" className="text-xs">
                       {topic}
                     </Badge>
                   ))}
-                  {article.topics.length > 3 && (
+                  {article.topics.length > 2 && (
                     <Badge variant="secondary" className="text-xs">
-                      +{article.topics.length - 3}
+                      +{article.topics.length - 2}
                     </Badge>
                   )}
                 </div>
               </div>
 
               <Button 
-                className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white mt-auto"
+                className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white"
                 size="sm"
               >
                 Read Full Article
