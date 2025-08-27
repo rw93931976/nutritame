@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
 import { Button } from './components/ui/button';
 import { Badge } from './components/ui/badge';
-import { ChefHat, Heart, Target, Users, Star, Check, ArrowRight, Smartphone, MapPin, ShoppingCart, Crown, Shield, Clock, Zap } from 'lucide-react';
+import { ChefHat, Heart, Target, Users, Star, Check, ArrowRight, Smartphone, MapPin, ShoppingCart, Crown, Shield, Clock, Zap, Calendar, Utensils } from 'lucide-react';
 import { API } from './config';
 import CountdownTimer from './CountdownTimer';
 import SocialProof from './SocialProof';
