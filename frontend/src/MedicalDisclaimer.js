@@ -10,8 +10,9 @@ const MedicalDisclaimer = ({ onAccept, onDecline }) => {
 
   const handleScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
-    const scrolledToEnd = scrollTop + clientHeight >= scrollHeight - 10;
-    if (scrolledToEnd) {
+    // More lenient scroll detection - consider scrolled if user scrolled at least 70%
+    const scrollPercent = (scrollTop + clientHeight) / scrollHeight;
+    if (scrollPercent >= 0.7) {
       setScrolledToBottom(true);
     }
   };
