@@ -56,7 +56,7 @@
   },
   "scripts": {
     "start": "craco start", 
-    "build": "craco build && echo '/* /index.html 200' > build/_redirects",
+    "build": "react-scripts build && echo '/* /index.html 200' > build/_redirects",
     "test": "craco test",
     "vercel-build": "npm install --legacy-peer-deps --no-audit && npm run build"
   },
