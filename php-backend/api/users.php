@@ -1,7 +1,6 @@
 <?php
 /**
  * User Profile API Endpoints
- * Converted from FastAPI user endpoints
  */
 
 require_once '../config.php';
@@ -10,13 +9,11 @@ $method = $_SERVER['REQUEST_METHOD'];
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $path_parts = explode('/', trim($path, '/'));
 
-// Extract user ID from path if present
 $user_id = null;
 if (count($path_parts) >= 3 && $path_parts[count($path_parts) - 2] === 'users') {
     $user_id = end($path_parts);
 }
 
-// Route handling
 switch ($method) {
     case 'POST':
         if (!$user_id) {
@@ -49,11 +46,9 @@ function createUserProfile() {
     try {
         $pdo = getDBConnection();
         
-        // Generate new user ID if not provided
         $user_id = generateUUID();
         $tenant_id = generateUUID();
         
-        // Prepare user data
         $email = $input['email'] ?? 'user_' . substr(uniqid(), -8) . '@nutritame.com';
         $diabetes_type = $input['diabetes_type'] ?? null;
         $age = $input['age'] ?? null;
@@ -83,12 +78,10 @@ function createUserProfile() {
             $allergies, $dislikes, $cooking_skill, $phone_number, $subscription_end
         ]);
         
-        // Get created user
         $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->execute([$user_id]);
         $user = $stmt->fetch();
         
-        // Decode JSON fields for response
         $user = formatUserResponse($user);
         
         jsonResponse($user, 201);
@@ -111,7 +104,6 @@ function getUserProfile($user_id) {
             jsonResponse(['error' => 'User not found'], 404);
         }
         
-        // Format response with JSON fields decoded
         $user = formatUserResponse($user);
         
         jsonResponse($user);
@@ -126,7 +118,6 @@ function updateUserProfile($user_id) {
     try {
         $pdo = getDBConnection();
         
-        // Check if user exists
         $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->execute([$user_id]);
         $existing_user = $stmt->fetch();
@@ -137,7 +128,6 @@ function updateUserProfile($user_id) {
         
         $input = json_decode(file_get_contents('php://input'), true);
         
-        // Build update query dynamically
         $update_fields = [];
         $update_values = [];
         
@@ -148,7 +138,6 @@ function updateUserProfile($user_id) {
         
         $json_fields = ['health_goals', 'food_preferences', 'allergies', 'dislikes'];
         
-        // Handle regular fields
         foreach ($allowed_fields as $field) {
             if (isset($input[$field])) {
                 $update_fields[] = "$field = ?";
@@ -156,7 +145,6 @@ function updateUserProfile($user_id) {
             }
         }
         
-        // Handle JSON fields
         foreach ($json_fields as $field) {
             if (isset($input[$field])) {
                 $update_fields[] = "$field = ?";
@@ -168,7 +156,6 @@ function updateUserProfile($user_id) {
             jsonResponse(['error' => 'No valid fields to update'], 400);
         }
         
-        // Add updated_at
         $update_fields[] = "updated_at = NOW()";
         $update_values[] = $user_id;
         
@@ -176,12 +163,10 @@ function updateUserProfile($user_id) {
         $stmt = $pdo->prepare($query);
         $stmt->execute($update_values);
         
-        // Get updated user
         $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->execute([$user_id]);
         $user = $stmt->fetch();
         
-        // Format response with JSON fields decoded
         $user = formatUserResponse($user);
         
         jsonResponse($user);
@@ -200,7 +185,6 @@ function listUserProfiles() {
         $stmt->execute();
         $users = $stmt->fetchAll();
         
-        // Format all users
         $formatted_users = array_map('formatUserResponse', $users);
         
         jsonResponse($formatted_users);
@@ -214,7 +198,6 @@ function listUserProfiles() {
 function formatUserResponse($user) {
     if (!$user) return null;
     
-    // Decode JSON fields
     $json_fields = ['health_goals', 'food_preferences', 'allergies', 'dislikes'];
     foreach ($json_fields as $field) {
         if ($user[$field]) {
