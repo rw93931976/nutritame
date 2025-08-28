@@ -1,17 +1,17 @@
 <?php
 /**
- * User Profile API Endpoints
+ * User Profile API Endpoints - Direct routing for React frontend
  */
 
 require_once '../config.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
-$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$path_parts = explode('/', trim($path, '/'));
 
+// Get user ID from URL if present (e.g., /api/users/123)
 $user_id = null;
-if (count($path_parts) >= 3 && $path_parts[count($path_parts) - 2] === 'users') {
-    $user_id = end($path_parts);
+$request_uri = $_SERVER['REQUEST_URI'];
+if (preg_match('/\/users\/([a-zA-Z0-9\-]+)/', $request_uri, $matches)) {
+    $user_id = $matches[1];
 }
 
 switch ($method) {
