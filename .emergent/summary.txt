@@ -1,0 +1,117 @@
+<analysis>
+The previous AI engineer successfully launched the NutriTame app from concept to MVP. Initial work involved critical bug fixes: incorrect launch date, profile management, navigation, and significant UI/UX improvements for the AI Health Coach, including implementing a medical disclaimer. A major misstep occurred when marketing website features were mistakenly implemented on , but this was corrected by reverting the file and deleting extraneous components. The AI then implemented the Demo Countdown Timer feature within the app.
+
+A prolonged phase involved troubleshooting Vercel deployment issues, which included resolving dependency conflicts, GitHub-Vercel sync problems, build script adjustments, and missing dependencies. This culminated in a successful Vercel deployment, though the user still faced in-app navigation bugs. The current focus has shifted to self-hosting on Hostinger using a PHP/MySQL conversion. This has involved extensive debugging of PHP setup, file placement, and ultimately creating direct, functional PHP API endpoints, bypassing complex routing. The immediate task is to update the React frontend to use these new PHP endpoints.
+</analysis>
+
+<product_requirements>
+The NutriTame (formerly GlucoPlanner) application is a meal planning tool specifically designed for diabetics. Its core functionality includes an AI Health Coach that provides personalized recommendations, supports user profiles, and offers a professional chat interface. Previous iterations incorporated features such as restaurant search, automatic shopping list generation, and an improved UI/UX. The application has since evolved into a multi-tenant SaaS platform, complete with Stripe-based subscription management, automated account creation, and robust data isolation.
+
+Key bug fixes and feature implementations completed:
+1.  **Launch Date**: Updated to October 1, 2025.
+2.  **Profile Management**: Resolved issues with profile saving, ensuring a Create Profile option for new users (including demo users) and fixing  prop mismatches.
+3.  **Navigation**: Ensured all header links (e.g., Account Settings, Help & Support) and marketing/demo banner links are functional.
+4.  **AI Health Coach UI/UX**: Addressed spacing, ensured responses expand correctly, improved scrolling, maintained input area visibility, and repositioned the shopping list popup.
+5.  **Medical Disclaimer**: Implemented and fixed validation issues preventing user access.
+6.  **Demo Countdown Timer**: Implemented as an in-app feature with session tracking and visual cues.
+7.  **Mobile Responsiveness**: Ensured the app, including the new countdown timer, is fully optimized for mobile devices.
+
+Future website enhancement suggestions (e.g., Advanced Meal Planning Wizard, Blood Sugar Tracking & Charts, Progress Analytics Dashboard, Recipe Database Integration, Detailed Nutrition Breakdown) are to be integrated as *actual in-app features*.
+</product_requirements>
+
+<key_technical_concepts>
+-   **Full-stack Architecture**: React frontend, FastAPI (originally, now PHP) backend, MongoDB (originally, now MySQL) database.
+-   **AI Integration**: Emergentintegrations for LLM (OpenAI GPT-4o-mini).
+-   **UI/UX**: Shadcn UI components, Tailwind CSS, /.
+-   **External APIs**: Google Places/Maps, USDA FoodData Central, Stripe API.
+-   **Authentication**: JWT, , React .
+-   **Multi-tenancy**: SaaS architecture.
+-   **Deployment**: Docker/Kubernetes (initial), Vercel (attempted), Hostinger (current target).
+</key_technical_concepts>
+
+<code_architecture>
+
+
+-   
+    -   **Importance**: Main React component managing routing, state, layout, and AI chat.
+    -   **Changes**: Fixed  for token,  for create/update logic. Improved AI chat layout/scrolling. Integrated  and . Updated for mobile responsiveness.
+-   
+    -   **Importance**: Original SaaS landing page.
+    -   **Changes**: Was mistakenly enhanced with marketing features and later reverted to a simpler version.
+-   
+    -   **Importance**: Entry page for demo mode, likely contains demo API calls.
+    -   **Changes**: Was the target for fixing API calls to PHP backend.
+-   
+    -   **Importance**: Displays legal disclaimer.
+    -   **Changes**: Fixed a bug where  button remained disabled due to strict scroll detection.
+-    (NEW)
+    -   **Importance**: Displays a countdown timer for demo sessions.
+    -   **Changes**: Created component, integrated into , and improved for mobile responsiveness.
+-   
+    -   **Importance**: Documents testing instructions and results.
+    -   **Changes**: Updated throughout to reflect bug fixes and testing outcomes, including for the Demo Countdown Timer.
+-    (NEW)
+    -   **Importance**: Configuration file for Vercel deployment.
+    -   **Changes**: Created, then iteratively fixed for , routing, Node.js runtime, and build commands ().
+-   
+    -   **Importance**: Frontend dependencies and build scripts.
+    -   **Changes**: Fixed dependency conflicts (downgraded , updated ). Modified build script from  to . Added  dependency.
+-    (NEW)
+    -   **Importance**: npm configuration for Vercel.
+    -   **Changes**: Created to force  for dependency resolution.
+-    (NEW)
+    -   **Importance**: Tells Vercel which files to ignore during deployment.
+    -   **Changes**: Created to prevent unnecessary files from being included.
+-    (NEW)
+    -   **Importance**: PHP backend configuration, database connection, constants, utility functions ().
+    -   **Changes**: Created, updated with database credentials and API/CORS URLs. Debugging display was temporarily added and removed.
+-    (NEW)
+    -   **Importance**: Main router for PHP backend, handling API requests.
+    -   **Changes**: Created to handle routing. Attempted to fix demo routing but later abandoned in favor of direct endpoint files.
+-    (NEW)
+    -   **Importance**: Apache rewrite rules for clean URLs in PHP.
+    -   **Changes**: Created to enable clean URL routing for the PHP backend.
+-    (NEW)
+    -   **Importance**: MySQL schema for database setup on Hostinger.
+    -   **Changes**: Created to mirror the MongoDB schema for MySQL compatibility.
+-    (NEW)
+    -   **Importance**: Direct PHP endpoint for retrieving demo configuration.
+    -   **Changes**: Created to bypass routing issues and provide a direct working endpoint.
+-    (NEW)
+    -   **Importance**: Direct PHP endpoint for creating demo access tokens.
+    -   **Changes**: Created to bypass routing issues and provide a direct working endpoint.
+-    (folder) (NEW)
+    -   **Importance**: Contains individual PHP API endpoint files.
+    -   **Changes**:  (initial attempt, had routing issues), , ,  were created here. The  folder structure was initially problematic with nesting.
+</code_architecture>
+
+<pending_tasks>
+-   Full Admin Tools (User/subscription monitoring and management).
+-   Main Website Integration (SSO support, embedding options).
+-   GDPR & HIPAA Compliance (Data export/deletion capabilities).
+-   Comprehensive Documentation (Deployment and management guides).
+-   Implement approved enhancements as *app functionality*:
+    -   Advanced Meal Planning Wizard
+    -   Blood Sugar Tracking & Charts
+    -   Progress Analytics Dashboard
+    -   Recipe Database Integration
+    -   Detailed Nutrition Breakdown
+</pending_tasks>
+
+<current_work>
+Immediately before this summary request, the AI engineer successfully established a functional PHP backend on Hostinger for the NutriTame app. This involved an extensive process of converting the original FastAPI backend to PHP, setting up a MySQL database, configuring database connections, and debugging numerous deployment issues on Hostinger.
+
+The key breakthrough in the PHP backend deployment was abandoning a complex  router for demo functionality and instead creating **direct PHP endpoint files**:  and  located directly in . These endpoints are now fully operational, returning correct JSON responses, and have been confirmed to be production-ready after thorough testing and cleanup of debugging files and broken routing attempts.
+
+The user previously experienced a Critical Navigation Failure with the Vercel-deployed version, where the app was stuck on the landing page, preventing access to demo mode or other features. The current Hostinger setup aims to resolve this by providing a stable backend.
+
+The current work involves deploying the React frontend to Hostinger. The AI engineer has instructed the user to:
+1.  Update the  environment variable in  to .
+2.  Modify API calls within the React app, specifically in , to use the new direct PHP endpoints (e.g., changing /demo/config to /demo-config.php).
+
+The user has confirmed they have located the  folder and has successfully updated the  file. However, they reported difficulty in opening or accessing , which is the next crucial step. The AI has provided the content of  and confirmed that  is where the demo-related API calls reside.
+</current_work>
+
+<optional_next_step>
+Obtain the content of  from the user to identify and update the API calls to the new direct PHP endpoints.
+</optional_next_step>
