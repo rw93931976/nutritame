@@ -24,7 +24,7 @@ const DemoModeBanner = ({ isMinimized = false, onToggleMinimize = null }) => {
     // Load demo configuration
     const loadDemoConfig = async () => {
       try {
-        const response = await fetch(`${API}/demo/config`);
+        const response = await fetch(`${API}/demo-config.php`);
         if (response.ok) {
           const config = await response.json();
           setDemoConfig(config);
