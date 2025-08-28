@@ -1,0 +1,2 @@
+Force deployment - fixing Vercel sync issue
+Date: 2025-08-27
