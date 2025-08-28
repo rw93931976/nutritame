@@ -17,5 +17,10 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ]
+  ],
+  "functions": {
+    "frontend/**": {
+      "runtime": "nodejs18.x"
+    }
+  }
 }
