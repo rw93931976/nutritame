@@ -59,11 +59,11 @@
     "ajv-keywords": "^5.1.0"
   },
   "scripts": {
-    "start": "craco start", 
-    "build": "craco build && echo '/* /index.html 200' > build/_redirects",
-    "test": "craco test",
-    "vercel-build": "vercel-build": "npm install --legacy-peer-deps && npm run build"
-  },
+    "start": "react-scripts start", 
+    "build": "react-scripts build && echo '/* /index.html 200' > build/_redirects",
+    "test": "react-scripts test",
+    "vercel-build": "npm install --legacy-peer-deps && npm run build"
+},
   "browserslist": {
     "production": [
       ">0.2%",
