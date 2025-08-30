@@ -174,7 +174,7 @@ class NutriTameHostingerTester:
             
             # Verify auto-generated email format
             user_email = response.get('user', {}).get('email', '')
-            if '@demo.nutritame.com' in user_email and user_email.startswith('demo_'):
+            if '@nutritame.com' in user_email and user_email.startswith('demo_'):
                 print(f"   ✅ Email format is correct: {user_email}")
                 return True
             else:
