@@ -2250,8 +2250,11 @@ function App() {
       }
     };
 
-    checkAuthenticationAndDemo();
-  }, []);
+    // Only run auth check after disclaimer is accepted
+    if (disclaimerAccepted) {
+      checkAuthenticationAndDemo();
+    }
+  }, [disclaimerAccepted]);
 
   // Handle successful payment and app access
   const handleAppAccess = async (paymentData) => {
