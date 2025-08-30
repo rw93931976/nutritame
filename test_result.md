@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Complete Demo Mode implementation for NutriTame (rebranded from GlucoPlanner), create DemoModeBanner component, integrate demo mode functionality, and update branding throughout the application."
+user_problem_statement: "Fix frontend-backend connectivity issue where interactive buttons are not working. Frontend loads correctly at https://app.nutritame.com/ but buttons like 'Start Free Demo Now' cannot connect to the PHP backend API."
 
   - task: "Try Demo Button Functionality"
     implemented: true
