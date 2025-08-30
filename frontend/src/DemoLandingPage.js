@@ -50,7 +50,7 @@ const DemoLandingPage = ({ onDemoAccess }) => {
   const handleDemoAccess = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API}/demo-access.php`, {
+      const response = await fetch(`${API}/demo-config.php?endpoint=access`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
