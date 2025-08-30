@@ -2188,9 +2188,9 @@ function App() {
   const [showShoppingListButton, setShowShoppingListButton] = useState(false);
   const [lastMealPlan, setLastMealPlan] = useState("");
 
-  // Check authentication on app load
+  // Check authentication and demo mode on app load
   useEffect(() => {
-    const checkAuthentication = async () => {
+    const checkAuthenticationAndDemo = async () => {
       const token = localStorage.getItem('authToken');
       const adminTokenStored = localStorage.getItem('adminToken');
       
@@ -2198,6 +2198,18 @@ function App() {
         setAdminToken(adminTokenStored);
         setAppMode('admin');
         return;
+      }
+      
+      // Check for demo mode first
+      try {
+        const demoResponse = await axios.get(`${API}/demo-config.php`);
+        if (demoResponse.data && demoResponse.data.demo_mode === true) {
+          console.log('Demo mode detected from backend');
+          setAppMode('demo');
+          return;
+        }
+      } catch (error) {
+        console.log('Demo mode check failed, proceeding with normal flow:', error);
       }
       
       if (token) {
@@ -2238,7 +2250,7 @@ function App() {
       }
     };
 
-    checkAuthentication();
+    checkAuthenticationAndDemo();
   }, []);
 
   // Handle successful payment and app access
