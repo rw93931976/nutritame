@@ -11,7 +11,7 @@ const getEnvVar = (name, defaultValue) => {
   return defaultValue || '';
 };
 
-export const BACKEND_URL = getEnvVar('REACT_APP_BACKEND_URL', 'https://nutritame-demo.preview.emergentagent.com');
+export const BACKEND_URL = getEnvVar('REACT_APP_BACKEND_URL', 'https://app.nutritame.com');
 export const API = `${BACKEND_URL}/api`;
 
 export default {
