@@ -104,20 +104,20 @@
 
 user_problem_statement: "Fix frontend-backend connectivity issue where interactive buttons are not working. Frontend loads correctly at https://app.nutritame.com/ but buttons like 'Start Free Demo Now' cannot connect to the PHP backend API."
 
-  - task: "Try Demo Button Functionality"
+  - task: "Frontend-Backend API Connectivity"
     implemented: true
-    working: true
-    file: "frontend/src/App.js"
+    working: false
+    file: "frontend/.env, frontend/src/config.js, frontend/src/DemoLandingPage.js"
     stuck_count: 0
     priority: "high"
     needs_retesting: true
     status_history:
       - working: false
         agent: "user"
-        comment: "User reports 'Try Demo' button does nothing when clicked. Need to investigate demo access creation functionality."
-      - working: true
+        comment: "User reports frontend loads correctly at https://app.nutritame.com/ but interactive buttons (Start Free Demo Now) don't work. Buttons cannot connect to PHP backend."
+      - working: false
         agent: "main"
-        comment: "Fixed demo access token issue - backend returns 'access_token' but frontend was looking for 'token'. Updated handleDemoAccess to use correct field name. Also added demo section id for navigation links. Added comprehensive debugging and enhanced error handling."
+        comment: "IDENTIFIED ROOT CAUSE: Frontend .env was pointing to old URL (nutritame-demo.preview.emergentagent.com) instead of Hostinger backend (app.nutritame.com). Updated frontend/.env to REACT_APP_BACKEND_URL=https://app.nutritame.com and corrected API endpoint in DemoLandingPage.js to use demo-config.php?endpoint=access. Fixed config.js default fallback URL. React app successfully rebuilt with yarn build. NEW BUILD READY FOR DEPLOYMENT to /public_html/app/ on Hostinger server."
   - task: "Profile Creation vs Update Logic"
     implemented: true
     working: true
