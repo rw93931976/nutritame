@@ -36,8 +36,18 @@ const MedicalDisclaimer = ({ onAccept, onDecline }) => {
       }
     };
     
-    // Check after a short delay to ensure DOM is ready
-    setTimeout(checkIfContentVisible, 100);
+    // Check after a longer delay to ensure DOM and CSS layout are ready (production timing)
+    setTimeout(checkIfContentVisible, 500);
+    
+    // Add a retry mechanism to handle production timing issues
+    const retryCheck = () => {
+      setTimeout(() => {
+        if (!scrolledToBottom) {
+          checkIfContentVisible();
+        }
+      }, 1000);
+    };
+    retryCheck();
   }, [onAccept]);
 
   const handleAccept = () => {
