@@ -2357,9 +2357,27 @@ function App() {
   };
 
   // Medical Disclaimer Handlers
-  const handleDisclaimerAccept = () => {
+  const handleDisclaimerAccept = async () => {
     setDisclaimerAccepted(true);
     setShowDisclaimer(false);
+    
+    // Immediately check for demo mode after disclaimer acceptance
+    try {
+      console.log('Checking for demo mode after disclaimer acceptance...');
+      const demoResponse = await axios.get(`${API}/demo-config.php`);
+      console.log('Demo config response:', demoResponse.data);
+      
+      if (demoResponse.data && demoResponse.data.demo_mode === true) {
+        console.log('Demo mode detected - setting app mode to demo');
+        setAppMode('demo');
+        return;
+      }
+    } catch (error) {
+      console.error('Demo mode check failed:', error);
+    }
+    
+    // If not demo mode, continue with normal flow
+    setAppMode('landing');
   };
 
   const handleDisclaimerDecline = () => {
