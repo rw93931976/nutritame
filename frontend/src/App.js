@@ -2188,28 +2188,17 @@ function App() {
   const [showShoppingListButton, setShowShoppingListButton] = useState(false);
   const [lastMealPlan, setLastMealPlan] = useState("");
 
-  // Check authentication and demo mode on app load
+  // Check authentication on app load (run only once, independent of disclaimer)
   useEffect(() => {
-    const checkAuthenticationAndDemo = async () => {
+    const checkAuthentication = async () => {
       const token = localStorage.getItem('authToken');
       const adminTokenStored = localStorage.getItem('adminToken');
       
       if (adminTokenStored) {
         setAdminToken(adminTokenStored);
         setAppMode('admin');
+        setShowDisclaimer(false); // Admin doesn't need disclaimer
         return;
-      }
-      
-      // Check for demo mode first
-      try {
-        const demoResponse = await axios.get(`${API}/demo-config.php`);
-        if (demoResponse.data && demoResponse.data.demo_mode === true) {
-          console.log('Demo mode detected from backend');
-          setAppMode('demo');
-          return;
-        }
-      } catch (error) {
-        console.log('Demo mode check failed, proceeding with normal flow:', error);
       }
       
       if (token) {
@@ -2223,6 +2212,7 @@ function App() {
             setAuthToken(token);
             setSubscriptionInfo(response.data.subscription_info);
             setAppMode('app');
+            setShowDisclaimer(false); // Existing users don't need disclaimer
             
             // Set up existing user profile for backward compatibility
             setCurrentUser({
@@ -2243,18 +2233,14 @@ function App() {
         } catch (error) {
           console.error('Authentication check failed:', error);
           localStorage.removeItem('authToken');
-          setAppMode('landing');
+          // Don't set appMode here - let disclaimer handler do it
         }
-      } else {
-        setAppMode('landing');
       }
+      // For new users, disclaimer handler will set the appropriate mode
     };
 
-    // Only run auth check after disclaimer is accepted
-    if (disclaimerAccepted) {
-      checkAuthenticationAndDemo();
-    }
-  }, [disclaimerAccepted]);
+    checkAuthentication();
+  }, []);
 
   // Handle successful payment and app access
   const handleAppAccess = async (paymentData) => {
