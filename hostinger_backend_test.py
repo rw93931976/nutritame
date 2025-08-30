@@ -114,7 +114,7 @@ class NutriTameHostingerTester:
             "Demo Access with Email (demo-config.php?endpoint=access)",
             "POST",
             "demo-config.php?endpoint=access",
-            200,
+            201,  # Expect 201 Created for successful resource creation
             data=demo_data
         )
         
