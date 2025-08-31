@@ -34,7 +34,7 @@ const DemoLandingPage = ({ onDemoAccess }) => {
     // Load demo configuration
     const loadDemoConfig = async () => {
       try {
-        const response = await fetch(`${API}/demo-config.php`);
+        const response = await fetch(`${API}/demo/config`);
         if (response.ok) {
           const config = await response.json();
           setDemoConfig(config);
