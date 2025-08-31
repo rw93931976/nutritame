@@ -250,7 +250,7 @@ const LandingPage = ({ onGetStarted }) => {
                 </ul>
                 <Button 
                   className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700"
-                  onClick={onGetStarted}
+                  onClick={() => onGetStarted('demo')}
                 >
                   Start Premium Trial
                 </Button>
