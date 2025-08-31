@@ -321,7 +321,7 @@ const LandingPage = ({ onGetStarted }) => {
           </p>
           
           <Button
-            onClick={onGetStarted}
+            onClick={() => onGetStarted('demo')}
             size="lg"
             className="bg-white text-emerald-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
           >
