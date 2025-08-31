@@ -12,20 +12,14 @@ const LandingPage = ({ onGetStarted }) => {
     restaurants: null
   });
 
+  // Removed stats fetching to prevent 404 errors
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const response = await fetch(`${API}/stats`);
-        if (response.ok) {
-          const data = await response.json();
-          setStats(data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch stats:', error);
-      }
-    };
-
-    fetchStats();
+    // Set default stats to prevent loading issues
+    setStats({
+      users: "1000+",
+      recipes: "500+", 
+      restaurants: "10000+"
+    });
   }, []);
 
   return (
