@@ -39,7 +39,7 @@ const LandingPage = ({ onGetStarted }) => {
               <a href="#features" className="text-gray-600 hover:text-emerald-600 transition-colors">Features</a>
               <a href="#pricing" className="text-gray-600 hover:text-emerald-600 transition-colors">Pricing</a>
               <Button 
-                onClick={onGetStarted}
+                onClick={() => onGetStarted('demo')}
                 className="bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white"
               >
                 Get Started
