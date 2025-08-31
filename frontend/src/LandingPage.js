@@ -71,7 +71,7 @@ const LandingPage = ({ onGetStarted }) => {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <Button
-                onClick={onGetStarted}
+                onClick={() => onGetStarted('demo')}
                 className="px-8 py-4 text-lg font-semibold bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
                 Start Your Health Journey
