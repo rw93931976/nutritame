@@ -15,6 +15,12 @@ $path = preg_replace('#^/api#', '', $request_uri);
 $path = trim($path, '/');
 $path_parts = explode('/', $path);
 
+// Debug logging
+error_log('Router - Request URI: ' . $request_uri);
+error_log('Router - Path: ' . $path);
+error_log('Router - Path parts: ' . json_encode($path_parts));
+error_log('Router - First part: ' . $path_parts[0]);
+
 // Route to appropriate handler
 try {
     switch ($path_parts[0]) {
