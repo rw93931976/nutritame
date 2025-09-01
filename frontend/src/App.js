@@ -773,44 +773,53 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect, authToken }) => {
 
   const handleManualSearch = async () => {
     if (!searchLocation.trim()) {
-      toast.error("Please enter a location");
+      setError('Please enter a location');
       return;
     }
     
     setLoading(true);
     try {
-      // Use the new location-based search API
-      const response = await axios.post(`${API}/restaurants/search-by-location`, {
-        location: searchLocation,
-        radius: searchRadius,
-        keyword: searchKeyword
-      }, {
-        headers: {
-          'Authorization': `Bearer ${authToken}`
+      // Mock coordinates for demo (defaulting to Dallas, TX area)
+      const mockCoordinates = {
+        latitude: 32.7767,
+        longitude: -96.7970
+      };
+      
+      const mockRestaurants = [
+        {
+          place_id: 'demo_location_1',
+          name: 'Local Healthy Eats',
+          address: `${searchLocation} Area`,
+          latitude: mockCoordinates.latitude + 0.001,
+          longitude: mockCoordinates.longitude + 0.001,
+          rating: 4.3,
+          price_level: 2,
+          types: ['restaurant', 'healthy'],
+          diabetic_friendly: true,
+          description: 'Local restaurant with diabetic-friendly options',
+          special_features: ['Low-carb menu', 'Portion control']
+        },
+        {
+          place_id: 'demo_location_2',
+          name: 'Nutrition Corner',
+          address: `${searchLocation} Downtown`,
+          latitude: mockCoordinates.latitude - 0.001,
+          longitude: mockCoordinates.longitude + 0.002,
+          rating: 4.6,
+          price_level: 2,
+          types: ['restaurant', 'healthy', 'organic'],
+          diabetic_friendly: true,
+          description: 'Organic meals with detailed nutrition information',
+          special_features: ['Macro tracking', 'Diabetic-friendly desserts']
         }
-      });
+      ];
       
-      // Also get the geocoded coordinates for the map
-      const locationResponse = await axios.post(`${API}/geocode`, {
-        location: searchLocation
-      });
+      setRestaurants(mockRestaurants);
+      setSearchCenter({ latitude: mockCoordinates.latitude, longitude: mockCoordinates.longitude });
       
-      setSearchCenter({
-        latitude: locationResponse.data.latitude,
-        longitude: locationResponse.data.longitude
-      });
-      
-      setRestaurants(response.data);
-      toast.success(`Found ${response.data.length} restaurants in ${searchLocation}`);
     } catch (error) {
-      console.error("Location search error:", error);
-      if (error.response?.data?.detail?.includes("Monthly API limit reached")) {
-        toast.error("🚫 Restaurant search temporarily unavailable - monthly limit reached");
-      } else if (error.response?.data?.detail?.includes("Could not find location")) {
-        toast.error(`Could not find location: ${searchLocation}. Please try a different search term.`);
-      } else {
-        toast.error("Failed to search restaurants. Please try again.");
-      }
+      console.error('Location search error:', error);
+      setError('Failed to search by location. Please try again.');
     } finally {
       setLoading(false);
     }
