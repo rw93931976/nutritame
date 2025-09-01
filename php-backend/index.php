@@ -19,7 +19,7 @@ $path_parts = explode('/', $path);
 try {
     switch ($path_parts[0]) {
         case 'demo':
-            if ($path_parts[1] === 'config' || $path_parts[1] === 'access') {
+            if ($path_parts[1] === 'config' || $path_parts[1] === 'access' || $path_parts[1] === 'profile') {
                 include 'api/demo.php';
             } else {
                 jsonResponse(['error' => 'Demo endpoint not found'], 404);
