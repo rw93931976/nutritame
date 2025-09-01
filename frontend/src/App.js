@@ -238,9 +238,8 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
         console.log(`Updating existing profile with ID: ${existingProfile.id}`);
         response = await axios.put(`${API}/users/${existingProfile.id}`, profileData);
       } else {
-        console.log('Creating new demo profile');
-        // Use demo profile endpoint for demo mode
-        response = await axios.post(`${API}/demo-config.php?endpoint=profile`, profileData);
+        console.log('Creating new profile');
+        response = await axios.post(`${API}/users`, profileData);
       }
 
       console.log('Profile save response:', response.data);
