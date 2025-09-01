@@ -19,6 +19,23 @@ if (strpos($path, '/chat') !== false) {
 }
 
 function sendChatMessage() {
+    // For demo mode, bypass authentication and return mock response
+    if (DEMO_MODE) {
+        $input = json_decode(file_get_contents('php://input'), true);
+        $message = $input['message'] ?? '';
+        
+        if (empty($message)) {
+            jsonResponse(['error' => 'Message is required'], 400);
+            return;
+        }
+        
+        // Generate contextual demo response
+        $response = generateDemoResponse($message);
+        jsonResponse(['response' => $response]);
+        return;
+    }
+    
+    // Original authentication-required logic for non-demo mode
     $current_user = getCurrentUser();
     if (!$current_user) {
         jsonResponse(['error' => 'Authentication required'], 401);
