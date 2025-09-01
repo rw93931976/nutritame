@@ -58,7 +58,7 @@
     "start": "react-scripts start", 
     "build": "react-scripts build && echo '/* /index.html 200' > build/_redirects",
     "test": "react-scripts test",
-    "vercel-build": "npm ci --no-audit || npm install --no-audit && node -p \"'ajv=' + require('ajv/package.json').version + ', ajv-keywords=' + require('ajv-keywords/package.json').version\" && npm run build"
+    "vercel-build": "rm -rf node_modules package-lock.json && npm install --no-audit --legacy-peer-deps && npm run build"
 },
   "browserslist": {
     "production": [
@@ -87,7 +87,6 @@
     "globals": "15.15.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17"
-    "ajv": "^8.12.0",
-  },
+    },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
