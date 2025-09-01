@@ -67,14 +67,21 @@ function createUserProfile() {
     try {
         $pdo = getDBConnection();
         
-        // Simplified approach - create basic user first, then update with profile data
+function createUserProfile() {
+    $input = json_decode(file_get_contents('php://input'), true);
+    
+    if (!DEMO_MODE) {
+        jsonResponse(['error' => 'Demo mode is not enabled'], 403);
+    }
+    
+    try {
+        $pdo = getDBConnection();
+        
+        $demo_email = $input['email'] ?? 'profile_' . substr(uniqid(), -8) . '@nutritame.com';
+        
         $user_id = generateUUID();
         $tenant_id = generateUUID();
         
-        $email = $input['email'] ?? 'profile_' . substr(uniqid(), -8) . '@nutritame.com';
-        $diabetes_type = $input['diabetes_type'] ?? 'type2';
-        
-        // First, create a basic user like demo access does
         $stmt = $pdo->prepare("
             INSERT INTO users (
                 id, email, subscription_status, subscription_tier, 
@@ -83,71 +90,15 @@ function createUserProfile() {
         ");
         
         $subscription_end = date('Y-m-d H:i:s', strtotime('+365 days'));
-        $stmt->execute([$user_id, $email, $subscription_end, $tenant_id, $diabetes_type]);
+        $diabetes_type = $input['diabetes_type'] ?? 'type2';
+        $stmt->execute([$user_id, $demo_email, $subscription_end, $tenant_id, $diabetes_type]);
         
-        // Then update with additional profile data if provided
-        $update_fields = [];
-        $update_values = [];
-        
-        if (isset($input['age'])) {
-            $update_fields[] = "age = ?";
-            $update_values[] = $input['age'];
-        }
-        if (isset($input['gender'])) {
-            $update_fields[] = "gender = ?";
-            $update_values[] = $input['gender'];
-        }
-        if (isset($input['activity_level'])) {
-            $update_fields[] = "activity_level = ?";
-            $update_values[] = $input['activity_level'];
-        }
-        if (isset($input['cultural_background'])) {
-            $update_fields[] = "cultural_background = ?";
-            $update_values[] = $input['cultural_background'];
-        }
-        if (isset($input['cooking_skill'])) {
-            $update_fields[] = "cooking_skill = ?";
-            $update_values[] = $input['cooking_skill'];
-        }
-        if (isset($input['phone_number'])) {
-            $update_fields[] = "phone_number = ?";
-            $update_values[] = $input['phone_number'];
-        }
-        
-        // Handle JSON fields
-        if (isset($input['health_goals'])) {
-            $update_fields[] = "health_goals = ?";
-            $update_values[] = json_encode($input['health_goals']);
-        }
-        if (isset($input['food_preferences'])) {
-            $update_fields[] = "food_preferences = ?";
-            $update_values[] = json_encode($input['food_preferences']);
-        }
-        if (isset($input['allergies'])) {
-            $update_fields[] = "allergies = ?";
-            $update_values[] = json_encode($input['allergies']);
-        }
-        if (isset($input['dislikes'])) {
-            $update_fields[] = "dislikes = ?";
-            $update_values[] = json_encode($input['dislikes']);
-        }
-        
-        // Update the user with profile data if any fields provided
-        if (!empty($update_fields)) {
-            $update_fields[] = "updated_at = NOW()";
-            $update_values[] = $user_id;
-            
-            $query = "UPDATE users SET " . implode(', ', $update_fields) . " WHERE id = ?";
-            $stmt = $pdo->prepare($query);
-            $stmt->execute($update_values);
-        }
-        
-        // Get the final user data
         $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->execute([$user_id]);
-        $user = $stmt->fetch();
+        $demo_user = $stmt->fetch();
         
-        $user = formatUserResponse($user);
+        // Return the user in the expected format
+        $user = formatUserResponse($demo_user);
         
         jsonResponse($user, 201);
         
