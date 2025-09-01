@@ -30,6 +30,10 @@ try {
             include 'api/users.php';
             break;
             
+        case 'profile':
+            include 'profile.php';
+            break;
+            
         case 'chat':
             include 'api/chat.php';
             break;
