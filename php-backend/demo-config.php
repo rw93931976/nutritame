@@ -9,6 +9,10 @@ require_once 'config.php';
 $method = $_SERVER['REQUEST_METHOD'];
 $endpoint = $_GET['endpoint'] ?? 'config';
 
+// Debug logging
+error_log('Demo-config.php - Method: ' . $method);
+error_log('Demo-config.php - Endpoint: ' . $endpoint);
+
 switch ($endpoint) {
     case 'config':
         if ($method === 'GET') {
