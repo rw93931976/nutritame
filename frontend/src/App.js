@@ -2663,6 +2663,8 @@ function App() {
                 authToken={authToken}
                 subscriptionInfo={subscriptionInfo}
                 demoMode={demoMode}
+                shoppingLists={shoppingLists}
+                setShoppingLists={setShoppingLists}
               />
             )}
           </div>
