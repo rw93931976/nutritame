@@ -39,6 +39,9 @@ switch ($endpoint) {
 }
 
 function getDemoConfig() {
+    // Test marker to confirm this file is being used
+    error_log('NEW demo-config.php file being used for config');
+    
     $config = [
         'demo_mode' => DEMO_MODE,
         'launch_date' => LAUNCH_DATE,
