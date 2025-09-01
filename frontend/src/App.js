@@ -576,7 +576,7 @@ const APIUsageMonitor = ({ userProfile }) => {
 };
 
 // Restaurant Search Component
-const RestaurantSearch = ({ userProfile, onRestaurantSelect }) => {
+const RestaurantSearch = ({ userProfile, onRestaurantSelect, authToken }) => {
   const [searchLocation, setSearchLocation] = useState("");
   const [searchRadius, setSearchRadius] = useState(2000);
   const [searchKeyword, setSearchKeyword] = useState("");
