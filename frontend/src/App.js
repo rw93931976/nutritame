@@ -617,6 +617,10 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect }) => {
         longitude: lng,
         radius: searchRadius,
         keyword: keyword
+      }, {
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        }
       });
       setRestaurants(response.data);
       toast.success(`Found ${response.data.length} restaurants`);
