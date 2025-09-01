@@ -9,6 +9,11 @@ $method = $_SERVER['REQUEST_METHOD'];
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $path_parts = explode('/', trim($path, '/'));
 
+// Debug logging
+error_log('Demo.php - Path: ' . $path);
+error_log('Demo.php - Path parts: ' . json_encode($path_parts));
+error_log('Demo.php - Last part: ' . end($path_parts));
+
 if (end($path_parts) === 'config') {
     if ($method === 'GET') {
         getDemoConfig();
