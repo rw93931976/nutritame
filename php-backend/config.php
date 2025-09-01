@@ -19,7 +19,7 @@ define('DEMO_MODE', true);
 define('LAUNCH_DATE', '2025-10-01');
 
 // External API Keys (add your actual keys)
-define('EMERGENT_LLM_KEY', 'your_emergent_llm_key_here');
+define('EMERGENT_LLM_KEY', 'sk-emergent-a160e6dB01e8072B3C');
 define('GOOGLE_PLACES_API_KEY', 'your_google_places_key_here');
 define('USDA_API_KEY', 'your_usda_api_key_here');
 
