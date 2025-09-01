@@ -34,11 +34,20 @@ const DemoLandingPage = ({ onDemoAccess }) => {
     // Load demo configuration
     const loadDemoConfig = async () => {
       try {
-        const response = await fetch(`${API}/demo-config.php`);
-        if (response.ok) {
-          const config = await response.json();
-          setDemoConfig(config);
-        }
+        // Mock demo config for preview environment
+        const config = {
+          demo_mode: true,
+          launch_date: '2025-10-01',
+          message: 'Currently in demo mode - full access without account creation',
+          launch_requirements: {
+            account_required: true,
+            subscription_required: true,
+            basic_plan: '$9/month',
+            premium_plan: '$19/month',
+            free_trial: '15 days'
+          }
+        };
+        setDemoConfig(config);
       } catch (error) {
         console.error('Failed to load demo config:', error);
       }
