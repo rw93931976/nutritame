@@ -43,6 +43,9 @@ switch ($method) {
 function createUserProfile() {
     $input = json_decode(file_get_contents('php://input'), true);
     
+    // Debug logging
+    error_log('Create profile input: ' . json_encode($input));
+    
     try {
         $pdo = getDBConnection();
         
