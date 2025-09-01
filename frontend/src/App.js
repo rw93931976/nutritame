@@ -1597,7 +1597,11 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken }) => {
 
   const loadChatHistory = async () => {
     try {
-      const response = await axios.get(`${API}/chat/${userProfile.id}`);
+      const response = await axios.get(`${API}/chat/${userProfile.id}`, {
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        }
+      });
       // Only load recent messages to avoid overwhelming the UI
       const recentMessages = response.data.slice(-10);
       if (recentMessages.length > 0) {
