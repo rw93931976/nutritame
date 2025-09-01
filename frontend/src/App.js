@@ -239,7 +239,7 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
         response = await axios.put(`${API}/users/${existingProfile.id}`, profileData);
       } else {
         console.log('Creating new profile');
-        response = await axios.post(`${API}/demo-config.php?endpoint=profile`, profileData);
+        response = await axios.post(`${API}/demo-config.php?endpoint=access`, profileData);
       }
 
       console.log('Profile save response:', response.data);
