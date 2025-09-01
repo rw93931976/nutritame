@@ -1330,7 +1330,7 @@ const RestaurantCard = ({ restaurant, onSelect }) => {
 };
 
 // Main Dashboard Component
-const Dashboard = ({ userProfile, onBack }) => {
+const Dashboard = ({ userProfile, onBack, demoMode }) => {
   const [activeTab, setActiveTab] = useState("chat");
   const [messages, setMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState("");
