@@ -968,18 +968,33 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect, authToken }) => {
 };
 
 // Shopping List Component
-const ShoppingListView = ({ userProfile }) => {
-  const [shoppingLists, setShoppingLists] = useState([]);
+const ShoppingListView = ({ userProfile, shoppingLists, setShoppingLists }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    loadShoppingLists();
+    if (shoppingLists.length === 0) {
+      loadShoppingLists();
+    }
   }, []);
 
   const loadShoppingLists = async () => {
     try {
-      const response = await axios.get(`${API}/shopping-lists/${userProfile.id}`);
-      setShoppingLists(response.data);
+      // Mock shopping lists for preview environment
+      const mockShoppingLists = [
+        {
+          id: 'sample_list_1',
+          name: 'Demo Shopping List',
+          created_date: new Date().toISOString().split('T')[0],
+          items: [
+            { name: 'Greek yogurt (plain)', category: 'proteins', quantity: '32 oz', checked: false },
+            { name: 'Spinach (fresh)', category: 'produce', quantity: '1 bag', checked: false },
+            { name: 'Salmon fillets', category: 'proteins', quantity: '1 lb', checked: true },
+            { name: 'Quinoa', category: 'pantry', quantity: '1 bag', checked: false },
+            { name: 'Mixed berries', category: 'produce', quantity: '1 container', checked: false }
+          ]
+        }
+      ];
+      setShoppingLists(mockShoppingLists);
     } catch (error) {
       console.error("Failed to load shopping lists:", error);
     }
