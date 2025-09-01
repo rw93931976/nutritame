@@ -166,4 +166,26 @@ function callEmergentLLM($prompt) {
     
     return "Thank you for your message! I'm your AI Health Coach here to help with diabetic-friendly meal planning. I can assist with recipes, nutrition advice, carb counting, and creating shopping lists. How can I help you today with your meal planning goals?";
 }
+
+function generateDemoResponse($message) {
+    $message_lower = strtolower($message);
+    
+    // Breakfast suggestions
+    if (strpos($message_lower, 'breakfast') !== false) {
+        return "For a diabetic-friendly breakfast, I recommend:\n\n• 2 scrambled eggs with spinach\n• 1 slice whole grain toast\n• 1/2 cup berries\n• 1 cup unsweetened almond milk\n\nThis meal provides protein to help stabilize blood sugar and fiber to slow carb absorption. Aim for 30-40g total carbs.";
+    }
+    
+    // Lunch suggestions
+    if (strpos($message_lower, 'lunch') !== false) {
+        return "Here's a balanced diabetic lunch:\n\n• Grilled chicken salad with mixed greens\n• 1/2 cup quinoa\n• Olive oil vinaigrette\n• Side of roasted vegetables\n\nThis provides lean protein, complex carbs, and healthy fats while keeping portions controlled for blood sugar management.";
+    }
+    
+    // Dinner suggestions
+    if (strpos($message_lower, 'dinner') !== false) {
+        return "For dinner, try this diabetes-friendly meal:\n\n• 4oz baked salmon\n• 1 cup roasted broccoli\n• 1/2 cup brown rice\n• Small side salad\n\nRich in omega-3s and fiber, this meal helps maintain stable blood glucose levels throughout the evening.";
+    }
+    
+    // General greeting or other messages
+    return "Hello! I'm your NutriTame AI Health Coach, specialized in diabetic meal planning. I can help you with:\n\n• Meal planning and recipes\n• Carb counting guidance\n• Restaurant dining tips\n• Blood sugar management through nutrition\n• Shopping lists for healthy eating\n\nWhat specific nutrition question can I help you with today? Always remember to consult with your healthcare provider for medical decisions.";
+}
 ?>
