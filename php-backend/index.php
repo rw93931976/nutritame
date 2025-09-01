@@ -41,11 +41,19 @@ try {
             break;
             
         case 'chat':
-            include 'api/chat.php';
+            if (DEMO_MODE) {
+                include 'demo-chat.php';
+            } else {
+                include 'api/chat.php';
+            }
             break;
             
         case 'restaurants':
-            include 'api/restaurants.php';
+            if (DEMO_MODE) {
+                include 'demo-restaurants.php';
+            } else {
+                include 'api/restaurants.php';
+            }
             break;
             
         case 'nutrition':
