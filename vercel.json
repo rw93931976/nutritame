@@ -14,9 +14,16 @@
   "functions": {
     "frontend/src/**": {
       "runtime": "nodejs20.x"
+    },
+    "api/**/*.js": {
+      "runtime": "nodejs20.x"
     }
   },
   "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
     {
       "handle": "filesystem"
     },
