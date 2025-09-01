@@ -29,6 +29,32 @@ import DemoCountdownTimer from './components/DemoCountdownTimer';
 
 import { BACKEND_URL, API } from './config';
 
+// Mock AI response generator for preview environment
+const generateMockAIResponse = (messageText) => {
+  const responses = [
+    "Based on your diabetes management needs, I recommend focusing on low-glycemic foods. Here are some meal suggestions:\n\n**Breakfast:**\n- Greek yogurt with berries and nuts\n- Oatmeal with cinnamon and almonds\n- Vegetable omelet with whole grain toast\n\n**Lunch:**\n- Grilled chicken salad with olive oil dressing\n- Quinoa bowl with roasted vegetables\n- Lentil soup with a side of mixed greens\n\n**Dinner:**\n- Baked salmon with steamed broccoli\n- Turkey and vegetable stir-fry\n- Lean beef with roasted sweet potato\n\nRemember to monitor your blood sugar levels and consult with your healthcare provider.",
+    
+    "For restaurant dining with diabetes, here are some tips:\n\n**What to Look For:**\n- Grilled, baked, or steamed options\n- Salads with dressing on the side\n- Lean proteins like fish, chicken, or tofu\n- Vegetable-based dishes\n- Whole grain options when available\n\n**What to Avoid:**\n- Fried foods\n- Sugary sauces and dressings\n- Large portion sizes\n- Refined carbohydrates\n\n**Questions to Ask:**\n- Can you prepare this without added sugar?\n- Is this grilled or fried?\n- Can I substitute vegetables for the starch?\n\nWould you like specific restaurant recommendations in your area?",
+    
+    "Here's a diabetes-friendly meal plan for the week:\n\n**Monday:**\nBreakfast: Scrambled eggs with spinach\nLunch: Chicken and vegetable soup\nDinner: Grilled fish with asparagus\n\n**Tuesday:**\nBreakfast: Greek yogurt parfait\nLunch: Turkey wrap with whole wheat tortilla\nDinner: Lean beef stir-fry\n\n**Wednesday:**\nBreakfast: Oatmeal with nuts\nLunch: Quinoa salad\nDinner: Baked chicken with green beans\n\nThis plan focuses on balanced nutrition, portion control, and blood sugar management. Each meal includes protein, healthy fats, and complex carbohydrates.",
+    
+    "Great question about managing blood sugar! Here are some key strategies:\n\n**Timing:**\n- Eat regular meals every 3-4 hours\n- Don't skip meals\n- Consider smaller, more frequent meals\n\n**Food Choices:**\n- Choose complex carbohydrates over simple sugars\n- Include protein with each meal\n- Add healthy fats like avocado, nuts, or olive oil\n- Fill half your plate with non-starchy vegetables\n\n**Monitoring:**\n- Check blood sugar as recommended by your doctor\n- Keep a food diary to identify patterns\n- Stay hydrated with water\n\n**Exercise:**\n- Take a short walk after meals\n- Aim for 150 minutes of moderate activity per week\n\nAlways consult with your healthcare team for personalized advice!"
+  ];
+  
+  // Simple keyword matching to provide relevant responses
+  const lowerMessage = messageText.toLowerCase();
+  
+  if (lowerMessage.includes('restaurant') || lowerMessage.includes('dining')) {
+    return responses[1];
+  } else if (lowerMessage.includes('meal plan') || lowerMessage.includes('weekly')) {
+    return responses[2];
+  } else if (lowerMessage.includes('blood sugar') || lowerMessage.includes('glucose')) {
+    return responses[3];
+  } else {
+    return responses[0];
+  }
+};
+
 // Map Component for displaying restaurant locations
 const RestaurantMap = ({ center, restaurants, selectedRestaurant, onRestaurantSelect }) => {
   const mapRef = useRef(null);
