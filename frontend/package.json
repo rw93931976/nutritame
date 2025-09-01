@@ -54,8 +54,6 @@
     "vaul": "^1.1.2",
     "zod": "^3.24.4"
  },
-
-}
   "resolutions": {
     "ajv": "^8.12.0",
     "ajv-keywords": "^5.1.0"
