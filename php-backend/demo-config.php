@@ -31,6 +31,7 @@ switch ($endpoint) {
         break;
         
     case 'profile':
+        error_log('Profile case matched! Method: ' . $method);
         if ($method === 'POST') {
             createDemoProfile();
         } else {
