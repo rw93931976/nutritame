@@ -59,22 +59,24 @@ const DemoLandingPage = ({ onDemoAccess }) => {
   const handleDemoAccess = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API}/demo-config.php?endpoint=access`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      // Mock demo access for preview environment
+      const demoData = {
+        demo_access: true,
+        access_token: 'demo_token_' + Math.random().toString(36).substr(2, 9),
+        user: {
+          id: 'demo_user_' + Math.random().toString(36).substr(2, 9),
+          email: email || 'demo_' + Math.random().toString(36).substr(2, 8) + '@nutritame.com',
+          diabetes_type: 'type2',
+          subscription_tier: 'premium',
+          subscription_status: 'active'
         },
-        body: JSON.stringify({
-          email: email || undefined
-        })
-      });
+        expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        demo_notice: 'This is a demo account with full premium access until 2025-10-01',
+        launch_date: '2025-10-01',
+        message: 'Demo access created successfully! Enjoy full premium features.'
+      };
 
-      if (!response.ok) {
-        throw new Error('Failed to create demo access');
-      }
-
-      const data = await response.json();
-      onDemoAccess(data);
+      onDemoAccess(demoData);
       
     } catch (error) {
       console.error('Demo access error:', error);
