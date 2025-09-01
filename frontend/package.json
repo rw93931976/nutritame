@@ -58,7 +58,7 @@
     "start": "react-scripts start", 
     "build": "react-scripts build && echo '/* /index.html 200' > build/_redirects",
     "test": "react-scripts test",
-    "vercel-build": "rm -rf node_modules package-lock.json && npm install --no-audit --legacy-peer-deps && npm run build"
+    "vercel-build": "npm ci --no-audit || npm install --no-audit && node -p \"'ajv=' + require('ajv/package.json').version + ', ajv-keywords=' + require('ajv-keywords/package.json').version\" && npm run build"
 },
   "browserslist": {
     "production": [
