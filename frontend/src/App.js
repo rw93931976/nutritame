@@ -1496,7 +1496,7 @@ const RestaurantCard = ({ restaurant, onSelect }) => {
 };
 
 // Main Dashboard Component
-const Dashboard = ({ userProfile, onBack, demoMode, authToken }) => {
+const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, setShoppingLists }) => {
   const [activeTab, setActiveTab] = useState("chat");
   const [messages, setMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState("");
