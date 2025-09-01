@@ -239,7 +239,28 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
         response = await axios.put(`${API}/users/${existingProfile.id}`, profileData);
       } else {
         console.log('Creating new profile');
-        response = await axios.post(`${API}/demo-config.php?endpoint=access`, profileData);
+        // Mock profile creation for preview environment
+        const mockProfile = {
+          id: 'profile_' + Math.random().toString(36).substr(2, 9),
+          email: profileData.email || 'profile_' + Math.random().toString(36).substr(2, 8) + '@nutritame.com',
+          tenant_id: 'tenant_' + Math.random().toString(36).substr(2, 9),
+          diabetes_type: profileData.diabetes_type || 'type2',
+          age: profileData.age || null,
+          gender: profileData.gender || null,
+          activity_level: profileData.activity_level || null,
+          health_goals: profileData.health_goals || [],
+          food_preferences: profileData.food_preferences || [],
+          cultural_background: profileData.cultural_background || null,
+          allergies: profileData.allergies || [],
+          dislikes: profileData.dislikes || [],
+          cooking_skill: profileData.cooking_skill || null,
+          phone_number: profileData.phone_number || null,
+          subscription_tier: 'premium',
+          subscription_status: 'active',
+          is_demo_user: true,
+          created_at: new Date().toISOString()
+        };
+        response = { data: mockProfile };
       }
 
       console.log('Profile save response:', response.data);
