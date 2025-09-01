@@ -71,70 +71,26 @@ function createDemoAccess() {
     $input = json_decode(file_get_contents('php://input'), true);
     $provided_email = $input['email'] ?? null;
     
-    try {
-        $pdo = getDBConnection();
-        
-        $demo_email = $provided_email ?: 'demo_' . substr(uniqid(), -8) . '@nutritame.com';
-        
-        $user_id = generateUUID();
-        $tenant_id = generateUUID();
-        
-        $stmt = $pdo->prepare("
-            INSERT INTO users (
-                id, email, subscription_status, subscription_tier, 
-                subscription_end_date, tenant_id, is_demo_user, diabetes_type, created_at
-            ) VALUES (?, ?, 'active', 'premium', ?, ?, TRUE, 'type2', NOW())
-        ");
-        
-        $subscription_end = date('Y-m-d H:i:s', strtotime('+365 days'));
-        $stmt->execute([$user_id, $demo_email, $subscription_end, $tenant_id]);
-        
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-        $stmt->execute([$user_id]);
-        $demo_user = $stmt->fetch();
-        
-        $token = generateJWT($user_id, $tenant_id);
-        
-        jsonResponse([
-            'demo_access' => true,
-            'access_token' => $token,
-            'user' => [
-                'id' => $demo_user['id'],
-                'email' => $demo_user['email'],
-                'diabetes_type' => $demo_user['diabetes_type'] ?? 'type2',
-                'subscription_tier' => $demo_user['subscription_tier'],
-                'subscription_status' => $demo_user['subscription_status']
-            ],
-            'expires_at' => date('Y-m-d\TH:i:s\Z', time() + JWT_EXPIRY),
-            'demo_notice' => 'This is a demo account with full premium access until ' . LAUNCH_DATE,
-            'launch_date' => LAUNCH_DATE,
-            'message' => 'Demo access created successfully! Enjoy full premium features.'
-        ]);
-        
-    } catch (Exception $e) {
-        error_log('Demo access error: ' . $e->getMessage());
-        
-        // Return mock data if database fails
-        $user_id = generateUUID();
-        $tenant_id = generateUUID();
-        $token = generateJWT($user_id, $tenant_id);
-        
-        jsonResponse([
-            'demo_access' => true,
-            'access_token' => $token,
-            'user' => [
-                'id' => $user_id,
-                'email' => $provided_email ?: 'demo_' . substr(uniqid(), -8) . '@nutritame.com',
-                'diabetes_type' => 'type2',
-                'subscription_tier' => 'premium',
-                'subscription_status' => 'active'
-            ],
-            'expires_at' => date('Y-m-d\TH:i:s\Z', time() + JWT_EXPIRY),
-            'demo_notice' => 'This is a demo account with full premium access until ' . LAUNCH_DATE,
-            'launch_date' => LAUNCH_DATE,
-            'message' => 'Demo access created successfully! Enjoy full premium features.'
-        ]);
-    }
+    // For demo mode, always return success without database dependency
+    $user_id = generateUUID();
+    $tenant_id = generateUUID();
+    $token = generateJWT($user_id, $tenant_id);
+    
+    jsonResponse([
+        'demo_access' => true,
+        'access_token' => $token,
+        'user' => [
+            'id' => $user_id,
+            'email' => $provided_email ?: 'demo_' . substr(uniqid(), -8) . '@nutritame.com',
+            'diabetes_type' => 'type2',
+            'subscription_tier' => 'premium',
+            'subscription_status' => 'active'
+        ],
+        'expires_at' => date('Y-m-d\TH:i:s\Z', time() + JWT_EXPIRY),
+        'demo_notice' => 'This is a demo account with full premium access until ' . LAUNCH_DATE,
+        'launch_date' => LAUNCH_DATE,
+        'message' => 'Demo access created successfully! Enjoy full premium features.'
+    ]);
 }
 
 function createDemoProfile() {
