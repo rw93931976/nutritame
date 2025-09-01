@@ -760,7 +760,7 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect, authToken }) => {
       
       setRestaurants(filteredRestaurants);
       if (filteredRestaurants.length > 0) {
-        setMapCenter({ lat: filteredRestaurants[0].latitude, lng: filteredRestaurants[0].longitude });
+        setSearchCenter({ latitude: filteredRestaurants[0].latitude, longitude: filteredRestaurants[0].longitude });
       }
       
     } catch (error) {
