@@ -2118,6 +2118,7 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken }) => {
             <RestaurantSearch 
               userProfile={userProfile} 
               onRestaurantSelect={handleRestaurantSelect}
+              authToken={authToken}
             />
           </TabsContent>
 
