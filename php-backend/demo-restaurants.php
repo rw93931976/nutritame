@@ -6,20 +6,26 @@
 require_once 'config.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
+$request_uri = $_SERVER['REQUEST_URI'];
 
 if ($method === 'POST') {
-    $input = json_decode(file_get_contents('php://input'), true);
-    
-    // Get location data
-    $latitude = $input['latitude'] ?? 40.7128;
-    $longitude = $input['longitude'] ?? -74.0060;
-    $location = $input['location'] ?? 'Demo City';
-    $keyword = $input['keyword'] ?? '';
-    
-    // Generate demo restaurant data
-    $restaurants = generateDemoRestaurants($latitude, $longitude, $keyword);
-    
-    jsonResponse($restaurants);
+    // Handle both /restaurants/search and /restaurants/search-by-location
+    if (strpos($request_uri, '/search') !== false) {
+        $input = json_decode(file_get_contents('php://input'), true);
+        
+        // Get location data
+        $latitude = $input['latitude'] ?? 40.7128;
+        $longitude = $input['longitude'] ?? -74.0060;
+        $location = $input['location'] ?? 'Demo City';
+        $keyword = $input['keyword'] ?? '';
+        
+        // Generate demo restaurant data
+        $restaurants = generateDemoRestaurants($latitude, $longitude, $keyword);
+        
+        jsonResponse($restaurants);
+    } else {
+        jsonResponse(['error' => 'Invalid endpoint'], 404);
+    }
 } else {
     jsonResponse(['error' => 'Method not allowed'], 405);
 }
