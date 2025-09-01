@@ -1709,19 +1709,12 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken }) => {
 
     try {
       console.log('Making API call to AI...');
-      const response = await axios.post(`${API}/chat`, {
-        user_id: userProfile.id,
-        message: messageText
-      }, {
-        headers: {
-          'Authorization': `Bearer ${authToken}`
-        }
-      });
-
-      console.log('AI response received:', response.data);
-
+      
+      // Mock AI response for preview environment
+      const mockResponse = generateMockAIResponse(messageText);
+      
       // Clean up AI response - remove markdown formatting
-      const cleanedResponse = response.data.response
+      const cleanedResponse = mockResponse
         .replace(/\*\*(.*?)\*\*/g, '$1')  // Remove **bold**
         .replace(/\*(.*?)\*/g, '$1')     // Remove *italic*
         .replace(/#{1,6}\s/g, '')        // Remove # headers
@@ -1742,7 +1735,8 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken }) => {
 
       // Add AI response to UI
       setMessages(prev => [...prev.slice(0, -1), {
-        ...response.data,
+        id: `ai-${Date.now()}`,
+        message: messageText,
         response: cleanedResponse,
         isUser: false
       }]);
