@@ -145,7 +145,8 @@ function createUserProfile() {
         
     } catch (Exception $e) {
         error_log('Create user error: ' . $e->getMessage());
-        jsonResponse(['error' => 'Failed to create user profile'], 500);
+        error_log('Stack trace: ' . $e->getTraceAsString());
+        jsonResponse(['error' => 'Failed to create user profile', 'details' => $e->getMessage()], 500);
     }
 }
 
