@@ -17,6 +17,10 @@ if (end($path_parts) === 'config') {
     if ($method === 'POST') {
         createDemoAccess();
     }
+} elseif (end($path_parts) === 'profile') {
+    if ($method === 'POST') {
+        createDemoProfile();
+    }
 } else {
     jsonResponse(['error' => 'Not found'], 404);
 }
