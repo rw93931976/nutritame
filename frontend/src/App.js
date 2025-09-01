@@ -240,7 +240,7 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
       } else {
         console.log('Creating new demo profile');
         // Use demo profile endpoint for demo mode
-        response = await axios.post(`${API}/demo-config.php?endpoint=profile`, profileData);
+        response = await axios.post(`${API}/demo/profile`, profileData);
       }
 
       console.log('Profile save response:', response.data);
