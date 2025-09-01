@@ -37,7 +37,7 @@ try {
             break;
             
         case 'profile':
-            include 'profile.php';
+            jsonResponse(['message' => 'Profile endpoint reached', 'method' => $method]);
             break;
             
         case 'chat':
