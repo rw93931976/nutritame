@@ -2310,7 +2310,11 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken }) => {
           </TabsContent>
 
           <TabsContent value="shopping">
-            <ShoppingListView userProfile={userProfile} />
+            <ShoppingListView 
+              userProfile={userProfile} 
+              shoppingLists={shoppingLists}
+              setShoppingLists={setShoppingLists}
+            />
           </TabsContent>
         </Tabs>
 
