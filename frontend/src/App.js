@@ -1653,6 +1653,10 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken }) => {
       const response = await axios.post(`${API}/chat`, {
         user_id: userProfile.id,
         message: messageText
+      }, {
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        }
       });
 
       console.log('AI response received:', response.data);
