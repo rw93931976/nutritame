@@ -650,6 +650,10 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect, authToken }) => {
         location: searchLocation,
         radius: searchRadius,
         keyword: searchKeyword
+      }, {
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        }
       });
       
       // Also get the geocoded coordinates for the map
