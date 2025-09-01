@@ -5,10 +5,17 @@
       "src": "frontend/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "build"
+        "distDir": "build",
+        "installCommand": "cd frontend && rm -f package-lock.json && npm install --legacy-peer-deps",
+        "buildCommand": "cd frontend && npm run vercel-build"
       }
     }
   ],
+  "functions": {
+    "frontend/src/**": {
+      "runtime": "nodejs20.x"
+    }
+  },
   "routes": [
     {
       "handle": "filesystem"
