@@ -629,6 +629,7 @@ const RestaurantSearch = ({ userProfile, onRestaurantSelect, authToken }) => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [restaurants, setRestaurants] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [searchCenter, setSearchCenter] = useState(null);
