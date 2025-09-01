@@ -62,7 +62,7 @@
     "start": "react-scripts start", 
     "build": "react-scripts build && echo '/* /index.html 200' > build/_redirects",
     "test": "react-scripts test",
-    "vercel-build": "npm ci --no-audit && npm ls ajv ajv-keywords || true && npm run build"
+    "vercel-build": "npm install ajv@8.12.0 ajv-keywords@5.1.0 schema-utils@4.2.0 terser-webpack-plugin@5.3.10 --no-audit --force && npm run build"
 },
   "browserslist": {
     "production": [
