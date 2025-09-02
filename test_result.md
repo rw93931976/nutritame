@@ -553,13 +553,15 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Demo Countdown Timer Feature"
-  stuck_tasks:
-    - "Demo Countdown Timer Feature"
+    - "AI Health Coach Real AI Integration"
+    - "Plan Gating & Consultation Limits"
+    - "AI Coach Database Schema"
+    - "Feature Flags System"
+    - "AI Health Coach API Endpoints"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
-  completed_focus:
-    - "Profile Page Navigation Links"
+  completed_focus: []
 
   - task: "Shopping List Display Fix"
     implemented: true
