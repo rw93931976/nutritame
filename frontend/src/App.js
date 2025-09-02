@@ -1625,6 +1625,19 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
+  // AI Health Coach State
+  const [aiCoachFeatureFlags, setAiCoachFeatureFlags] = useState(null);
+  const [aiCoachDisclaimerAccepted, setAiCoachDisclaimerAccepted] = useState(false);
+  const [showAiCoachDisclaimer, setShowAiCoachDisclaimer] = useState(false);
+  const [consultationLimit, setConsultationLimit] = useState(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [aiCoachSessions, setAiCoachSessions] = useState([]);
+  const [currentSessionId, setCurrentSessionId] = useState(null);
+  const [showSessionHistory, setShowSessionHistory] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState(null);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+
   // Auto-scroll to show start of latest AI response (not the very bottom)
   const scrollToLatestResponse = () => {
     // Find all messages
