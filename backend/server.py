@@ -875,6 +875,141 @@ google_places = GooglePlacesClient()
 usda_nutrition = USDANutritionClient()
 
 # =============================================
+# AI HEALTH COACH HELPER FUNCTIONS
+# =============================================
+
+async def check_consultation_limit(user_id: str) -> dict:
+    """Check if user has remaining consultations for the month"""
+    try:
+        # Get current month
+        current_month = datetime.now().strftime("%Y-%m")
+        
+        # Get user's consultation data
+        consultation_doc = await db.consultation_limits.find_one({"user_id": user_id})
+        
+        if not consultation_doc:
+            # Create new consultation limit document
+            consultation_doc = {
+                "user_id": user_id,
+                "consultation_count": 0,
+                "consultation_month": current_month,
+                "plan": "standard",  # Default plan
+                "last_reset": datetime.now(timezone.utc)
+            }
+            await db.consultation_limits.insert_one(consultation_doc)
+        
+        # Reset count if new month
+        if consultation_doc["consultation_month"] != current_month:
+            consultation_doc["consultation_count"] = 0
+            consultation_doc["consultation_month"] = current_month
+            consultation_doc["last_reset"] = datetime.now(timezone.utc)
+            await db.consultation_limits.update_one(
+                {"user_id": user_id},
+                {"$set": consultation_doc}
+            )
+        
+        # Check limits based on plan
+        plan = consultation_doc.get("plan", "standard")
+        limit = STANDARD_CONSULTATION_LIMIT if plan == "standard" else PREMIUM_CONSULTATION_LIMIT
+        current_count = consultation_doc["consultation_count"]
+        
+        can_use = limit == -1 or current_count < limit  # -1 means unlimited
+        
+        return {
+            "can_use": can_use,
+            "current_count": current_count,
+            "limit": limit,
+            "plan": plan,
+            "remaining": limit - current_count if limit != -1 else -1
+        }
+        
+    except Exception as e:
+        logging.error(f"Error checking consultation limit: {e}")
+        return {"can_use": False, "error": str(e)}
+
+async def increment_consultation_count(user_id: str):
+    """Increment user's consultation count"""
+    try:
+        current_month = datetime.now().strftime("%Y-%m")
+        await db.consultation_limits.update_one(
+            {"user_id": user_id},
+            {
+                "$inc": {"consultation_count": 1},
+                "$set": {"consultation_month": current_month}
+            },
+            upsert=True
+        )
+        return True
+    except Exception as e:
+        logging.error(f"Error incrementing consultation count: {e}")
+        return False
+
+async def get_ai_response(message: str, user_id: str, session_id: str) -> str:
+    """Get AI response using emergentintegrations with rate limiting and retry"""
+    try:
+        # Initialize LLM chat with guardrail prompt
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=session_id,
+            system_message=HEALTH_COACH_PROMPT
+        )
+        
+        # Configure model based on environment
+        if LLM_PROVIDER == "openai":
+            chat.with_model("openai", LLM_MODEL)
+        elif LLM_PROVIDER == "anthropic":
+            chat.with_model("anthropic", LLM_MODEL)
+        elif LLM_PROVIDER == "google":
+            chat.with_model("gemini", LLM_MODEL)
+        
+        # Create user message
+        user_message = UserMessage(text=message)
+        
+        # Get response with retry logic
+        max_retries = 3
+        retry_delay = 1
+        
+        for attempt in range(max_retries):
+            try:
+                response = await chat.send_message(user_message)
+                return response
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    logging.warning(f"AI response attempt {attempt + 1} failed: {e}, retrying in {retry_delay}s")
+                    await asyncio.sleep(retry_delay)
+                    retry_delay *= 2  # Exponential backoff
+                else:
+                    raise e
+                    
+    except Exception as e:
+        logging.error(f"Error getting AI response: {e}")
+        # Fallback response
+        return "I'm sorry, I'm having trouble connecting right now. Please try again in a moment. If the issue persists, please contact support."
+
+async def check_disclaimer_acceptance(user_id: str) -> bool:
+    """Check if user has accepted the disclaimer"""
+    try:
+        disclaimer_doc = await db.disclaimer_acceptances.find_one({"user_id": user_id})
+        return disclaimer_doc is not None
+    except Exception as e:
+        logging.error(f"Error checking disclaimer acceptance: {e}")
+        return False
+
+async def save_disclaimer_acceptance(user_id: str):
+    """Save user's disclaimer acceptance"""
+    try:
+        disclaimer_doc = {
+            "user_id": user_id,
+            "accepted_at": datetime.now(timezone.utc),
+            "disclaimer_text": "Not a medical device. The AI Health Coach provides general nutrition guidance only and is not a substitute for professional medical advice. Always consult your healthcare provider."
+        }
+        await db.disclaimer_acceptances.insert_one(disclaimer_doc)
+        return True
+    except Exception as e:
+        logging.error(f"Error saving disclaimer acceptance: {e}")
+        return False
+
+# =============================================
 # DEMO MODE ENDPOINTS
 # =============================================
 
