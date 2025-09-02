@@ -315,9 +315,9 @@ class AIHealthCoachTester:
         )
         
         if success:
-            # Verify AI response structure
-            if 'message' in response:
-                ai_message = response['message']
+            # Verify AI response structure (actual API format)
+            if 'ai_response' in response:
+                ai_message = response['ai_response']
                 
                 # Verify message structure
                 required_fields = ['id', 'session_id', 'role', 'text', 'created_at']
@@ -370,9 +370,25 @@ class AIHealthCoachTester:
                 else:
                     print(f"   ⚠️  AI response missing shopping list offer")
                 
+                # Verify user message was also saved
+                if 'user_message' in response:
+                    user_message = response['user_message']
+                    if user_message.get('role') == 'user' and user_message.get('text') == message_data['message']:
+                        print(f"   ✅ User message correctly saved")
+                    else:
+                        print(f"   ❌ User message not properly saved")
+                        return False
+                
+                # Verify consultation was used
+                if response.get('consultation_used') is True:
+                    print(f"   ✅ Consultation count incremented")
+                else:
+                    print(f"   ❌ Consultation count not incremented")
+                    return False
+                
                 return True
             else:
-                print(f"   ❌ Missing AI message in response")
+                print(f"   ❌ Missing AI response in response")
                 return False
         return False
 
