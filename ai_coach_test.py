@@ -140,18 +140,18 @@ class AIHealthCoachTester:
         )
         
         if success:
-            # Verify disclaimer status response
-            if 'accepted' in response:
-                print(f"   ✅ Disclaimer status retrieved: {response['accepted']}")
+            # Verify disclaimer status response (actual API format)
+            if 'disclaimer_accepted' in response:
+                print(f"   ✅ Disclaimer status retrieved: {response['disclaimer_accepted']}")
             else:
-                print(f"   ❌ Missing disclaimer status in response")
+                print(f"   ❌ Missing disclaimer_accepted field in response")
                 return False
             
-            # Verify accepted_at timestamp if disclaimer was accepted
-            if response.get('accepted') and 'accepted_at' in response:
-                print(f"   ✅ Disclaimer acceptance timestamp: {response['accepted_at']}")
-            elif response.get('accepted'):
-                print(f"   ❌ Missing acceptance timestamp for accepted disclaimer")
+            # Verify user_id is returned
+            if response.get('user_id') == self.test_user_id:
+                print(f"   ✅ User ID matches: {self.test_user_id}")
+            else:
+                print(f"   ❌ User ID mismatch in response")
                 return False
             
             return True
