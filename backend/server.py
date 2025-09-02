@@ -40,6 +40,16 @@ db = client[os.environ['DB_NAME']]
 DEMO_MODE = os.environ.get('DEMO_MODE', 'true').lower() == 'true'
 LAUNCH_DATE = os.environ.get('LAUNCH_DATE', '2025-02-01')  # Set your launch date
 
+# AI Health Coach Configuration
+LLM_PROVIDER = os.environ.get('LLM_PROVIDER', 'openai')
+LLM_MODEL = os.environ.get('LLM_MODEL', 'gpt-4o-mini') 
+FEATURE_COACH = os.environ.get('FEATURE_COACH', 'true').lower() == 'true'
+EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY')
+
+# Plan limits
+STANDARD_CONSULTATION_LIMIT = 10
+PREMIUM_CONSULTATION_LIMIT = -1  # Unlimited
+
 # Create the main app
 app = FastAPI(title="GlucoPlanner SaaS", version="2.0.0")
 
