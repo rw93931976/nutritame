@@ -2682,6 +2682,20 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
                 className="flex-1 space-y-4 overflow-y-auto pr-2 pb-6"
                 style={{ scrollBehavior: 'smooth' }}
               >
+                {/* Inline AI Health Coach Disclaimer Banner */}
+                {messages.length > 1 && !messages.find(m => m.isWelcome) && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-yellow-100 flex items-center justify-center">
+                        <span className="text-yellow-600 text-xs font-bold">!</span>
+                      </div>
+                      <p className="text-sm text-yellow-800">
+                        <strong>Not a medical device.</strong> For diagnosis or treatment, consult a professional.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 {messages.map((msg, index) => (
                   <div key={msg.id || index} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'} message-enter`}>
                     <Card className={`max-w-[85%] transition-all duration-300 group ${
