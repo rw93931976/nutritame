@@ -1100,7 +1100,7 @@ const ShoppingListView = ({ userProfile, shoppingLists, setShoppingLists }) => {
                               {item.checked && <Check className="h-3 w-3" />}
                             </button>
                             <span className={`flex-1 ${item.checked ? 'line-through text-gray-500' : 'text-gray-800'}`}>
-                              {item.item}
+                              {item.name}
                             </span>
                             {item.quantity && (
                               <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
