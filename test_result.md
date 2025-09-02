@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Fix frontend-backend connectivity issue where interactive buttons are not working. Frontend loads correctly at https://app.nutritame.com/ but buttons like 'Start Free Demo Now' cannot connect to the PHP backend API."
+user_problem_statement: "AI Health Coach Refinement: Transform the current demo-only AI Health Coach into a fully functional, gated, and compliant feature with real AI integration, plan limits (Standard: 10/month, Premium: unlimited), conversation history, search functionality, and proper medical disclaimers."
 
   - task: "Frontend-Backend API Connectivity"
     implemented: true
