@@ -168,6 +168,9 @@ class UserProfile(BaseModel):
     dislikes: List[str] = []
     cooking_skill: Optional[str] = None  # "beginner", "intermediate", "advanced"
     phone_number: Optional[str] = None  # For SMS notifications
+    plan: str = "standard"  # "standard" or "premium" 
+    consultation_count: int = 0
+    consultation_month: Optional[str] = None  # YYYY-MM format
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class UserProfileCreate(BaseModel):
