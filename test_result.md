@@ -253,6 +253,53 @@ user_problem_statement: "AI Health Coach Refinement: Transform the current demo-
         comment: "Fixed navigation links in DemoModeBanner component. Added click handlers to all banner elements: PRE-LAUNCH DEMO badge, All Premium Features Free, No Account Required, Launch Date, and mobile version. Each element now shows informative alerts when clicked and has proper hover effects with cursor pointer."
 
 backend:
+  - task: "AI Health Coach Real AI Integration"
+    implemented: false
+    working: "NA"
+    file: "backend/server.py, backend/requirements.txt"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Starting implementation of model-agnostic AI wrapper with Emergent LLM Key default. Supporting openai:gpt-4o, anthropic:claude-sonnet, google:gemini-pro via LLM_PROVIDER env var. Including rate limiting, retry with backoff, and guardrail system prompt for diabetes nutrition guidance."
+
+  - task: "Plan Gating & Consultation Limits"
+    implemented: false
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implementing subscription plan logic with Standard (10 consults/month) vs Premium (unlimited). Adding consultationCount, consultationMonth fields to users collection with monthly reset logic."
+
+  - task: "AI Coach Database Schema"
+    implemented: false
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Creating MongoDB collections: users (plan, consultationCount, consultationMonth), coach_sessions (userId, title, disclaimerAcceptedAt), coach_messages (sessionId, role, text, createdAt). Adding keyword search indexing."
+
+  - task: "Feature Flags System"
+    implemented: false
+    working: "NA"
+    file: "backend/.env, backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implementing lightweight feature flag system with FEATURE_COACH env var and auth-protected admin endpoint for flag verification."
   - task: "User Profile API Endpoints"
     implemented: true
     working: true
