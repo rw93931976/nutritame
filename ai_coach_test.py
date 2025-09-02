@@ -203,15 +203,18 @@ class AIHealthCoachTester:
         """Test POST /api/coach/sessions - Create new AI coach session"""
         print("\n🎯 Testing AI Coach Session Creation...")
         
-        # The API expects user_id as a query parameter, not in the body
+        # Create session with proper request format
         session_data = {
             "title": "Test AI Health Coach Session"
         }
         
+        # Add user_id as query parameter
+        url = f"coach/sessions?user_id={self.test_user_id}"
+        
         success, response = self.run_test(
             "Create AI Coach Session",
             "POST",
-            f"coach/sessions?user_id={self.test_user_id}",
+            url,
             200,
             data=session_data
         )
