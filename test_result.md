@@ -312,6 +312,18 @@ backend:
       - working: "NA"
         agent: "main"
         comment: "✅ IMPLEMENTED: Added feature flags system with FEATURE_COACH=true in .env, LLM_PROVIDER=openai, LLM_MODEL=gpt-4o-mini environment variables. Created /api/coach/feature-flags endpoint for flag verification. Ready for testing."
+
+  - task: "AI Health Coach API Endpoints"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ IMPLEMENTED: Created comprehensive AI Health Coach API endpoints: GET /api/coach/feature-flags, POST /api/coach/accept-disclaimer, GET /api/coach/disclaimer-status/{user_id}, GET /api/coach/consultation-limit/{user_id}, POST /api/coach/sessions, GET /api/coach/sessions/{user_id}, POST /api/coach/message, GET /api/coach/messages/{session_id}, GET /api/coach/search/{user_id}. All endpoints include proper error handling, consultation limit checking, disclaimer requirements, and database operations. Ready for testing."
   - task: "User Profile API Endpoints"
     implemented: true
     working: true
