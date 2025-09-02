@@ -2357,6 +2357,214 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
               />
             )}
 
+            {/* AI Health Coach Disclaimer Modal */}
+            {showAiCoachDisclaimer && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <Card className="w-full max-w-md mx-4">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <ChefHat className="h-5 w-5 text-emerald-600" />
+                      AI Health Coach Disclaimer
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <p className="text-sm text-gray-700">
+                        <strong>Not a medical device.</strong> The AI Health Coach provides general nutrition guidance only and is not a substitute for professional medical advice. Always consult your healthcare provider.
+                      </p>
+                    </div>
+                    <div className="flex gap-3">
+                      <Button 
+                        onClick={handleAiCoachDisclaimerAccept}
+                        className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                      >
+                        Accept & Continue
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setShowAiCoachDisclaimer(false)}
+                        className="flex-1"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {/* Consultation Limit Badge & Upgrade Modal */}
+            {consultationLimit && (
+              <div className="mb-4">
+                <div className="bg-gradient-to-r from-blue-50 to-emerald-50 border border-blue-200 rounded-lg p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Crown className="h-4 w-4 text-blue-600" />
+                      <span className="text-sm font-medium text-gray-700">
+                        {consultationLimit.plan === 'premium' ? (
+                          "Premium Plan: Unlimited consultations"
+                        ) : (
+                          `Standard Plan: ${consultationLimit.current_count}/${consultationLimit.limit} consultations used this month`
+                        )}
+                      </span>
+                    </div>
+                    {consultationLimit.plan === 'standard' && (
+                      <Badge variant={consultationLimit.remaining > 3 ? "default" : "destructive"}>
+                        {consultationLimit.remaining} remaining
+                      </Badge>
+                    )}
+                  </div>
+                  {consultationLimit.plan === 'standard' && consultationLimit.remaining <= 3 && (
+                    <p className="text-xs text-gray-600 mt-2">
+                      Running low on consultations. Upgrade to Premium for unlimited access!
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Upgrade to Premium Modal */}
+            {showUpgradeModal && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <Card className="w-full max-w-md mx-4">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Crown className="h-5 w-5 text-yellow-600" />
+                      Upgrade to Premium
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="text-center">
+                      <p className="text-gray-700 mb-4">
+                        You've reached your monthly consultation limit. Upgrade to Premium for unlimited AI Health Coach access.
+                      </p>
+                      <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                        <h4 className="font-semibold text-gray-800 mb-2">Premium Features:</h4>
+                        <ul className="text-sm text-gray-600 space-y-1">
+                          <li>• Unlimited AI Health Coach consultations</li>
+                          <li>• Priority support</li>
+                          <li>• Advanced meal planning</li>
+                          <li>• Personalized recommendations</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <Button 
+                        onClick={() => toast.info("Upgrade functionality coming soon!")}
+                        className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+                      >
+                        Upgrade Now
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setShowUpgradeModal(false)}
+                        className="flex-1"
+                      >
+                        Maybe Later
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {/* AI Coach Session History Panel */}
+            {showSessionHistory && (
+              <Card className="mb-4">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BookOpen className="h-5 w-5 text-emerald-600" />
+                    AI Coach Sessions
+                  </CardTitle>
+                  <CardDescription>
+                    Your previous AI Health Coach conversations
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {aiCoachSessions.length === 0 ? (
+                    <p className="text-gray-500 text-center py-4">No sessions yet. Start your first AI Health Coach conversation!</p>
+                  ) : (
+                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                      {aiCoachSessions.map((session) => (
+                        <div
+                          key={session.id}
+                          className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg hover:bg-emerald-100 cursor-pointer transition-colors group"
+                          onClick={() => loadAiCoachSession(session)}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-gray-900 truncate">
+                              {session.title}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {new Date(session.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <ChevronDown className="h-4 w-4 text-gray-400 transform -rotate-90" />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Search Results Panel */}
+            {showSearchResults && searchResults && (
+              <Card className="mb-4">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Search className="h-5 w-5 text-purple-600" />
+                    Search Results for "{searchQuery}"
+                  </CardTitle>
+                  <CardDescription>
+                    Found {searchResults.results?.length || 0} sessions with matching content
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {!searchResults.results || searchResults.results.length === 0 ? (
+                    <p className="text-gray-500 text-center py-4">No results found for your search.</p>
+                  ) : (
+                    <div className="space-y-3 max-h-80 overflow-y-auto">
+                      {searchResults.results.map((result) => (
+                        <div
+                          key={result.session.id}
+                          className="p-4 bg-purple-50 rounded-lg border border-purple-100 group cursor-pointer"
+                          onClick={() => loadAiCoachSession(result.session)}
+                        >
+                          <div className="flex items-start justify-between mb-2">
+                            <h4 className="font-medium text-gray-900 text-sm">
+                              {result.session.title}
+                            </h4>
+                            <Badge variant="outline" className="text-xs">
+                              {result.messages.length} matches
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-gray-500 mb-2">
+                            {new Date(result.session.created_at).toLocaleDateString()}
+                          </p>
+                          {result.messages.slice(0, 2).map((msg) => (
+                            <div key={msg.id} className="text-sm text-gray-700 mb-1 truncate">
+                              <span className="font-medium">{msg.role}:</span> {msg.text.substring(0, 100)}...
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="mt-3 pt-3 border-t">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setShowSearchResults(false)}
+                      className="w-full"
+                    >
+                      Close Search Results
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Saved Chats Panel */}
             {showSavedChats && (
               <Card className="mb-4">
