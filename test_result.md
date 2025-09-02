@@ -273,11 +273,11 @@ backend:
 
   - task: "Plan Gating & Consultation Limits"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -285,6 +285,9 @@ backend:
       - working: "NA"
         agent: "main"
         comment: "✅ IMPLEMENTED: Added plan gating with Standard (10 consults/month) vs Premium (unlimited) limits. Implemented check_consultation_limit() and increment_consultation_count() functions with monthly reset logic. Added plan, consultation_count, consultation_month fields to UserProfile. Created consultation_limits collection for tracking usage. Ready for testing."
+      - working: true
+        agent: "testing"
+        comment: "✅ COMPREHENSIVE TESTING COMPLETED: Plan gating and consultation limits working perfectly. ✅ Standard plan correctly limited to 10 consultations per month. ✅ Premium plan correctly set to unlimited consultations (-1 limit). ✅ Monthly reset logic functioning correctly - automatically resets counts for new months. ✅ Remaining consultations calculated accurately (10 → 9 after one consultation used). ✅ Consultation count incremented properly after AI interactions. ✅ Plan enforcement working - can_use flag correctly indicates availability. Plan gating system is production-ready."
 
   - task: "AI Coach Database Schema"
     implemented: true
