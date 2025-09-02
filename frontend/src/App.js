@@ -2299,38 +2299,46 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
               </div>
               
               <div className="flex items-center gap-2">
-                {/* New Chat Button */}
+                {/* New AI Coach Session Button */}
                 <button
-                  onClick={startNewChat}
+                  onClick={() => createAiCoachSession()}
                   className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-all duration-200"
-                  title="Start new chat"
+                  title="Start new AI Coach session"
                 >
                   <MessageSquarePlus className="h-4 w-4" />
-                  New Chat
+                  New Session
                 </button>
                 
-                {/* Save Chat Button */}
+                {/* Session History Button */}
                 <button
-                  onClick={saveCurrentChat}
-                  disabled={messages.length <= 1}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                  title="Save current chat"
+                  onClick={() => setShowSessionHistory(!showSessionHistory)}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                  title="View session history"
                 >
-                  <Save className="h-4 w-4" />
-                  Save
+                  <BookOpen className="h-4 w-4" />
+                  Sessions ({aiCoachSessions.length})
                 </button>
                 
-                {/* Load Chats Button */}
-                <button
-                  onClick={loadSavedChats}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-lg transition-all duration-200"
-                  title="Load saved chats"
-                >
-                  <FolderOpen className="h-4 w-4" />
-                  Saved ({savedChats.length})
-                </button>
+                {/* Search Button */}
+                <div className="flex items-center gap-1">
+                  <Input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search history..."
+                    className="w-32 h-8 text-sm"
+                    onKeyPress={(e) => e.key === 'Enter' && searchAiCoachHistory()}
+                  />
+                  <button
+                    onClick={searchAiCoachHistory}
+                    disabled={!searchQuery.trim()}
+                    className="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-lg transition-all duration-200 disabled:opacity-50"
+                    title="Search conversations"
+                  >
+                    <Search className="h-4 w-4" />
+                  </button>
+                </div>
                 
-                {/* Favorites Button */}
+                {/* Legacy Favorites Button */}
                 <button
                   onClick={loadFavorites}
                   className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-pink-600 hover:text-pink-700 hover:bg-pink-50 rounded-lg transition-all duration-200"
