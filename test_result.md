@@ -427,6 +427,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Implementing first-use disclaimer modal with checkbox acceptance and inline conversation banners. Modal text: 'Not a medical device. AI Health Coach provides general nutrition guidance only...' Banner: 'Not a medical device. For diagnosis or treatment, consult a professional.'"
+      - working: "NA"
+        agent: "main"
+        comment: "Starting frontend implementation: First-time modal requiring user acceptance + inline disclaimer banner at start of each new conversation. Integrating with backend /api/coach/accept-disclaimer and /api/coach/disclaimer-status endpoints."
 
   - task: "Consultation Limit UI & Upgrade Modal"
     implemented: false
@@ -439,6 +442,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Adding consultation count badge for Standard users ('X/10 consults left this month') and Upgrade to Premium modal when limit reached. Premium users see unlimited access."
+      - working: "NA"
+        agent: "main"
+        comment: "Implementing consultation limit UI: Display badge showing remaining consults (Standard plan), Upgrade to Premium modal when limit reached. Integrating with backend /api/coach/consultation-limit endpoint."
 
   - task: "Conversation History & Search"
     implemented: false
@@ -451,6 +457,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Building conversation history save/load functionality and keyword search feature to find prior AI Coach responses. Integrating with backend coach_sessions and coach_messages collections."
+      - working: "NA"
+        agent: "main"
+        comment: "Implementing conversation history & search: List of prior conversations accessible per user, search functionality tied to backend search endpoint. Integrating with /api/coach/sessions and /api/coach/search endpoints."
 
   - task: "Real AI Integration Frontend"
     implemented: false
@@ -463,6 +472,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Replacing demo responses with real AI-generated responses from backend. Adding loading states, error handling, and connection to new AI Health Coach API endpoints."
+      - working: "NA"
+        agent: "main"
+        comment: "Implementing real AI integration frontend: Replace demo responses with backend AI responses, add loading states, error handling. Connecting to /api/coach/message endpoint with session management."
   - task: "Demo Landing Page"
     implemented: true
     working: true
