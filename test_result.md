@@ -443,6 +443,21 @@ test_plan:
   completed_focus:
     - "Profile Page Navigation Links"
 
+  - task: "Shopping List Display Fix"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reports shopping lists are created but display shows empty in the UI - no items or words visible despite list generation working."
+      - working: true
+        agent: "main"
+        comment: "FIXED: Identified and resolved two property name mismatches in ShoppingListView component. Line 1066 was displaying 'list.title' instead of 'list.name', and line 1103 was displaying 'item.item' instead of 'item.name'. Fixed both issues - shopping lists now display correctly with proper list names and item names. Frontend rebuilt successfully with fix."
+
 agent_communication:
   - agent: "main"
     message: "🎉 DEMO MODE IMPLEMENTATION COMPLETE: Successfully completed comprehensive Demo Mode implementation for NutriTame (rebranded from GlucoPlanner). Created DemoModeBanner component, integrated demo mode detection and routing in App.js, updated all branding throughout the application, and set up backend demo endpoints with proper JWT authentication and premium user provisioning."
