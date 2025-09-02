@@ -185,6 +185,7 @@ class UserProfileCreate(BaseModel):
     dislikes: List[str] = []
     cooking_skill: Optional[str] = None
     phone_number: Optional[str] = None
+    plan: str = "standard"  # Default to standard plan
 
 class UserProfileUpdate(BaseModel):
     diabetes_type: Optional[str] = None
@@ -198,6 +199,7 @@ class UserProfileUpdate(BaseModel):
     dislikes: Optional[List[str]] = None
     cooking_skill: Optional[str] = None
     phone_number: Optional[str] = None
+    plan: Optional[str] = None  # Allow plan updates
 
 class ChatMessage(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
