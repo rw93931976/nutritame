@@ -29,6 +29,116 @@ import DemoCountdownTimer from './components/DemoCountdownTimer';
 
 import { BACKEND_URL, API } from './config';
 
+// =============================================
+// AI HEALTH COACH SERVICE FUNCTIONS
+// =============================================
+
+// AI Health Coach API Service
+const aiCoachService = {
+  // Check feature flags
+  async getFeatureFlags() {
+    try {
+      const response = await axios.get(`${API}/coach/feature-flags`);
+      return response.data;
+    } catch (error) {
+      console.error('Error getting feature flags:', error);
+      throw error;
+    }
+  },
+
+  // Disclaimer management
+  async acceptDisclaimer(userId) {
+    try {
+      const response = await axios.post(`${API}/coach/accept-disclaimer`, {
+        user_id: userId
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error accepting disclaimer:', error);
+      throw error;
+    }
+  },
+
+  async getDisclaimerStatus(userId) {
+    try {
+      const response = await axios.get(`${API}/coach/disclaimer-status/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error getting disclaimer status:', error);
+      throw error;
+    }
+  },
+
+  // Consultation limits
+  async getConsultationLimit(userId) {
+    try {
+      const response = await axios.get(`${API}/coach/consultation-limit/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error getting consultation limit:', error);
+      throw error;
+    }
+  },
+
+  // Session management
+  async createSession(userId, title = "New Conversation") {
+    try {
+      const response = await axios.post(`${API}/coach/sessions?user_id=${userId}`, {
+        title: title
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error creating session:', error);
+      throw error;
+    }
+  },
+
+  async getSessions(userId) {
+    try {
+      const response = await axios.get(`${API}/coach/sessions/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error getting sessions:', error);
+      throw error;
+    }
+  },
+
+  // Message handling
+  async sendMessage(sessionId, message) {
+    try {
+      const response = await axios.post(`${API}/coach/message`, {
+        session_id: sessionId,
+        message: message
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error sending message:', error);
+      throw error;
+    }
+  },
+
+  async getMessages(sessionId) {
+    try {
+      const response = await axios.get(`${API}/coach/messages/${sessionId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error getting messages:', error);
+      throw error;
+    }
+  },
+
+  // Search functionality
+  async searchHistory(userId, query) {
+    try {
+      const response = await axios.get(`${API}/coach/search/${userId}?query=${encodeURIComponent(query)}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error searching history:', error);
+      throw error;
+    }
+  }
+};
+
 // Mock AI response generator for preview environment
 const generateMockAIResponse = (messageText) => {
   const responses = [
