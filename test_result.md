@@ -377,6 +377,53 @@ backend:
         comment: "✅ COMPREHENSIVE LIVE TESTING COMPLETED: PHP backend deployed at https://app.nutritame.com/api/ is fully functional for demo mode. ✅ GET /api/demo-config.php returns correct configuration (demo_mode=true, launch_date=2025-10-01). ✅ POST /api/demo-config.php?endpoint=access creates demo users with premium access tokens (HTTP 201). ✅ Auto-generated demo emails working (demo_xxxxx@nutritame.com format). ✅ CORS headers properly configured for frontend integration. ✅ API health checks and error handling working correctly. ⚠️ Minor issue: Demo access with provided email returns 500 error, but core functionality (demo access without email) works perfectly. ✅ DEPLOYMENT STATUS: Ready for frontend integration - all critical demo endpoints operational for 'Start Free Demo Now' buttons."
 
 frontend:
+  - task: "AI Health Coach Disclaimer System"
+    implemented: false
+    working: "NA"
+    file: "frontend/src/App.js, frontend/src/components/"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implementing first-use disclaimer modal with checkbox acceptance and inline conversation banners. Modal text: 'Not a medical device. AI Health Coach provides general nutrition guidance only...' Banner: 'Not a medical device. For diagnosis or treatment, consult a professional.'"
+
+  - task: "Consultation Limit UI & Upgrade Modal"
+    implemented: false
+    working: "NA"
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Adding consultation count badge for Standard users ('X/10 consults left this month') and Upgrade to Premium modal when limit reached. Premium users see unlimited access."
+
+  - task: "Conversation History & Search"
+    implemented: false
+    working: "NA"
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Building conversation history save/load functionality and keyword search feature to find prior AI Coach responses. Integrating with backend coach_sessions and coach_messages collections."
+
+  - task: "Real AI Integration Frontend"
+    implemented: false
+    working: "NA"
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Replacing demo responses with real AI-generated responses from backend. Adding loading states, error handling, and connection to new AI Health Coach API endpoints."
   - task: "Demo Landing Page"
     implemented: true
     working: true
