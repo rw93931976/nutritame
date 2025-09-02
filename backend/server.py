@@ -1691,6 +1691,221 @@ async def get_chat_history(user_id: str):
     messages = await db.chat_messages.find({"user_id": user_id}).sort("timestamp", 1).to_list(1000)
     return [ChatMessage(**parse_from_mongo(msg)) for msg in messages]
 
+# =============================================
+# AI HEALTH COACH ENDPOINTS
+# =============================================
+
+@api_router.get("/coach/feature-flags")
+async def get_coach_feature_flags():
+    """Get AI Health Coach feature flags"""
+    return {
+        "coach_enabled": FEATURE_COACH,
+        "llm_provider": LLM_PROVIDER,
+        "llm_model": LLM_MODEL,
+        "standard_limit": STANDARD_CONSULTATION_LIMIT,
+        "premium_limit": "unlimited" if PREMIUM_CONSULTATION_LIMIT == -1 else PREMIUM_CONSULTATION_LIMIT
+    }
+
+@api_router.post("/coach/accept-disclaimer")
+async def accept_disclaimer(request: dict):
+    """Accept AI Health Coach disclaimer"""
+    try:
+        user_id = request.get("user_id")
+        if not user_id:
+            raise HTTPException(status_code=400, detail="User ID required")
+        
+        # Check if already accepted
+        already_accepted = await check_disclaimer_acceptance(user_id)
+        if already_accepted:
+            return {"message": "Disclaimer already accepted", "accepted": True}
+        
+        # Save acceptance
+        success = await save_disclaimer_acceptance(user_id)
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to save disclaimer acceptance")
+        
+        return {"message": "Disclaimer accepted successfully", "accepted": True}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error accepting disclaimer: {str(e)}")
+
+@api_router.get("/coach/disclaimer-status/{user_id}")
+async def get_disclaimer_status(user_id: str):
+    """Check if user has accepted disclaimer"""
+    try:
+        accepted = await check_disclaimer_acceptance(user_id)
+        return {"user_id": user_id, "disclaimer_accepted": accepted}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error checking disclaimer status: {str(e)}")
+
+@api_router.get("/coach/consultation-limit/{user_id}")
+async def get_consultation_limit(user_id: str):
+    """Get user's consultation limit status"""
+    try:
+        limit_info = await check_consultation_limit(user_id)
+        return limit_info
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error checking consultation limit: {str(e)}")
+
+@api_router.post("/coach/sessions")
+async def create_coach_session(session_request: CoachSessionCreate, user_id: str = None):
+    """Create a new AI Health Coach session"""
+    try:
+        if not user_id:
+            raise HTTPException(status_code=400, detail="User ID required")
+        
+        # Check disclaimer acceptance
+        disclaimer_accepted = await check_disclaimer_acceptance(user_id)
+        if not disclaimer_accepted:
+            raise HTTPException(status_code=403, detail="Disclaimer must be accepted before using AI Health Coach")
+        
+        # Check consultation limits
+        limit_info = await check_consultation_limit(user_id)
+        if not limit_info["can_use"]:
+            return {
+                "error": "consultation_limit_reached",
+                "message": "Monthly consultation limit reached. Upgrade to Premium for unlimited access.",
+                "limit_info": limit_info
+            }
+        
+        # Create session
+        session = CoachSession(
+            user_id=user_id,
+            title=session_request.title,
+            disclaimer_accepted_at=datetime.now(timezone.utc)
+        )
+        
+        # Save to database
+        session_data = prepare_for_mongo(session.dict())
+        await db.coach_sessions.insert_one(session_data)
+        
+        return session
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating coach session: {str(e)}")
+
+@api_router.get("/coach/sessions/{user_id}")
+async def get_coach_sessions(user_id: str):
+    """Get AI Health Coach sessions for user"""
+    try:
+        sessions = await db.coach_sessions.find({"user_id": user_id}).sort("created_at", -1).to_list(100)
+        return [CoachSession(**parse_from_mongo(session)) for session in sessions]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting coach sessions: {str(e)}")
+
+@api_router.post("/coach/message")
+async def send_coach_message(message_request: CoachMessageCreate):
+    """Send message to AI Health Coach"""
+    try:
+        # Get session to verify ownership
+        session = await db.coach_sessions.find_one({"id": message_request.session_id})
+        if not session:
+            raise HTTPException(status_code=404, detail="Session not found")
+        
+        user_id = session["user_id"]
+        
+        # Check consultation limits
+        limit_info = await check_consultation_limit(user_id)
+        if not limit_info["can_use"]:
+            return {
+                "error": "consultation_limit_reached",
+                "message": "Monthly consultation limit reached. Upgrade to Premium for unlimited access.",
+                "limit_info": limit_info
+            }
+        
+        # Save user message
+        user_message = CoachMessage(
+            session_id=message_request.session_id,
+            role="user",
+            text=message_request.message
+        )
+        user_msg_data = prepare_for_mongo(user_message.dict())
+        await db.coach_messages.insert_one(user_msg_data)
+        
+        # Get AI response
+        ai_response_text = await get_ai_response(
+            message_request.message, 
+            user_id, 
+            message_request.session_id
+        )
+        
+        # Save AI response
+        ai_message = CoachMessage(
+            session_id=message_request.session_id,
+            role="assistant",
+            text=ai_response_text
+        )
+        ai_msg_data = prepare_for_mongo(ai_message.dict())
+        await db.coach_messages.insert_one(ai_msg_data)
+        
+        # Increment consultation count
+        await increment_consultation_count(user_id)
+        
+        # Update session timestamp
+        await db.coach_sessions.update_one(
+            {"id": message_request.session_id},
+            {"$set": {"updated_at": datetime.now(timezone.utc)}}
+        )
+        
+        return {
+            "user_message": user_message,
+            "ai_response": ai_message,
+            "consultation_used": True
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error sending coach message: {str(e)}")
+
+@api_router.get("/coach/messages/{session_id}")
+async def get_coach_messages(session_id: str):
+    """Get messages for a coach session"""
+    try:
+        messages = await db.coach_messages.find({"session_id": session_id}).sort("created_at", 1).to_list(1000)
+        return [CoachMessage(**parse_from_mongo(msg)) for msg in messages]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting coach messages: {str(e)}")
+
+@api_router.get("/coach/search/{user_id}")
+async def search_coach_history(user_id: str, query: str):
+    """Search AI Health Coach conversation history"""
+    try:
+        # Get user's sessions
+        sessions = await db.coach_sessions.find({"user_id": user_id}).to_list(100)
+        session_ids = [session["id"] for session in sessions]
+        
+        # Search messages
+        search_results = await db.coach_messages.find({
+            "session_id": {"$in": session_ids},
+            "text": {"$regex": query, "$options": "i"}
+        }).sort("created_at", -1).to_list(50)
+        
+        # Group results by session
+        results_by_session = {}
+        for msg in search_results:
+            session_id = msg["session_id"]
+            if session_id not in results_by_session:
+                # Find session info
+                session_info = next((s for s in sessions if s["id"] == session_id), None)
+                results_by_session[session_id] = {
+                    "session": session_info,
+                    "messages": []
+                }
+            results_by_session[session_id]["messages"].append(CoachMessage(**parse_from_mongo(msg)))
+        
+        return {
+            "query": query,
+            "results": list(results_by_session.values())
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error searching coach history: {str(e)}")
+
 # Restaurant Analysis Endpoint
 @api_router.post("/restaurants/analyze")
 async def analyze_restaurant_for_user(analysis_request: RestaurantAnalysisRequest):
