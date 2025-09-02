@@ -2157,13 +2157,22 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     setMessages(prev => [...prev, tempUserMsg]);
 
     try {
-      console.log('Making API call to AI...');
+      console.log('Making API call to AI Health Coach...');
       
-      // Mock AI response for preview environment
-      const mockResponse = generateMockAIResponse(messageText);
+      // Use real AI Health Coach integration
+      const aiResponse = await sendAiCoachMessage(messageText);
+      
+      if (!aiResponse) {
+        // If no response (due to disclaimer or limit), remove user message
+        setMessages(prev => prev.slice(0, -1));
+        return;
+      }
+
+      // Extract AI response text
+      const aiResponseText = aiResponse.ai_response?.text || "I apologize, but I couldn't generate a response. Please try again.";
       
       // Clean up AI response - remove markdown formatting
-      const cleanedResponse = mockResponse
+      const cleanedResponse = aiResponseText
         .replace(/\*\*(.*?)\*\*/g, '$1')  // Remove **bold**
         .replace(/\*(.*?)\*/g, '$1')     // Remove *italic*
         .replace(/#{1,6}\s/g, '')        // Remove # headers
