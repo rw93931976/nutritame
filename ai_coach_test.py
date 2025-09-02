@@ -67,8 +67,8 @@ class AIHealthCoachTester:
         )
         
         if success:
-            # Verify required feature flags
-            expected_flags = ['FEATURE_COACH', 'LLM_PROVIDER', 'LLM_MODEL']
+            # Verify required feature flags (actual API response format)
+            expected_flags = ['coach_enabled', 'llm_provider', 'llm_model', 'standard_limit', 'premium_limit']
             
             for flag in expected_flags:
                 if flag in response:
@@ -77,11 +77,18 @@ class AIHealthCoachTester:
                     print(f"   ❌ Missing feature flag: {flag}")
                     return False
             
-            # Verify FEATURE_COACH is enabled
-            if response.get('FEATURE_COACH') is True:
+            # Verify coach is enabled
+            if response.get('coach_enabled') is True:
                 print("   ✅ AI Health Coach feature is enabled")
             else:
-                print(f"   ❌ AI Health Coach should be enabled, got: {response.get('FEATURE_COACH')}")
+                print(f"   ❌ AI Health Coach should be enabled, got: {response.get('coach_enabled')}")
+                return False
+            
+            # Verify standard limit is 10
+            if response.get('standard_limit') == 10:
+                print("   ✅ Standard plan limit is correctly set to 10")
+            else:
+                print(f"   ❌ Standard limit should be 10, got: {response.get('standard_limit')}")
                 return False
             
             return True
