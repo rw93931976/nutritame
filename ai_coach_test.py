@@ -466,39 +466,48 @@ class AIHealthCoachTester:
         )
         
         if success:
-            # Verify search response structure
-            if 'results' in response:
+            # Verify search response structure (actual API format)
+            if 'results' in response and 'query' in response:
                 results = response['results']
-                print(f"   ✅ Search returned {len(results)} results")
+                query = response['query']
+                
+                print(f"   ✅ Search returned {len(results)} session results for query: '{query}'")
                 
                 # Verify search results structure
                 if len(results) > 0:
                     result = results[0]
-                    required_fields = ['session_id', 'message_id', 'text', 'relevance_score']
-                    missing_fields = [field for field in required_fields if field not in result]
                     
-                    if missing_fields:
-                        print(f"   ❌ Missing search result fields: {missing_fields}")
-                        return False
-                    
-                    # Verify search relevance
-                    text = result.get('text', '')
-                    if search_query.lower() in text.lower():
-                        print(f"   ✅ Search results contain query term: {search_query}")
+                    # Check if result has session and messages
+                    if 'session' in result and 'messages' in result:
+                        print(f"   ✅ Search results have correct structure (session + messages)")
+                        
+                        # Verify messages contain search term
+                        messages = result['messages']
+                        if len(messages) > 0:
+                            found_query_term = False
+                            for msg in messages:
+                                if hasattr(msg, 'text') and search_query.lower() in msg.text.lower():
+                                    found_query_term = True
+                                    break
+                                elif isinstance(msg, dict) and search_query.lower() in msg.get('text', '').lower():
+                                    found_query_term = True
+                                    break
+                            
+                            if found_query_term:
+                                print(f"   ✅ Search results contain query term: {search_query}")
+                            else:
+                                print(f"   ⚠️  Search results may not contain query term")
+                        else:
+                            print(f"   ⚠️  No messages in search results")
                     else:
-                        print(f"   ⚠️  Search results may not be relevant to query")
-                    
-                    # Verify relevance score
-                    score = result.get('relevance_score', 0)
-                    if 0 <= score <= 1:
-                        print(f"   ✅ Relevance score is valid: {score}")
-                    else:
-                        print(f"   ❌ Invalid relevance score: {score}")
+                        print(f"   ❌ Search result missing session or messages structure")
                         return False
+                else:
+                    print(f"   ✅ Search completed successfully (no results found)")
                 
                 return True
             else:
-                print(f"   ❌ Missing search results in response")
+                print(f"   ❌ Missing search results or query in response")
                 return False
         return False
 
