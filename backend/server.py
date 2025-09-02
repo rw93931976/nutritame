@@ -197,6 +197,42 @@ class ChatMessageCreate(BaseModel):
     user_id: str
     message: str
 
+# AI Health Coach Models
+class CoachSession(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    title: str = "New Conversation"
+    disclaimer_accepted_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CoachMessage(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    session_id: str
+    role: str  # "user", "assistant", "system"
+    text: str
+    tokens: Optional[int] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CoachMessageCreate(BaseModel):
+    session_id: str
+    message: str
+
+class CoachSessionCreate(BaseModel):
+    title: Optional[str] = "New Conversation"
+
+class ConsultationLimit(BaseModel):
+    user_id: str
+    consultation_count: int = 0
+    consultation_month: str  # YYYY-MM format
+    plan: str = "standard"  # "standard" or "premium"
+    last_reset: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class DisclaimerAcceptance(BaseModel):
+    user_id: str
+    accepted_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    disclaimer_text: str
+
 class RestaurantSearchRequest(BaseModel):
     latitude: float
     longitude: float
