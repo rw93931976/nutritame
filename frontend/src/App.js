@@ -1819,6 +1819,190 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     }
   };
 
+  // =============================================
+  // AI HEALTH COACH FUNCTIONS
+  // =============================================
+
+  // Initialize AI Health Coach
+  useEffect(() => {
+    const initializeAiCoach = async () => {
+      try {
+        // Get feature flags
+        const flags = await aiCoachService.getFeatureFlags();
+        setAiCoachFeatureFlags(flags);
+
+        // Check if user has accepted disclaimer
+        if (userProfile?.id) {
+          const disclaimerStatus = await aiCoachService.getDisclaimerStatus(userProfile.id);
+          setAiCoachDisclaimerAccepted(disclaimerStatus.disclaimer_accepted);
+
+          // Get consultation limit
+          const limitInfo = await aiCoachService.getConsultationLimit(userProfile.id);
+          setConsultationLimit(limitInfo);
+
+          // Load user sessions
+          const sessions = await aiCoachService.getSessions(userProfile.id);
+          setAiCoachSessions(sessions);
+        }
+      } catch (error) {
+        console.error('Error initializing AI Health Coach:', error);
+      }
+    };
+
+    if (userProfile) {
+      initializeAiCoach();
+    }
+  }, [userProfile]);
+
+  // Handle AI Health Coach disclaimer acceptance
+  const handleAiCoachDisclaimerAccept = async () => {
+    try {
+      if (!userProfile?.id) {
+        toast.error("User profile required");
+        return;
+      }
+
+      await aiCoachService.acceptDisclaimer(userProfile.id);
+      setAiCoachDisclaimerAccepted(true);
+      setShowAiCoachDisclaimer(false);
+      toast.success("AI Health Coach disclaimer accepted");
+
+      // Refresh consultation limit after accepting disclaimer
+      const limitInfo = await aiCoachService.getConsultationLimit(userProfile.id);
+      setConsultationLimit(limitInfo);
+    } catch (error) {
+      console.error('Error accepting AI Coach disclaimer:', error);
+      toast.error("Failed to accept disclaimer");
+    }
+  };
+
+  // Create new AI Coach session
+  const createAiCoachSession = async (title = "New Conversation") => {
+    try {
+      if (!userProfile?.id) {
+        toast.error("User profile required");
+        return;
+      }
+
+      const session = await aiCoachService.createSession(userProfile.id, title);
+      setCurrentSessionId(session.id);
+      setAiCoachSessions(prev => [session, ...prev]);
+      
+      // Clear current messages and start fresh
+      setMessages([{
+        id: 'welcome-' + Date.now(),
+        message: `Hi! I'm your AI health coach. I can help you with meal planning, restaurant recommendations, and nutrition analysis. What would you like to explore today?`,
+        response: '',
+        isWelcome: true
+      }]);
+      
+      return session;
+    } catch (error) {
+      console.error('Error creating AI Coach session:', error);
+      toast.error("Failed to create session");
+      return null;
+    }
+  };
+
+  // Send message to AI Health Coach
+  const sendAiCoachMessage = async (messageText) => {
+    try {
+      if (!userProfile?.id) {
+        toast.error("User profile required");
+        return;
+      }
+
+      // Check if user has accepted disclaimer
+      if (!aiCoachDisclaimerAccepted) {
+        setShowAiCoachDisclaimer(true);
+        return;
+      }
+
+      // Check consultation limits
+      if (consultationLimit && !consultationLimit.can_use) {
+        setShowUpgradeModal(true);
+        return;
+      }
+
+      // Create session if doesn't exist
+      let sessionId = currentSessionId;
+      if (!sessionId) {
+        const session = await createAiCoachSession();
+        if (!session) return;
+        sessionId = session.id;
+      }
+
+      // Send message to backend AI
+      const response = await aiCoachService.sendMessage(sessionId, messageText);
+      
+      // Check if consultation limit reached
+      if (response.error === 'consultation_limit_reached') {
+        setShowUpgradeModal(true);
+        toast.error("Monthly consultation limit reached");
+        return;
+      }
+
+      // Update consultation limit
+      const limitInfo = await aiCoachService.getConsultationLimit(userProfile.id);
+      setConsultationLimit(limitInfo);
+
+      return response;
+    } catch (error) {
+      console.error('Error sending AI Coach message:', error);
+      throw error;
+    }
+  };
+
+  // Search AI Coach history
+  const searchAiCoachHistory = async () => {
+    try {
+      if (!userProfile?.id || !searchQuery.trim()) {
+        return;
+      }
+
+      const results = await aiCoachService.searchHistory(userProfile.id, searchQuery);
+      setSearchResults(results);
+      setShowSearchResults(true);
+    } catch (error) {
+      console.error('Error searching AI Coach history:', error);
+      toast.error("Failed to search history");
+    }
+  };
+
+  // Load AI Coach session
+  const loadAiCoachSession = async (session) => {
+    try {
+      const messages = await aiCoachService.getMessages(session.id);
+      
+      // Convert AI Coach messages to UI format
+      const uiMessages = messages.map(msg => ({
+        id: msg.id,
+        message: msg.role === 'user' ? msg.text : '',
+        response: msg.role === 'assistant' ? msg.text : '',
+        isUser: msg.role === 'user',
+        timestamp: msg.created_at
+      }));
+
+      // Add welcome message if needed
+      if (uiMessages.length === 0) {
+        uiMessages.unshift({
+          id: 'welcome-' + Date.now(),
+          message: `Hi! I'm your AI health coach. I can help you with meal planning, restaurant recommendations, and nutrition analysis. What would you like to explore today?`,
+          response: '',
+          isWelcome: true
+        });
+      }
+
+      setMessages(uiMessages);
+      setCurrentSessionId(session.id);
+      setShowSessionHistory(false);
+      toast.success(`Loaded session: ${session.title}`);
+    } catch (error) {
+      console.error('Error loading AI Coach session:', error);
+      toast.error("Failed to load session");
+    }
+  };
+
   // Auto scroll to show start of latest response when new messages arrive
   useEffect(() => {
     const timer = setTimeout(() => {
