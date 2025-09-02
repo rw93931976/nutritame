@@ -1063,7 +1063,7 @@ const ShoppingListView = ({ userProfile, shoppingLists, setShoppingLists }) => {
           <Card key={list.id} className="bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200/50">
             <CardHeader className="bg-gradient-to-r from-emerald-50 to-blue-50">
               <CardTitle className="flex items-center justify-between">
-                <span>{list.title}</span>
+                <span>{list.name}</span>
                 <Badge variant="outline" className="bg-white">
                   {list.items.filter(item => item.checked).length} / {list.items.length} completed
                 </Badge>
