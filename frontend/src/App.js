@@ -3296,6 +3296,8 @@ const CoachInterface = () => {
 
 // Main App Component
 function App() {
+  console.log('🔧 App component starting execution...');
+  
   // SaaS State Management
   const [appMode, setAppMode] = useState('landing'); // landing, demo, success, app, admin
   const [user, setUser] = useState(null);
@@ -3323,7 +3325,11 @@ function App() {
 
   // TARGETED FIX: Handle /coach route at the top level
   // This bypasses all the app mode logic and directly renders CoachRoute
-  if (window.location.pathname === '/coach') {
+  const currentPath = window.location.pathname;
+  console.log('🔍 Current path:', currentPath);
+  
+  if (currentPath === '/coach') {
+    console.log('✅ /coach path detected - rendering CoachRoute directly');
     return (
       <BrowserRouter>
         <Routes>
@@ -3332,6 +3338,8 @@ function App() {
       </BrowserRouter>
     );
   }
+
+  console.log('⚡ Continuing with normal app flow - path is not /coach');
 
   // Check authentication on app load (run only once, independent of disclaimer)
   useEffect(() => {
