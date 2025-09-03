@@ -2983,6 +2983,11 @@ const CoachRoute = () => {
     localStorage.setItem(disclaimerKey, 'true');
     setDisclaimerAccepted(true);
     setShowCoachDisclaimer(false);
+    
+    // Show encouragement toast after disclaimer acceptance
+    setTimeout(() => {
+      toast.success("Thanks for confirming — remember, this is guidance only, and your healthcare provider is your best resource.");
+    }, 500);
   };
 
   const handleCoachDisclaimerDecline = () => {
