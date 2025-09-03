@@ -1,6 +1,7 @@
 import requests
 import sys
 import json
+import uuid
 from datetime import datetime
 import time
 
@@ -10,9 +11,10 @@ class AIHealthCoachTester:
         self.api_url = f"{base_url}/api"
         self.tests_run = 0
         self.tests_passed = 0
-        self.test_user_id = "test-user-123"  # As specified in review request
+        self.test_user_id = None  # Will create fresh user
         self.session_id = None
         self.access_token = None
+        self.test_results = []
 
     def run_test(self, name, method, endpoint, expected_status, data=None, headers=None):
         """Run a single API test"""
