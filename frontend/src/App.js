@@ -3301,11 +3301,23 @@ function App() {
   const [demoMode, setDemoMode] = useState(false);
   const [demoUser, setDemoUser] = useState(null);
   
-  // Medical Disclaimer State
+  // Medical Disclaimer State - MOVED TO TOP FOR PROPER REACT LIFECYCLE
   const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
 
-  // Top-level router to handle /coach route independently
+  // Existing state (preserve all original functionality)
+  const [currentUser, setCurrentUser] = useState(null);
+  const [showForm, setShowForm] = useState(true);
+  const [restaurants, setRestaurants] = useState([]);
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+  const [searchCenter, setSearchCenter] = useState(null);
+  const [searchRadius, setSearchRadius] = useState(8047); // 5 miles in meters
+  const [apiUsage, setApiUsage] = useState(null);
+  const [shoppingLists, setShoppingLists] = useState([]);
+  const [showShoppingListButton, setShowShoppingListButton] = useState(false);
+  const [lastMealPlan, setLastMealPlan] = useState("");
+
+  // Top-level router to handle /coach route independently - AFTER state initialization
   const currentPath = window.location.pathname;
   
   if (currentPath === '/coach') {
@@ -3319,9 +3331,6 @@ function App() {
       </BrowserRouter>
     );
   }
-
-  // Existing state (preserve all original functionality)
-  const [currentUser, setCurrentUser] = useState(null);
   const [showForm, setShowForm] = useState(true);
   const [restaurants, setRestaurants] = useState([]);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
