@@ -2912,6 +2912,25 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
 };
 
 // =============================================
+// LANDING PAGE WRAPPER WITH NAVIGATION
+// =============================================
+
+const LandingPageWrapper = ({ onGetStarted }) => {
+  const navigate = useNavigate();
+  
+  const handleNavigateToCoach = () => {
+    navigate('/coach');
+  };
+
+  return (
+    <LandingPage 
+      onGetStarted={onGetStarted} 
+      onNavigateToCoach={handleNavigateToCoach}
+    />
+  );
+};
+
+// =============================================
 // COACH ROUTE COMPONENT
 // =============================================
 
