@@ -957,11 +957,31 @@ async def increment_consultation_count(user_id: str):
 async def get_ai_response(message: str, user_id: str, session_id: str) -> str:
     """Get AI response using emergentintegrations with rate limiting and retry"""
     try:
-        # Initialize LLM chat with guardrail prompt
+        # Get user profile for context
+        user_profile = await db.user_profiles.find_one({"id": user_id})
+        user_context = ""
+        
+        if user_profile:
+            user_context = f"""
+User Profile Context:
+- Diabetes Type: {user_profile.get('diabetes_type', 'Not specified')}
+- Age: {user_profile.get('age', 'Not specified')}
+- Gender: {user_profile.get('gender', 'Not specified')}
+- Activity Level: {user_profile.get('activity_level', 'Not specified')}
+- Health Goals: {', '.join(user_profile.get('health_goals', []))}
+- Food Preferences: {', '.join(user_profile.get('food_preferences', []))}
+- Cultural Background: {user_profile.get('cultural_background', 'Not specified')}
+- Allergies: {', '.join(user_profile.get('allergies', []))}
+- Dislikes: {', '.join(user_profile.get('dislikes', []))}
+- Cooking Skill: {user_profile.get('cooking_skill', 'Not specified')}
+
+"""
+        
+        # Initialize LLM chat with guardrail prompt and user context
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=session_id,
-            system_message=HEALTH_COACH_PROMPT
+            system_message=f"{HEALTH_COACH_PROMPT}\n\n{user_context}"
         )
         
         # Configure model based on environment
