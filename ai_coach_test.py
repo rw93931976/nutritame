@@ -58,6 +58,44 @@ class AIHealthCoachTester:
             print(f"❌ Failed - Error: {str(e)}")
             return False, {}
 
+    def setup_test_user(self):
+        """Create a test user profile for AI Health Coach testing"""
+        print("\n🔧 Setting up test user with comprehensive profile...")
+        
+        # Create a realistic user profile for AI testing
+        test_profile = {
+            "diabetes_type": "type2",
+            "age": 45,
+            "gender": "female",
+            "activity_level": "moderate",
+            "health_goals": ["blood_sugar_control", "weight_loss"],
+            "food_preferences": ["mediterranean", "low_carb"],
+            "cultural_background": "Mediterranean",
+            "allergies": ["nuts", "shellfish"],
+            "dislikes": ["liver", "brussels_sprouts"],
+            "cooking_skill": "intermediate",
+            "phone_number": "+15551234567",
+            "plan": "standard"  # Standard plan for consultation limit testing
+        }
+        
+        success, response = self.run_test(
+            "Create Test User Profile",
+            "POST",
+            "users",
+            200,
+            data=test_profile
+        )
+        
+        if success and 'id' in response:
+            self.test_user_id = response['id']
+            self.created_user_profile = response
+            print(f"   ✅ Created test user ID: {self.test_user_id}")
+            print(f"   ✅ Profile includes: diabetes_type={response.get('diabetes_type')}, allergies={response.get('allergies')}")
+            return True
+        else:
+            print(f"   ❌ Failed to create test user: {response}")
+            return False
+
     def test_feature_flags(self):
         """Test GET /api/coach/feature-flags - Verify feature flags and configuration"""
         print("\n🎯 Testing AI Health Coach Feature Flags...")
