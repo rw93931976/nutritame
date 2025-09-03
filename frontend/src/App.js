@@ -3164,6 +3164,7 @@ function App() {
           <Route path="/success" element={<PaymentSuccess onAccessApp={handleAppAccess} />} />
           <Route path="/cancel" element={<LandingPage onStartTrial={() => setAppMode('landing')} />} />
           <Route path="/admin" element={<AdminLogin onAdminLogin={handleAdminLogin} />} />
+          <Route path="/coach" element={<CoachRoute />} />
         </Routes>
       </BrowserRouter>
     );
