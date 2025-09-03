@@ -3290,6 +3290,133 @@ const CoachInterface = () => {
   );
 };
 
+// App Mode Router Component - handles different app modes
+const AppModeRouter = ({ 
+  appMode, setAppMode, user, setUser, authToken, setAuthToken, 
+  adminToken, setAdminToken, subscriptionInfo, setSubscriptionInfo,
+  demoMode, setDemoMode, demoUser, setDemoUser, currentUser, setCurrentUser,
+  showForm, setShowForm, restaurants, setRestaurants, selectedRestaurant, setSelectedRestaurant,
+  searchCenter, setSearchCenter, searchRadius, setSearchRadius, apiUsage, setApiUsage,
+  shoppingLists, setShoppingLists, showShoppingListButton, setShowShoppingListButton,
+  lastMealPlan, setLastMealPlan
+}) => {
+  
+  // All the existing useEffect hooks and handlers will go here
+  // For now, let's implement the basic routing based on appMode
+  
+  const handleLandingGetStarted = (mode) => {
+    if (mode === 'demo') {
+      setAppMode('demo');
+    } else {
+      setAppMode('signup');
+    }
+  };
+
+  const handleDemoAccess = async (demoData) => {
+    setDemoMode(true);
+    setDemoUser(demoData.user);
+    setAuthToken(demoData.access_token);
+    setAppMode('app');
+    
+    setCurrentUser({
+      id: demoData.user.id,
+      email: demoData.user.email,
+      diabetes_type: null, // Don't set so it's treated as new profile
+      age: null,
+      gender: null,
+      activity_level: null,
+      health_goals: [],
+      food_preferences: [],
+      allergies: [],
+      cooking_skill: null,
+      phone_number: null
+    });
+    setShowForm(true);
+  };
+
+  const handleAppAccess = async (paymentData) => {
+    try {
+      const response = await axios.post(`${API}/auth/login`, {
+        email: paymentData.email || 'demo@example.com'
+      }, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      });
+
+      if (response.data.access_token) {
+        localStorage.setItem('authToken', response.data.access_token);
+        setAuthToken(response.data.access_token);
+        setUser(response.data.user);
+        setAppMode('app');
+        
+        setCurrentUser({
+          id: response.data.user.id,
+          email: response.data.user.email,
+          diabetes_type: response.data.user.diabetes_type || 'type2',
+          age: response.data.user.age,
+          gender: response.data.user.gender,
+          activity_level: response.data.user.activity_level,
+          health_goals: response.data.user.health_goals || [],
+          food_preferences: response.data.user.food_preferences || [],
+          allergies: response.data.user.allergies || [],
+          cooking_skill: response.data.user.cooking_skill,
+          phone_number: response.data.user.phone_number
+        });
+        setShowForm(false);
+      }
+    } catch (error) {
+      console.error('App access failed:', error);
+      toast.error("Failed to access app");
+    }
+  };
+
+  const handleAdminLogin = (token) => {
+    localStorage.setItem('adminToken', token);
+    setAdminToken(token);
+    setAppMode('admin');
+  };
+
+  // Demo Mode Rendering
+  if (appMode === 'demo') {
+    return <DemoLandingPage onDemoAccess={handleDemoAccess} />;
+  }
+
+  // SaaS Mode Rendering (Payment/Signup Flow)
+  if (appMode === 'signup') {
+    return (
+      <Routes>
+        <Route path="/" element={<LandingPage onStartTrial={() => setAppMode('landing')} />} />
+        <Route path="/success" element={<PaymentSuccess onAccessApp={handleAppAccess} />} />
+        <Route path="/cancel" element={<LandingPage onStartTrial={() => setAppMode('landing')} />} />
+        <Route path="/admin" element={<AdminLogin onAdminLogin={handleAdminLogin} />} />
+      </Routes>
+    );
+  }
+
+  if (appMode === 'success') {
+    return <PaymentSuccess onAccessApp={handleAppAccess} />;
+  }
+
+  if (appMode === 'admin') {
+    return <AdminDashboard adminToken={adminToken} />;
+  }
+
+  // Main App Mode (existing NutriTame functionality)
+  if (appMode === 'app') {
+    // This would render the main app interface - for now return placeholder
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50">
+        <div className="container mx-auto p-4">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">NutriTame Main App</h1>
+          <p className="text-gray-600">Main app interface would be rendered here.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Landing Page (Default)
+  return <LandingPageWrapper onGetStarted={handleLandingGetStarted} />;
+};
+
 // App Layout Component with Global Disclaimer Logic
 const AppLayout = ({ children }) => {
   const location = useLocation();
