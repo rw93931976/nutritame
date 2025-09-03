@@ -2988,7 +2988,7 @@ const CoachRoute = () => {
     window.location.href = '/';
   };
 
-  console.log('🔄 CoachRoute render - loading:', loading, 'featureFlags:', featureFlags, 'accepted:', disclaimerAccepted);
+  console.log('🔄 CoachRoute render - loading:', loading, 'featureFlags:', featureFlags, 'ack:', ack);
 
   if (loading) {
     console.log('⏳ Rendering loading screen');
@@ -3019,7 +3019,7 @@ const CoachRoute = () => {
   }
 
   // Show disclaimer modal if not accepted
-  if (!disclaimerAccepted) {
+  if (!ack) {
     console.log('📋 Rendering coach disclaimer modal');
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 flex items-center justify-center">
