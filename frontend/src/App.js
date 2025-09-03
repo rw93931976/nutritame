@@ -3201,7 +3201,7 @@ const CoachInterface = () => {
                       <div className="bg-gray-100 text-gray-800 max-w-xs lg:max-w-md px-4 py-2 rounded-lg">
                         <div className="flex items-center gap-2">
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-emerald-600"></div>
-                          <p className="text-sm">AI is thinking...</p>
+                          <p className="text-sm">Thinking...</p>
                         </div>
                       </div>
                     </div>
