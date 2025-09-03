@@ -3331,15 +3331,6 @@ function App() {
       </BrowserRouter>
     );
   }
-  const [showForm, setShowForm] = useState(true);
-  const [restaurants, setRestaurants] = useState([]);
-  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
-  const [searchCenter, setSearchCenter] = useState(null);
-  const [searchRadius, setSearchRadius] = useState(8047); // 5 miles in meters
-  const [apiUsage, setApiUsage] = useState(null);
-  const [shoppingLists, setShoppingLists] = useState([]);
-  const [showShoppingListButton, setShowShoppingListButton] = useState(false);
-  const [lastMealPlan, setLastMealPlan] = useState("");
 
   // Check authentication on app load (run only once, independent of disclaimer)
   useEffect(() => {
