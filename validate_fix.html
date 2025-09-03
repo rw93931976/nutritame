@@ -16,7 +16,7 @@
             
             try {
                 // Test the main site
-                const response = await fetch('https://coach-nutritame.preview.emergentagent.com');
+                const response = await fetch('https://health-ai-persist.preview.emergentagent.com');
                 const html = await response.text();
                 
                 results.innerHTML += `<p>✅ Site loads: HTTP ${response.status}</p>`;
@@ -37,11 +37,11 @@
                 }
                 
                 // Test /coach route
-                const coachResponse = await fetch('https://coach-nutritame.preview.emergentagent.com/coach');
+                const coachResponse = await fetch('https://health-ai-persist.preview.emergentagent.com/coach');
                 results.innerHTML += `<p>✅ /coach route: HTTP ${coachResponse.status}</p>`;
                 
                 // Test backend API
-                const apiResponse = await fetch('https://coach-nutritame.preview.emergentagent.com/api/coach/feature-flags');
+                const apiResponse = await fetch('https://health-ai-persist.preview.emergentagent.com/api/coach/feature-flags');
                 if (apiResponse.ok) {
                     const data = await apiResponse.json();
                     results.innerHTML += `<p>✅ Backend API: ${JSON.stringify(data)}</p>`;
