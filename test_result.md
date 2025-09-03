@@ -418,11 +418,11 @@ backend:
 frontend:
   - task: "AI Health Coach Disclaimer System"
     implemented: true
-    working: "NA"
+    working: false
     file: "frontend/src/App.js, frontend/src/components/"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -433,6 +433,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "✅ IMPLEMENTED: Added AI Health Coach disclaimer system with first-time modal requiring user acceptance and inline disclaimer banner. Modal displays 'Not a medical device' warning with Accept & Continue / Cancel options. Inline banner shows 'Not a medical device. For diagnosis or treatment, consult a professional.' Integrated with backend disclaimer acceptance API. Ready for testing."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL ISSUE: Medical disclaimer modal works correctly (proper text, scroll detection, checkbox validation, Accept & Continue functionality), but AI Health Coach interface is not accessible after disclaimer acceptance. Application shows landing page with AI Health Coach card but clicking it does not navigate to actual chat interface. Missing: inline disclaimer banner in conversations, actual AI chat interface, session management. The disclaimer system is implemented but the main AI Health Coach functionality is not accessible through the UI."
 
   - task: "Consultation Limit UI & Upgrade Modal"
     implemented: true
