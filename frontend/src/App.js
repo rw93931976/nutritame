@@ -3077,8 +3077,8 @@ const CoachRoute = () => {
 // COACH INTERFACE COMPONENT
 // =============================================
 
-const CoachInterface = () => {
-  console.log('🎯 CoachInterface component mounted!');
+const CoachInterface = ({ pendingQuestion }) => {
+  console.log('🎯 CoachInterface component mounted with pendingQuestion:', pendingQuestion);
   
   // Basic AI Health Coach state
   const [messages, setMessages] = useState([]);
