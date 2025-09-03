@@ -1902,6 +1902,8 @@ async def search_coach_history(user_id: str, query: str):
             if session_id not in results_by_session:
                 # Find session info
                 session_info = next((s for s in sessions if s["id"] == session_id), None)
+                if session_info:
+                    session_info = parse_from_mongo(session_info)  # Fix ObjectId serialization
                 results_by_session[session_id] = {
                     "session": session_info,
                     "messages": []
