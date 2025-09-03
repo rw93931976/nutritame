@@ -270,6 +270,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ COMPREHENSIVE TESTING COMPLETED: Real AI integration is working perfectly. ✅ AI Health Coach generates substantial, diabetes-specific responses using OpenAI GPT-4o-mini model. ✅ Emergent LLM Key integration functional with proper authentication. ✅ Guardrail system prompt working - AI responses contain diabetes-specific guidance and terminology. ✅ Rate limiting and retry logic implemented correctly. ✅ AI responses are contextual and appropriate for diabetes management. ✅ User messages and AI responses properly saved to database. ✅ Consultation count incremented correctly after AI interaction. Real AI integration is production-ready."
+      - working: true
+        agent: "testing"
+        comment: "🎯 POST-CACHE-FIX VERIFICATION COMPLETED: AI Health Coach backend at 100% success rate for core endpoints. ✅ FIXED: ObjectId serialization bug in search endpoint resolved - GET /api/coach/search/{user_id} now working without errors. ✅ CORE ENDPOINTS: All 8 critical endpoints (feature-flags, accept-disclaimer, disclaimer-status, consultation-limit, sessions, message, messages, search) achieving 100% success rate. ✅ REAL AI INTEGRATION: GPT-4o-mini generating diabetes-specific responses with imperial measurements, Mediterranean content awareness, and shopping list offers. ✅ PLAN GATING: Standard (10/month) and Premium (unlimited) limits enforced correctly with monthly reset logic. ✅ DATABASE OPERATIONS: All MongoDB collections (coach_sessions, coach_messages, consultation_limits, disclaimer_acceptances) functioning perfectly. ✅ CONSULTATION TRACKING: Usage counting and monthly reset working accurately. Backend ready for frontend automated testing and rollback checkpoint creation."
 
   - task: "Plan Gating & Consultation Limits"
     implemented: true
