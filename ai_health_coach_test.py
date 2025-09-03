@@ -210,14 +210,13 @@ class AIHealthCoachTester:
     def test_create_session(self):
         """Test POST /api/coach/sessions endpoint"""
         session_data = {
-            "user_id": self.test_user_id,
             "title": "Test Diabetes Meal Planning Session"
         }
         
         success, response = self.run_test(
             "Create AI Health Coach Session",
             "POST",
-            "coach/sessions",
+            f"coach/sessions?user_id={self.test_user_id}",
             200,
             data=session_data
         )
