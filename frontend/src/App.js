@@ -3155,7 +3155,8 @@ const CoachInterface = () => {
               <Button 
                 variant="outline" 
                 onClick={() => window.location.href = '/'}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 hover:bg-gray-50 focus:ring-2 focus:ring-emerald-500 transition-all"
+                aria-label="Return to home page"
               >
                 <Navigation className="h-4 w-4" />
                 Home
