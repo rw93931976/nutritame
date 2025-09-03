@@ -2987,8 +2987,8 @@ const CoachRoute = ({ currentUser }) => {
       toast.success("Thanks for confirming — remember, this is guidance only, and your healthcare provider is your best resource.");
     }, 500);
     
-    // Clear pending question from localStorage when disclaimer is accepted (it will be passed to CoachInterface)
-    localStorage.removeItem('nt_coach_pending_question');
+    // DON'T remove pending question here - let CoachInterface handle it after processing
+    // localStorage.removeItem('nt_coach_pending_question');
   };
 
   const handleCoachDisclaimerDecline = () => {
