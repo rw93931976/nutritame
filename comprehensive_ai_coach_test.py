@@ -371,7 +371,7 @@ class ComprehensiveAICoachTester:
         if success and 'ai_response' in response:
             ai_response = response['ai_response']
             print(f"   ✅ AI response received ({len(ai_response)} characters)")
-            print(f"   📝 Preview: {ai_response[:200]}...")
+            print(f"   📝 Preview: {str(ai_response)[:200]}...")
             
             # Verify diabetes-specific content
             diabetes_keywords = ['diabetes', 'blood sugar', 'carbohydrate', 'mediterranean', 'meal']
