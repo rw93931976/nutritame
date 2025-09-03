@@ -375,7 +375,7 @@ class ComprehensiveAICoachTester:
             
             # Verify diabetes-specific content
             diabetes_keywords = ['diabetes', 'blood sugar', 'carbohydrate', 'mediterranean', 'meal']
-            found_keywords = [k for k in diabetes_keywords if k.lower() in ai_response.lower()]
+            found_keywords = [k for k in diabetes_keywords if k.lower() in str(ai_response).lower()]
             
             if len(found_keywords) >= 3:
                 print(f"   ✅ Diabetes-specific content detected: {found_keywords}")
