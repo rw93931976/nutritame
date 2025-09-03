@@ -3244,7 +3244,15 @@ function App() {
 
   // Landing Page (Default)
   if (appMode === 'landing') {
-    return <LandingPage onGetStarted={handleLandingGetStarted} />;
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LandingPage onGetStarted={handleLandingGetStarted} />} />
+          <Route path="/coach" element={<CoachRoute />} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </BrowserRouter>
+    );
   }
 
   // SaaS Mode Rendering (Payment/Signup Flow)
