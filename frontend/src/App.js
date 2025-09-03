@@ -3027,7 +3027,7 @@ const CoachRoute = () => {
   }
 
   // Show disclaimer modal if not accepted
-  if (showCoachDisclaimer && !disclaimerAccepted) {
+  if (!disclaimerAccepted) {
     console.log('📋 Rendering coach disclaimer modal');
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 flex items-center justify-center">
