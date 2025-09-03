@@ -3305,6 +3305,21 @@ function App() {
   const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
 
+  // Top-level router to handle /coach route independently
+  const currentPath = window.location.pathname;
+  
+  if (currentPath === '/coach') {
+    // Render /coach route independently of app mode
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route path="/coach" element={<CoachRoute />} />
+          <Route path="*" element={<Navigate to="/coach" />} />
+        </Routes>
+      </BrowserRouter>
+    );
+  }
+
   // Existing state (preserve all original functionality)
   const [currentUser, setCurrentUser] = useState(null);
   const [showForm, setShowForm] = useState(true);
