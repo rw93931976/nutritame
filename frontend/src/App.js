@@ -107,12 +107,9 @@ const aiCoachService = {
   },
 
   // Message handling
-  async sendMessage(sessionId, message) {
+  async sendMessage(payload) {
     try {
-      const response = await axios.post(`${API}/coach/message`, {
-        session_id: sessionId,
-        message: message
-      });
+      const response = await axios.post(`${API}/coach/message`, payload);
       return response.data;
     } catch (error) {
       console.error('Error sending message:', error);
