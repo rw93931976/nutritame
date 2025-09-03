@@ -2949,6 +2949,12 @@ const CoachRoute = () => {
     return stored === 'true';
   });
 
+  // State to preserve user question across disclaimer acceptance
+  const [pendingQuestion, setPendingQuestion] = useState(() => {
+    const stored = localStorage.getItem('nt_coach_pending_question');
+    return stored || '';
+  });
+
   useEffect(() => {
     console.log('🔍 CoachRoute useEffect started - checking feature flags...');
     
