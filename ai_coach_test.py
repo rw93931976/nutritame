@@ -738,6 +738,13 @@ class AIHealthCoachTester:
         """Run all AI Health Coach tests"""
         print("🚀 Starting Comprehensive AI Health Coach Backend Testing...")
         print(f"Backend URL: {self.base_url}")
+        print("=" * 80)
+        
+        # First setup test user
+        if not self.setup_test_user():
+            print("\n❌ CRITICAL: Failed to setup test user. Cannot proceed with AI Health Coach tests.")
+            return False
+        
         print(f"Test User ID: {self.test_user_id}")
         print("=" * 80)
         
