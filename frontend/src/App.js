@@ -3315,19 +3315,20 @@ function App() {
   const [apiUsage, setApiUsage] = useState(null);
   const [shoppingLists, setShoppingLists] = useState([]);
   const [showShoppingListButton, setShowShoppingListButton] = useState(false);
-  const [lastMealPlan, setLastMealPlan] = useState("");
+  const [lastMealPain, setLastMealPlan] = useState("");
 
-  // SINGLE ROUTER AT ROOT LEVEL
-  return (
-    <BrowserRouter>
-      <AppLayout>
+  // TARGETED FIX: Handle /coach route at the top level
+  // This bypasses all the app mode logic and directly renders CoachRoute
+  if (window.location.pathname === '/coach') {
+    return (
+      <BrowserRouter>
         <Routes>
-          {/* COACH ROUTE - HIGHEST PRECEDENCE */}
-          <Route path="/coach/*" element={<CoachRoute />} />
-          
-          {/* OTHER ROUTES BASED ON APP MODE */}
-          <Route path="/" element={<AppModeRouter 
-            appMode={appMode}
+          <Route path="/coach" element={<CoachRoute />} />
+          <Route path="*" element={<Navigate to="/coach" />} />
+        </Routes>
+      </BrowserRouter>
+    );
+  }
             setAppMode={setAppMode}
             user={user}
             setUser={setUser}
