@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Coach Bug Reproduction</title>
+</head>
+<body>
+    <h1>AI Coach Bug Reproduction Test</h1>
+    
+    <div id="test-results"></div>
+    
+    <script>
+        console.log('🔍 Starting AI Coach Bug Reproduction Test...');
+        
+        // Simulate the exact flow that's failing
+        const testResults = document.getElementById('test-results');
+        
+        function log(message) {
+            console.log(message);
+            testResults.innerHTML += '<div>' + message + '</div>';
+        }
+        
+        // Simulate CoachRoute mounting with empty localStorage
+        log('1. 🚀 CoachRoute mounts...');
+        const initialPendingQuestion = localStorage.getItem('nt_coach_pending_question') || '';
+        log('   - pendingQuestion initial state: "' + initialPendingQuestion + '"');
+        
+        // Simulate user typing (after mount)
+        log('2. 📝 User types question...');
+        const userQuestion = 'What should I eat for diabetes?';
+        localStorage.setItem('nt_coach_pending_question', userQuestion);
+        log('   - localStorage now contains: "' + localStorage.getItem('nt_coach_pending_question') + '"');
+        log('   - BUT pendingQuestion state is still: "' + initialPendingQuestion + '"');
+        
+        // Simulate disclaimer acceptance
+        log('3. ✅ User accepts disclaimer...');
+        const storedQuestion = localStorage.getItem('nt_coach_pending_question');
+        if (storedQuestion) {
+            log('   - Found stored question: "' + storedQuestion + '"');
+            log('   - setPendingQuestion would be called with: "' + storedQuestion + '"');
+        } else {
+            log('   - No stored question found!');
+        }
+        
+        // Simulate CoachInterface receiving updated pendingQuestion
+        log('4. 🎯 CoachInterface useEffect with updated pendingQuestion...');
+        if (storedQuestion && storedQuestion.trim()) {
+            log('   - Would set input field to: "' + storedQuestion + '"');
+            log('   - Would clear localStorage');
+            localStorage.removeItem('nt_coach_pending_question');
+            log('   - localStorage after clear: "' + (localStorage.getItem('nt_coach_pending_question') || 'empty') + '"');
+        } else {
+            log('   - No pending question to process!');
+        }
+        
+        log('\n✅ Test complete. Check console for details.');
+    </script>
+</body>
+</html>
