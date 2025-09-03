@@ -3,6 +3,9 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-route
 import axios from "axios";
 import "./App.css";
 
+// CRITICAL DEBUG: This should appear in console immediately
+console.log('🏗️ App.js file loaded - module executing');
+
 // Import shadcn components
 import { Button } from "./components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./components/ui/card";
