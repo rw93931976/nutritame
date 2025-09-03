@@ -2994,7 +2994,7 @@ const CoachRoute = () => {
     window.location.href = '/';
   };
 
-  console.log('🔄 CoachRoute render - loading:', loading, 'featureFlags:', featureFlags, 'showDisclaimer:', showCoachDisclaimer, 'accepted:', disclaimerAccepted);
+  console.log('🔄 CoachRoute render - loading:', loading, 'featureFlags:', featureFlags, 'accepted:', disclaimerAccepted);
 
   if (loading) {
     console.log('⏳ Rendering loading screen');
