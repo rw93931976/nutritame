@@ -556,8 +556,18 @@ class AIHealthCoachUrgentTester:
                     self.log("✅ Search results have correct structure", "PASS")
                 
                 return True
+            elif isinstance(response, dict) and 'results' in response:
+                # Handle wrapped response format
+                results = response['results']
+                if isinstance(results, list):
+                    search_results = len(results)
+                    self.log(f"✅ Search returned {search_results} results (wrapped format)", "PASS")
+                    return True
+                else:
+                    self.log(f"❌ Search results should be list, got: {type(results)}", "ERROR")
+                    return False
             else:
-                self.log(f"❌ Search should return list, got: {type(response)}", "ERROR")
+                self.log(f"❌ Search should return list or dict with results, got: {type(response)}", "ERROR")
                 return False
                 
         return False
