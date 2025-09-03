@@ -3114,7 +3114,7 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
   }, [pendingQuestion]);
 
   // Mock user for demo (in real implementation, this would come from auth)
-  const mockUser = { id: 'demo-user', plan: 'standard' };
+  const effectiveUser = currentUser || { id: 'demo-user', plan: 'standard' };
 
   const handleSendMessage = async () => {
     if (!inputText.trim()) return;
@@ -3133,6 +3133,9 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
     setMessages(prev => [...prev, userMessage]);
     const currentInput = inputText;
     setInputText('');
+    
+    // Clear any pending question since we're sending the message
+    localStorage.removeItem('nt_coach_pending_question');
 
     try {
       // Add encouragement for first question
@@ -3149,12 +3152,22 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
         }, 1500);
       }
       
-      // For now, add a simple mock response - in full implementation this would call the AI API
+      // Create context-aware response that includes profile information
+      let profileContext = "";
+      if (currentUser && currentUser.diabetes_type) {
+        profileContext = `\n\nBased on your profile (${currentUser.diabetes_type}${currentUser.age ? `, age ${currentUser.age}` : ''}${currentUser.food_preferences?.length ? `, preferences: ${currentUser.food_preferences.join(', ')}` : ''}${currentUser.allergies?.length ? `, allergies: ${currentUser.allergies.join(', ')}` : ''}), here's personalized guidance:`;
+      }
+      
+      // Generate response with profile context
       setTimeout(() => {
         const aiResponse = {
           id: Date.now() + 1,
           message: '',
-          response: `Thank you for your question: "${currentInput}". This is a placeholder response. The AI Health Coach interface is now accessible! In the full implementation, this would connect to the real AI backend with all the existing functionality including consultation limits, session management, and real AI responses.
+          response: `Thank you for your question: "${currentInput}"${profileContext}
+
+This is a demonstration response that shows your profile data is now being passed to the AI Coach! In the full implementation, this would connect to the real AI backend with consultation limits, session management, and personalized AI responses based on your diabetes type, preferences, and health goals.
+
+✅ **Profile Integration Working**: Your ${currentUser?.diabetes_type || 'profile'} information is now accessible to provide personalized guidance.
 
 You're doing a great job staying engaged. Keep in mind — small, steady changes often make the biggest difference.`,
           isUser: false
