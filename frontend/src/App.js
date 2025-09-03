@@ -2941,15 +2941,20 @@ const CoachRoute = () => {
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
 
   useEffect(() => {
+    console.log('🚀 CoachRoute component mounted!');
+    
     const checkFeatureFlagsAndDisclaimer = async () => {
       try {
+        console.log('🔍 Checking feature flags...');
         // Check feature flags
         const flags = await aiCoachService.getFeatureFlags();
+        console.log('📋 Feature flags:', flags);
         setFeatureFlags(flags);
         
         // Check if disclaimer was already accepted (from localStorage or API)
         const disclaimerKey = 'nutritame_coach_disclaimer_accepted';
         const localDisclaimerAccepted = localStorage.getItem(disclaimerKey) === 'true';
+        console.log('📜 Disclaimer already accepted:', localDisclaimerAccepted);
         
         if (localDisclaimerAccepted) {
           setDisclaimerAccepted(true);
@@ -2957,7 +2962,7 @@ const CoachRoute = () => {
           setShowCoachDisclaimer(true);
         }
       } catch (error) {
-        console.error('Error checking feature flags:', error);
+        console.error('❌ Error checking feature flags:', error);
         setFeatureFlags({ coach_enabled: false });
       } finally {
         setLoading(false);
@@ -2968,6 +2973,7 @@ const CoachRoute = () => {
   }, []);
 
   const handleCoachDisclaimerAccept = () => {
+    console.log('✅ Coach disclaimer accepted');
     const disclaimerKey = 'nutritame_coach_disclaimer_accepted';
     localStorage.setItem(disclaimerKey, 'true');
     setDisclaimerAccepted(true);
@@ -2975,9 +2981,12 @@ const CoachRoute = () => {
   };
 
   const handleCoachDisclaimerDecline = () => {
+    console.log('❌ Coach disclaimer declined - redirecting to home');
     // Redirect back to home page
     window.location.href = '/';
   };
+
+  console.log('🔄 CoachRoute render - loading:', loading, 'featureFlags:', featureFlags, 'showDisclaimer:', showCoachDisclaimer, 'accepted:', disclaimerAccepted);
 
   if (loading) {
     return (
@@ -3007,6 +3016,7 @@ const CoachRoute = () => {
 
   // Show disclaimer modal if not accepted
   if (showCoachDisclaimer && !disclaimerAccepted) {
+    console.log('📋 Rendering coach disclaimer modal');
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 flex items-center justify-center">
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -3045,6 +3055,7 @@ const CoachRoute = () => {
     );
   }
 
+  console.log('🎯 Rendering coach interface');
   // Render full coach interface component
   return <CoachInterface />;
 };
