@@ -160,15 +160,33 @@ const LandingPage = ({ onGetStarted, onNavigateToCoach }) => {
                 color: "red"
               }
             ].map((feature, index) => (
-              <Card key={index} className="text-center hover:shadow-lg transition-shadow duration-300 border-2 hover:border-emerald-200">
+              <Card 
+                key={index} 
+                className={`text-center hover:shadow-lg transition-all duration-300 border-2 hover:border-emerald-200 ${
+                  feature.title === "AI Health Coach" ? "cursor-pointer hover:scale-105 hover:bg-emerald-50" : ""
+                }`}
+                onClick={feature.title === "AI Health Coach" ? () => onNavigateToCoach && onNavigateToCoach() : undefined}
+              >
                 <CardHeader>
                   <div className={`w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-${feature.color}-100 to-${feature.color}-200 flex items-center justify-center`}>
                     <feature.icon className={`h-8 w-8 text-${feature.color}-600`} />
                   </div>
-                  <CardTitle className="text-xl">{feature.title}</CardTitle>
+                  <CardTitle className="text-xl">
+                    {feature.title}
+                    {feature.title === "AI Health Coach" && (
+                      <Badge className="ml-2 bg-gradient-to-r from-emerald-500 to-blue-500 text-white">
+                        Try Now
+                      </Badge>
+                    )}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600">{feature.description}</p>
+                  {feature.title === "AI Health Coach" && (
+                    <div className="mt-3">
+                      <ArrowRight className="h-5 w-5 text-emerald-600 mx-auto" />
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
