@@ -2942,28 +2942,23 @@ const CoachRoute = () => {
   
   const [featureFlags, setFeatureFlags] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  
+  // Single source of truth for disclaimer acceptance with localStorage persistence
+  const [ack, setAck] = useState(() => {
+    const stored = localStorage.getItem('nt_coach_disclaimer_ack');
+    return stored === 'true';
+  });
 
   useEffect(() => {
     console.log('🔍 CoachRoute useEffect started - checking feature flags...');
     
-    const checkFeatureFlagsAndDisclaimer = async () => {
+    const checkFeatureFlags = async () => {
       try {
         console.log('🔍 Fetching feature flags...');
         // Check feature flags
         const flags = await aiCoachService.getFeatureFlags();
         console.log('📋 Feature flags received:', flags);
         setFeatureFlags(flags);
-        
-        // Check if disclaimer was already accepted (from localStorage or API)
-        const disclaimerKey = 'nutritame_coach_disclaimer_accepted';
-        const localDisclaimerAccepted = localStorage.getItem(disclaimerKey) === 'true';
-        console.log('📜 Local disclaimer already accepted:', localDisclaimerAccepted);
-        
-        if (localDisclaimerAccepted) {
-          setDisclaimerAccepted(true);
-        }
-        // If not accepted, disclaimerAccepted remains false and disclaimer will show
       } catch (error) {
         console.error('❌ Error checking feature flags:', error);
         setFeatureFlags({ coach_enabled: false });
@@ -2972,15 +2967,14 @@ const CoachRoute = () => {
       }
     };
 
-    checkFeatureFlagsAndDisclaimer();
+    checkFeatureFlags();
   }, []);
 
   const handleCoachDisclaimerAccept = () => {
     console.log('✅ Coach disclaimer accepted');
-    const disclaimerKey = 'nutritame_coach_disclaimer_accepted';
-    localStorage.setItem(disclaimerKey, 'true');
-    setDisclaimerAccepted(true);
-    // Remove redundant state update to fix race condition
+    // Single update - both state and persistence
+    setAck(true);
+    localStorage.setItem('nt_coach_disclaimer_ack', 'true');
     
     // Show encouragement toast after disclaimer acceptance
     setTimeout(() => {
