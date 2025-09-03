@@ -3134,8 +3134,16 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
     }
   }, [pendingQuestion, currentUser]);
 
-  // Mock user for demo (in real implementation, this would come from auth)
-  const effectiveUser = currentUser || { id: 'demo-user', plan: 'standard' };
+  // Generate a proper user for demo/testing if no currentUser
+  const effectiveUser = currentUser || { 
+    id: `demo-${Date.now()}`, 
+    plan: 'standard',
+    email: 'demo@nutritame.com',
+    diabetes_type: 'type2', // Default for demo
+    age: 35,
+    food_preferences: ['mediterranean'],
+    allergies: []
+  };
 
   const handleSendMessage = async () => {
     if (!inputText.trim()) return;
