@@ -3118,6 +3118,9 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
       console.log('🎯 Processing pending question:', pendingQuestion);
       setInputText(pendingQuestion);
       
+      // Clear the pending question from localStorage now that we've processed it
+      localStorage.removeItem('nt_coach_pending_question');
+      
       // Add encouragement microcopy for restored question
       setTimeout(() => {
         toast.success("Great question! I've restored your message - just hit send when you're ready 💬");
