@@ -466,6 +466,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "✅ POST V2.1 ENHANCEMENT VALIDATION: Main medical disclaimer modal working perfectly with scroll detection (70% threshold), checkbox validation, and Accept & Continue functionality. Proper 'Not a medical device' warning text displayed. AI Health Coach inline disclaimer may already be accepted in session. Disclaimer system meets all medical compliance requirements and accessibility standards."
+      - working: true
+        agent: "testing"
+        comment: "🎉 DISCLAIMER RACE CONDITION FIX VALIDATED: Comprehensive testing confirms the disclaimer race condition fix is working perfectly. ✅ SINGLE SOURCE OF TRUTH: localStorage persistence using 'nt_coach_disclaimer_ack' key working correctly. ✅ NO RACE CONDITION: Disclaimer modal appears correctly, accepts properly, and CoachInterface renders immediately after acceptance without any flashing or re-rendering issues. ✅ PERSISTENCE: After disclaimer acceptance, page reloads go directly to CoachInterface without showing disclaimer modal again. ✅ PROPER FLOW: /coach route → disclaimer modal → Accept & Continue → CoachInterface accessible. ✅ CONSOLE LOGS: All debug logs show proper state transitions (ack: false → ack: true → CoachInterface mounted). The disclaimer race condition fix is production-ready."
 
   - task: "Coach Entry & Feature Flag System"
     implemented: true
