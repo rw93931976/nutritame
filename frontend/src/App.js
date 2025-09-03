@@ -3329,24 +3329,6 @@ function App() {
   const [showShoppingListButton, setShowShoppingListButton] = useState(false);
   const [lastMealPain, setLastMealPlan] = useState("");
 
-  // TARGETED FIX: Handle /coach route at the top level
-  // This bypasses all the app mode logic and directly renders CoachRoute
-  const currentPath = window.location.pathname;
-  console.log('🔍 Current path:', currentPath);
-  
-  if (currentPath === '/coach') {
-    console.log('✅ /coach path detected - rendering CoachRoute directly');
-    return (
-      <BrowserRouter>
-        <Routes>
-          <Route path="/coach" element={<CoachRoute />} />
-        </Routes>
-      </BrowserRouter>
-    );
-  }
-
-  console.log('⚡ Continuing with normal app flow - path is not /coach');
-
   // Check authentication on app load (run only once, independent of disclaimer)
   useEffect(() => {
     const checkAuthentication = async () => {
