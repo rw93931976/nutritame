@@ -3640,40 +3640,45 @@ function App() {
   if (appMode === 'app') {
     return (
       <BrowserRouter>
-        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50">
-          {/* Demo Mode Banner - only show when in demo mode */}
-          {demoMode && <DemoModeBanner />}
-          
-          {/* SaaS Header */}
-          <SaaSHeader 
-            user={user || demoUser} 
-            subscriptionInfo={subscriptionInfo} 
-            onLogout={handleLogout} 
-          />
-          
-          {/* Main Content */}
-          <div className="container mx-auto px-4 py-8">
-            {showForm ? (
-              <UserProfileSetup 
-                onProfileComplete={(profile) => {
-                  setCurrentUser(profile);
-                  setShowForm(false);
-                }}
-                existingProfile={currentUser}
+        <Routes>
+          <Route path="/coach" element={<CoachRoute currentUser={currentUser} />} />
+          <Route path="/*" element={
+            <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50">
+              {/* Demo Mode Banner - only show when in demo mode */}
+              {demoMode && <DemoModeBanner />}
+              
+              {/* SaaS Header */}
+              <SaaSHeader 
+                user={user || demoUser} 
+                subscriptionInfo={subscriptionInfo} 
+                onLogout={handleLogout} 
               />
-            ) : (
-              <Dashboard 
-                userProfile={currentUser} 
-                onBack={() => setShowForm(true)}
-                authToken={authToken}
-                subscriptionInfo={subscriptionInfo}
-                demoMode={demoMode}
-                shoppingLists={shoppingLists}
-                setShoppingLists={setShoppingLists}
-              />
-            )}
-          </div>
-        </div>
+              
+              {/* Main Content */}
+              <div className="container mx-auto px-4 py-8">
+                {showForm ? (
+                  <UserProfileSetup 
+                    onProfileComplete={(profile) => {
+                      setCurrentUser(profile);
+                      setShowForm(false);
+                    }}
+                    existingProfile={currentUser}
+                  />
+                ) : (
+                  <Dashboard 
+                    userProfile={currentUser} 
+                    onBack={() => setShowForm(true)}
+                    authToken={authToken}
+                    subscriptionInfo={subscriptionInfo}
+                    demoMode={demoMode}
+                    shoppingLists={shoppingLists}
+                    setShoppingLists={setShoppingLists}
+                  />
+                )}
+              </div>
+            </div>
+          } />
+        </Routes>
       </BrowserRouter>
     );
   }
