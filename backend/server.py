@@ -470,8 +470,13 @@ def prepare_for_mongo(data):
     return data
 
 def parse_from_mongo(item):
-    """Parse ISO string dates back to datetime objects"""
+    """Parse MongoDB documents for Pydantic models"""
     if isinstance(item, dict):
+        # Remove MongoDB's _id field to avoid conflicts with our UUID id field
+        if '_id' in item:
+            del item['_id']
+            
+        # Parse ISO string dates back to datetime objects
         for key, value in item.items():
             if key in ['created_at', 'timestamp', 'cached_at'] and isinstance(value, str):
                 try:
