@@ -3257,14 +3257,15 @@ const CoachInterface = () => {
               {/* Search */}
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm">Search Conversations</CardTitle>
+                  <CardTitle className="text-sm">Search Chats</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Input
-                    placeholder="Search..."
+                    placeholder="Search conversations..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="text-sm"
+                    className="text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                    aria-label="Search through your conversations"
                   />
                 </CardContent>
               </Card>
