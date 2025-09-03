@@ -383,7 +383,7 @@ class ComprehensiveAICoachTester:
                 print(f"   ⚠️  Limited diabetes-specific content: {found_keywords}")
             
             # Check for allergy awareness
-            allergy_aware = any(word in ai_response.lower() for word in ['nuts', 'shellfish', 'allerg'])
+            allergy_aware = any(word in str(ai_response).lower() for word in ['nuts', 'shellfish', 'allerg'])
             if allergy_aware:
                 print(f"   ✅ AI shows allergy awareness")
             else:
@@ -391,20 +391,20 @@ class ComprehensiveAICoachTester:
             
             # Check for imperial measurements
             imperial_measurements = ['cup', 'tablespoon', 'teaspoon', 'oz', 'pound', 'inch']
-            found_imperial = [m for m in imperial_measurements if m in ai_response.lower()]
+            found_imperial = [m for m in imperial_measurements if m in str(ai_response).lower()]
             if found_imperial:
                 print(f"   ✅ Imperial measurements used: {found_imperial}")
             else:
                 print(f"   ⚠️  Imperial measurements not detected")
             
             # Check for shopping list offer
-            if 'shopping list' in ai_response.lower():
+            if 'shopping list' in str(ai_response).lower():
                 print(f"   ✅ Shopping list offer included")
             else:
                 print(f"   ⚠️  Shopping list offer not found")
             
             # Check formatting (no markdown)
-            if '**' in ai_response or '##' in ai_response:
+            if '**' in str(ai_response) or '##' in str(ai_response):
                 print(f"   ⚠️  Markdown formatting detected")
             else:
                 print(f"   ✅ Clean formatting (no markdown)")
