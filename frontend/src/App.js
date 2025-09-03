@@ -2937,8 +2937,8 @@ const LandingPageWrapper = ({ onGetStarted }) => {
 // COACH ROUTE COMPONENT
 // =============================================
 
-const CoachRoute = () => {
-  console.log('🚀 CoachRoute component mounted!');
+const CoachRoute = ({ currentUser }) => {
+  console.log('🚀 CoachRoute component mounted with currentUser:', currentUser);
   
   const [featureFlags, setFeatureFlags] = useState(null);
   const [loading, setLoading] = useState(true);
