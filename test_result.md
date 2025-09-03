@@ -707,6 +707,36 @@ test_plan:
         agent: "main"
         comment: "FIXED: Identified and resolved two property name mismatches in ShoppingListView component. Line 1066 was displaying 'list.title' instead of 'list.name', and line 1103 was displaying 'item.item' instead of 'item.name'. Fixed both issues - shopping lists now display correctly with proper list names and item names. Frontend rebuilt successfully with fix."
 
+  - task: "User Question Lost After Disclaimer Accept"
+    implemented: false
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reports critical UX issue: When user enters a question in AI Coach interface, disclaimer modal appears, user clicks 'Accept', but the original question is erased and user must retype it. Expected: Question should be preserved and submitted immediately after disclaimer acceptance."
+      - working: false
+        agent: "main"
+        comment: "ISSUE IDENTIFIED: CoachInterface component doesn't have mechanism to persist user input when disclaimer state changes. CoachInterface re-mounts with fresh state after disclaimer acceptance, losing original question. Need to implement question persistence in localStorage or component state management."
+
+  - task: "Profile Data Not Persisting to AI Coach"
+    implemented: false
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reports critical data persistence issue: After completing profile form during onboarding and submitting, when navigating to AI Coach, the AI Coach asks again for all profile info as if nothing was saved. Expected: Profile data should persist from form into AI Coach session."
+      - working: false
+        agent: "main"
+        comment: "ISSUE IDENTIFIED: CoachInterface component is isolated from main app's currentUser state and doesn't receive profile data as props. Main app has currentUser with profile data, but CoachInterface doesn't access it. Need to pass profile data to CoachInterface and integrate it into AI requests."
+
 agent_communication:
   - agent: "main"
     message: "🎯 POST V2.1 COMPLETION SPRINT INITIATED: v2.1-ai-health-coach rollback checkpoint confirmed stable (Backend: 100% success, Frontend: fully accessible, Build: main.917c49ee.js). Starting systematic enhancement sprint: Phase 1 (Completion Logging) ✅, Phase 2 (Frontend Polish), Phase 3 (Encouragement Microcopy), Phase 4 (Regression Testing). All enhancements must maintain stability and comply with medical safety requirements."
@@ -721,7 +751,9 @@ agent_communication:
   - agent: "main"
     message: "🎉 DISCLAIMER RACE CONDITION FIX COMPLETE: Implemented single source of truth with localStorage persistence using 'nt_coach_disclaimer_ack' key. Eliminated redundant state variables (disclaimerAccepted, showCoachDisclaimer) causing async race condition. Simplified conditional rendering: !ack → disclaimer modal, ack → CoachInterface. Backend regression testing complete at 100% success rate (14/14 tests passed). All 9 AI Health Coach endpoints stable with real AI integration working. Ready for comprehensive frontend testing to validate fix and all UI/UX enhancements."
   - agent: "main"
-    message: "🎉 AI HEALTH COACH FRONTEND IMPLEMENTATION COMPLETE: Successfully implemented comprehensive AI Health Coach frontend including disclaimer system (first-time modal + inline banners), consultation limit UI with upgrade modal, conversation history & search functionality, and real AI integration replacing mock responses. Added new controls: New Session, Sessions History, Search, and proper state management. All components integrated with backend APIs and ready for testing."
+    message: "🎉 AI HEALTH COACH FRONTEND IMPLEMENTATION COMPLETE: Successfully implemented comprehensive AI Health Coach frontend including disclaimer system (first-time modal + inl"
+  - agent: "main"
+    message: "🚨 CRITICAL UX/DATA PERSISTENCE ISSUES IDENTIFIED: User reported two critical bugs after manual QA testing. Issue 1: User questions are lost after disclaimer acceptance - CoachInterface re-mounts with fresh state, erasing original input. Issue 2: Profile data not persisting to AI Coach - CoachInterface is isolated from main app's currentUser state. Both issues require immediate frontend architecture fixes to preserve user input and pass profile data to AI Coach component."ine banners), consultation limit UI with upgrade modal, conversation history & search functionality, and real AI integration replacing mock responses. Added new controls: New Session, Sessions History, Search, and proper state management. All components integrated with backend APIs and ready for testing."
   - agent: "main"
     message: "🎉 AI HEALTH COACH BACKEND IMPLEMENTATION COMPLETE: Successfully implemented comprehensive AI Health Coach backend functionality including model-agnostic AI integration with Emergent LLM Key, plan gating system (Standard: 10 consults/month, Premium: unlimited), MongoDB database schema for sessions/messages/limits, feature flags system, disclaimer management, and 9 complete API endpoints. Backend is ready for testing with real AI responses, consultation limits, conversation history, and search functionality."
   - agent: "main"
