@@ -5,7 +5,7 @@ from datetime import datetime
 import time
 
 class AIHealthCoachTester:
-    def __init__(self, base_url="https://nutri-coach-beta.preview.emergentagent.com"):
+    def __init__(self, base_url="https://coach-routing-fix.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.tests_run = 0
