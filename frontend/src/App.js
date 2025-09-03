@@ -3190,7 +3190,7 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
       const aiResponse = {
         id: Date.now() + 1,
         message: '',
-        response: response.ai_response || response.response || response.message || 'Thank you for your question. I received your message successfully.',
+        response: response.ai_response?.text || response.response || response.message || 'Thank you for your question. I received your message successfully.',
         isUser: false
       };
       
