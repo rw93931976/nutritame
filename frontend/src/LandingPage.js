@@ -5,7 +5,7 @@ import { Badge } from './components/ui/badge';
 import { ChefHat, Heart, Target, Users, Star, Check, ArrowRight, Smartphone, MapPin, ShoppingCart, Crown } from 'lucide-react';
 import { API } from './config';
 
-const LandingPage = ({ onGetStarted }) => {
+const LandingPage = ({ onGetStarted, onNavigateToCoach }) => {
   const [stats, setStats] = useState({
     users: null,
     recipes: null, 
