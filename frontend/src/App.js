@@ -3107,6 +3107,9 @@ const CoachInterface = () => {
   const handleSendMessage = async () => {
     if (!inputText.trim()) return;
     
+    const isFirstMessage = messages.length === 0 || (messages.length === 1 && messages[0].isWelcome);
+    const messageCount = messages.filter(msg => msg.isUser).length;
+    
     setIsLoading(true);
     const userMessage = {
       id: Date.now(),
@@ -3116,15 +3119,32 @@ const CoachInterface = () => {
     };
     
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = inputText;
     setInputText('');
 
     try {
+      // Add encouragement for first question
+      if (isFirstMessage) {
+        setTimeout(() => {
+          toast.success("That's a great question — curiosity is the first step toward progress.");
+        }, 500);
+      }
+      
+      // Add encouragement for multiple sessions/messages
+      if (messageCount >= 3) {
+        setTimeout(() => {
+          toast.success("Nice work staying consistent — small steps really add up.");
+        }, 1500);
+      }
+      
       // For now, add a simple mock response - in full implementation this would call the AI API
       setTimeout(() => {
         const aiResponse = {
           id: Date.now() + 1,
           message: '',
-          response: `Thank you for your question: "${inputText}". This is a placeholder response. The AI Health Coach interface is now accessible! In the full implementation, this would connect to the real AI backend with all the existing functionality including consultation limits, session management, and real AI responses.`,
+          response: `Thank you for your question: "${currentInput}". This is a placeholder response. The AI Health Coach interface is now accessible! In the full implementation, this would connect to the real AI backend with all the existing functionality including consultation limits, session management, and real AI responses.
+
+You're doing a great job staying engaged. Keep in mind — small, steady changes often make the biggest difference.`,
           isUser: false
         };
         setMessages(prev => [...prev, aiResponse]);
