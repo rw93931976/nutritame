@@ -3214,9 +3214,10 @@ const CoachInterface = () => {
                   <Input
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
-                    placeholder="Ask me about nutrition, meal planning, or diabetes-friendly recipes..."
+                    placeholder="Ask about nutrition, meals, or recipes..."
                     onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                    className="flex-1"
+                    className="flex-1 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                    aria-label="Enter your nutrition question"
                   />
                   <Button 
                     onClick={handleSendMessage}
