@@ -11,10 +11,11 @@ class AIHealthCoachTester:
         self.api_url = f"{base_url}/api"
         self.tests_run = 0
         self.tests_passed = 0
-        self.test_user_id = None  # Will create fresh user
+        self.test_user_id = None
         self.session_id = None
         self.access_token = None
         self.test_results = []
+        self.created_user_profile = None
 
     def run_test(self, name, method, endpoint, expected_status, data=None, headers=None):
         """Run a single API test"""
