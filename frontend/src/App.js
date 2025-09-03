@@ -3164,27 +3164,23 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
         }, 1500);
       }
       
-      // Prepare message payload with profile data
-      const messagePayload = {
-        user_id: effectiveUser.id,
-        message: currentInput,
-        session_id: currentSessionId
-      };
-      
-      // Add profile context if available
-      if (currentUser) {
-        messagePayload.profile_data = {
-          diabetes_type: currentUser.diabetes_type,
-          age: currentUser.age,
-          food_preferences: currentUser.food_preferences,
-          allergies: currentUser.allergies,
-          dietary_restrictions: currentUser.dietary_restrictions,
-          health_goals: currentUser.health_goals,
-          cultural_background: currentUser.cultural_background
-        };
+      // Create session if not exists
+      let sessionId = currentSessionId;
+      if (!sessionId) {
+        console.log('🎯 Creating new session for user:', effectiveUser.id);
+        const sessionResponse = await aiCoachService.createSession(effectiveUser.id, "New Health Coach Conversation");
+        sessionId = sessionResponse.id;
+        setCurrentSessionId(sessionId);
+        console.log('🎯 Created session:', sessionId);
       }
       
-      console.log('🎯 Sending message to AI with profile data:', messagePayload);
+      // Prepare message payload
+      const messagePayload = {
+        session_id: sessionId,
+        message: currentInput
+      };
+      
+      console.log('🎯 Sending message to AI with payload:', messagePayload);
       
       // Call real AI backend API
       const response = await aiCoachService.sendMessage(messagePayload);
