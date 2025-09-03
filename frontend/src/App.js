@@ -3290,6 +3290,75 @@ const CoachInterface = () => {
   );
 };
 
+// App Layout Component with Global Disclaimer Logic
+const AppLayout = ({ children }) => {
+  const location = useLocation();
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const [aiCoachFeatureFlags, setAiCoachFeatureFlags] = useState(null);
+
+  // Check if we're on the coach route and if coach feature is enabled
+  const isCoachRoute = location.pathname.startsWith('/coach');
+  const coachEnabled = aiCoachFeatureFlags?.coach_enabled || false;
+  const suppressGlobalDisclaimer = coachEnabled && isCoachRoute;
+
+  // Load coach feature flags
+  useEffect(() => {
+    const loadFlags = async () => {
+      try {
+        const flags = await aiCoachService.getFeatureFlags();
+        setAiCoachFeatureFlags(flags);
+      } catch (error) {
+        console.error('Error loading coach feature flags:', error);
+        setAiCoachFeatureFlags({ coach_enabled: false });
+      }
+    };
+    loadFlags();
+  }, []);
+
+  // Handle global disclaimer acceptance
+  const handleDisclaimerAccept = async () => {
+    setDisclaimerAccepted(true);
+    setShowDisclaimer(false);
+    
+    // Demo mode detection logic (only for non-coach routes)
+    if (!isCoachRoute) {
+      try {
+        console.log('Checking for demo mode after disclaimer acceptance...');
+        const demoResponse = await axios.get(`${API}/demo-config.php`);
+        console.log('Demo config response:', demoResponse.data);
+        
+        if (demoResponse.data && demoResponse.data.demo_mode === true) {
+          console.log('Demo mode detected - setting app mode to demo');
+          // This would trigger demo mode - but we're handling it in the main App component
+        }
+      } catch (error) {
+        console.error('Demo mode check failed:', error);
+      }
+    }
+  };
+
+  const handleDisclaimerDecline = () => {
+    alert('You must accept the medical disclaimer to use NutriTame. The application will now close.');
+    window.close();
+    setTimeout(() => {
+      window.location.href = 'about:blank';
+    }, 1000);
+  };
+
+  // Show global disclaimer only if NOT on coach route OR coach is disabled
+  if (showDisclaimer && !disclaimerAccepted && !suppressGlobalDisclaimer) {
+    return (
+      <MedicalDisclaimer 
+        onAccept={handleDisclaimerAccept}
+        onDecline={handleDisclaimerDecline}
+      />
+    );
+  }
+
+  return children;
+};
+
 // Main App Component
 function App() {
   // SaaS State Management
@@ -3300,10 +3369,6 @@ function App() {
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
   const [demoMode, setDemoMode] = useState(false);
   const [demoUser, setDemoUser] = useState(null);
-  
-  // Medical Disclaimer State - MOVED TO TOP FOR PROPER REACT LIFECYCLE
-  const [showDisclaimer, setShowDisclaimer] = useState(true);
-  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
 
   // Existing state (preserve all original functionality)
   const [currentUser, setCurrentUser] = useState(null);
@@ -3317,20 +3382,59 @@ function App() {
   const [showShoppingListButton, setShowShoppingListButton] = useState(false);
   const [lastMealPlan, setLastMealPlan] = useState("");
 
-  // Top-level router to handle /coach route independently - AFTER state initialization
-  const currentPath = window.location.pathname;
-  
-  if (currentPath === '/coach') {
-    // Render /coach route independently of app mode
-    return (
-      <BrowserRouter>
+  // SINGLE ROUTER AT ROOT LEVEL
+  return (
+    <BrowserRouter>
+      <AppLayout>
         <Routes>
-          <Route path="/coach" element={<CoachRoute />} />
-          <Route path="*" element={<Navigate to="/coach" />} />
+          {/* COACH ROUTE - HIGHEST PRECEDENCE */}
+          <Route path="/coach/*" element={<CoachRoute />} />
+          
+          {/* OTHER ROUTES BASED ON APP MODE */}
+          <Route path="/" element={<AppModeRouter 
+            appMode={appMode}
+            setAppMode={setAppMode}
+            user={user}
+            setUser={setUser}
+            authToken={authToken}
+            setAuthToken={setAuthToken}
+            adminToken={adminToken}
+            setAdminToken={setAdminToken}
+            subscriptionInfo={subscriptionInfo}
+            setSubscriptionInfo={setSubscriptionInfo}
+            demoMode={demoMode}
+            setDemoMode={setDemoMode}
+            demoUser={demoUser}
+            setDemoUser={setDemoUser}
+            currentUser={currentUser}
+            setCurrentUser={setCurrentUser}
+            showForm={showForm}
+            setShowForm={setShowForm}
+            restaurants={restaurants}
+            setRestaurants={setRestaurants}
+            selectedRestaurant={selectedRestaurant}
+            setSelectedRestaurant={setSelectedRestaurant}
+            searchCenter={searchCenter}
+            setSearchCenter={setSearchCenter}
+            searchRadius={searchRadius}
+            setSearchRadius={setSearchRadius}
+            apiUsage={apiUsage}
+            setApiUsage={setApiUsage}
+            shoppingLists={shoppingLists}
+            setShoppingLists={setShoppingLists}
+            showShoppingListButton={showShoppingListButton}
+            setShowShoppingListButton={setShowShoppingListButton}
+            lastMealPlan={lastMealPlan}
+            setLastMealPlan={setLastMealPlan}
+          />} />
+          
+          {/* CATCH-ALL - LOWEST PRECEDENCE */}
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
-      </BrowserRouter>
-    );
-  }
+      </AppLayout>
+    </BrowserRouter>
+  );
+}
 
   // Check authentication on app load (run only once, independent of disclaimer)
   useEffect(() => {
