@@ -3167,32 +3167,60 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
         }, 1500);
       }
       
-      // Create context-aware response that includes profile information
-      let profileContext = "";
-      if (currentUser && currentUser.diabetes_type) {
-        profileContext = `\n\nBased on your profile (${currentUser.diabetes_type}${currentUser.age ? `, age ${currentUser.age}` : ''}${currentUser.food_preferences?.length ? `, preferences: ${currentUser.food_preferences.join(', ')}` : ''}${currentUser.allergies?.length ? `, allergies: ${currentUser.allergies.join(', ')}` : ''}), here's personalized guidance:`;
+      // Prepare message payload with profile data
+      const messagePayload = {
+        user_id: effectiveUser.id,
+        message: currentInput,
+        session_id: currentSessionId
+      };
+      
+      // Add profile context if available
+      if (currentUser) {
+        messagePayload.profile_data = {
+          diabetes_type: currentUser.diabetes_type,
+          age: currentUser.age,
+          food_preferences: currentUser.food_preferences,
+          allergies: currentUser.allergies,
+          dietary_restrictions: currentUser.dietary_restrictions,
+          health_goals: currentUser.health_goals,
+          cultural_background: currentUser.cultural_background
+        };
       }
       
-      // Generate response with profile context
-      setTimeout(() => {
-        const aiResponse = {
-          id: Date.now() + 1,
-          message: '',
-          response: `Thank you for your question: "${currentInput}"${profileContext}
-
-This is a demonstration response that shows your profile data is now being passed to the AI Coach! In the full implementation, this would connect to the real AI backend with consultation limits, session management, and personalized AI responses based on your diabetes type, preferences, and health goals.
-
-✅ **Profile Integration Working**: Your ${currentUser?.diabetes_type || 'profile'} information is now accessible to provide personalized guidance.
-
-You're doing a great job staying engaged. Keep in mind — small, steady changes often make the biggest difference.`,
-          isUser: false
-        };
-        setMessages(prev => [...prev, aiResponse]);
-        setIsLoading(false);
-      }, 1000);
-    } catch (error) {
-      console.error('Error sending message:', error);
+      console.log('🎯 Sending message to AI with profile data:', messagePayload);
+      
+      // Call real AI backend API
+      const response = await aiCoachService.sendMessage(messagePayload);
+      console.log('🎯 AI response received:', response);
+      
+      // Create AI response message
+      const aiResponse = {
+        id: Date.now() + 1,
+        message: '',
+        response: response.response || response.message || 'Thank you for your question. I received your message successfully.',
+        isUser: false
+      };
+      
+      setMessages(prev => [...prev, aiResponse]);
       setIsLoading(false);
+      
+    } catch (error) {
+      console.error('❌ Error sending message to AI:', error);
+      
+      // Show error message to user
+      const errorResponse = {
+        id: Date.now() + 1,
+        message: '',
+        response: `I apologize, but I'm having trouble connecting right now. Please try again in a moment. ${currentUser ? `I can see your ${currentUser.diabetes_type} profile is loaded and ready for personalized guidance once the connection is restored.` : 'Make sure to complete your profile for personalized advice.'}`,
+        isUser: false,
+        isError: true
+      };
+      
+      setMessages(prev => [...prev, errorResponse]);
+      setIsLoading(false);
+      
+      // Show error toast
+      toast.error("Connection issue - please try again in a moment.");
     }
   };
 
