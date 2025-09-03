@@ -409,16 +409,26 @@ class AIHealthCoachTester:
         )
         
         if success:
-            if isinstance(response, list):
-                print(f"   ✅ Search returned {len(response)} results")
+            # The response should be a dict with 'query' and 'results' fields
+            if isinstance(response, dict) and 'results' in response:
+                results = response['results']
+                print(f"   ✅ Search returned {len(results)} results")
+                
+                # Verify query field
+                if response.get('query') == search_query:
+                    print("   ✅ Search query correctly echoed back")
+                else:
+                    print(f"   ❌ Query mismatch: expected '{search_query}', got '{response.get('query')}'")
+                    return False
+                    
             else:
-                print(f"   ❌ Expected list of search results, got: {type(response)}")
+                print(f"   ❌ Expected dict with 'results' field, got: {type(response)}")
                 return False
                 
             # If we have results, verify structure
-            if len(response) > 0:
-                first_result = response[0]
-                expected_fields = ['session_id', 'title', 'message_preview', 'created_at']
+            if len(results) > 0:
+                first_result = results[0]
+                expected_fields = ['session', 'messages']
                 
                 for field in expected_fields:
                     if field in first_result:
@@ -427,7 +437,7 @@ class AIHealthCoachTester:
                         print(f"   ⚠️  Search result missing {field}")
                 
                 # Check if our session appears in search results
-                session_ids = [result.get('session_id') for result in response]
+                session_ids = [result.get('session', {}).get('id') for result in results]
                 if self.test_session_id in session_ids:
                     print("   ✅ Created session found in search results")
                 else:
