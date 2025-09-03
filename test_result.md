@@ -719,11 +719,11 @@ test_plan:
         agent: "main"
         comment: "FIXED: Identified and resolved two property name mismatches in ShoppingListView component. Line 1066 was displaying 'list.title' instead of 'list.name', and line 1103 was displaying 'item.item' instead of 'item.name'. Fixed both issues - shopping lists now display correctly with proper list names and item names. Frontend rebuilt successfully with fix."
 
-  - task: "User Question Lost After Disclaimer Accept"
-    implemented: true
-    working: true
+  - task: "User Question Lost After Disclaimer Accept - REOPENED"
+    implemented: false
+    working: false
     file: "frontend/src/App.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "critical"
     needs_retesting: true
     status_history:
@@ -736,6 +736,12 @@ test_plan:
       - working: true
         agent: "main"
         comment: "✅ ISSUE FIXED: Implemented question persistence using localStorage. Added pendingQuestion state in CoachRoute that reads from 'nt_coach_pending_question' localStorage key. Modified input onChange to save question to localStorage. CoachInterface now receives pendingQuestion prop and auto-populates input field. Added encouragement toast when question is restored. Question now persists across disclaimer acceptance flow."
+      - working: false
+        agent: "user"
+        comment: "Manual QA shows both blockers remain unresolved — question is still lost when disclaimer is accepted despite previous implementation attempt."
+      - working: false
+        agent: "main"
+        comment: "RE-INVESTIGATING: User reports the question persistence fix is not working. Need to trace the pendingQuestion flow from input → localStorage → disclaimer acceptance → CoachInterface rendering."
 
   - task: "Profile Data Not Persisting to AI Coach"
     implemented: true
