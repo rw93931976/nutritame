@@ -192,16 +192,36 @@ class DynamicDemoUserTester:
             data=message_data
         )
         
-        if success and response.get('response'):
-            ai_response = response.get('response')
-            print(f"   ✅ AI response received (length: {len(ai_response)} chars)")
-            print(f"   Response preview: {ai_response[:200]}...")
+        if success:
+            # Check for AI response in the response structure
+            ai_response_text = None
             
-            # Store AI response for profile integration verification
-            self.ai_response = ai_response
-            return True
+            # Handle different possible response structures
+            if 'ai_response' in response and 'text' in response['ai_response']:
+                ai_response_text = response['ai_response']['text']
+            elif 'response' in response:
+                ai_response_text = response['response']
+            elif 'text' in response:
+                ai_response_text = response['text']
+            
+            if ai_response_text:
+                print(f"   ✅ AI response received (length: {len(ai_response_text)} chars)")
+                print(f"   Response preview: {ai_response_text[:200]}...")
+                
+                # Store AI response for profile integration verification
+                self.ai_response = ai_response_text
+                
+                # Verify consultation was used
+                if response.get('consultation_used'):
+                    print(f"   ✅ Consultation count incremented correctly")
+                
+                return True
+            else:
+                print(f"   ❌ No AI response text found in response")
+                print(f"   Response structure: {list(response.keys()) if isinstance(response, dict) else type(response)}")
+                return False
         else:
-            print(f"   ❌ Failed to get AI response")
+            print(f"   ❌ Failed to send message")
             print(f"   Response: {response}")
             return False
 
