@@ -291,6 +291,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ COMPREHENSIVE TESTING COMPLETED: Plan gating and consultation limits working perfectly. ✅ Standard plan correctly limited to 10 consultations per month. ✅ Premium plan correctly set to unlimited consultations (-1 limit). ✅ Monthly reset logic functioning correctly - automatically resets counts for new months. ✅ Remaining consultations calculated accurately (10 → 9 after one consultation used). ✅ Consultation count incremented properly after AI interactions. ✅ Plan enforcement working - can_use flag correctly indicates availability. Plan gating system is production-ready."
+      - working: true
+        agent: "testing"
+        comment: "🎯 POST-CACHE-FIX VERIFICATION: Plan gating system at 100% functionality. ✅ Standard plan enforcement: 10 consultations/month limit correctly applied and tracked. ✅ Premium plan: Unlimited consultations (-1 limit) working as expected. ✅ Monthly reset logic: Automatically resets consultation counts for new months (verified for 2025-09). ✅ Usage tracking: Current count increments properly after AI interactions, remaining count calculated accurately. ✅ Plan detection: System correctly identifies user plans and applies appropriate limits. All consultation limit endpoints achieving 100% success rate."
 
   - task: "AI Coach Database Schema"
     implemented: true
