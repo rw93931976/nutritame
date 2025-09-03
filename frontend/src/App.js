@@ -3516,7 +3516,15 @@ function App() {
 
   // Demo Mode Rendering
   if (appMode === 'demo') {
-    return <DemoLandingPage onDemoAccess={handleDemoAccess} />;
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<DemoLandingPage onDemoAccess={handleDemoAccess} />} />
+          <Route path="/coach" element={<CoachRoute />} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </BrowserRouter>
+    );
   }
 
   // Landing Page (Default)
