@@ -238,7 +238,7 @@ class AIHealthCoachUrgentTester:
         success, response = self.run_test(
             "Create AI Coach Session",
             "POST",
-            "coach/sessions",
+            f"coach/sessions?user_id={self.created_user_id}",
             200,
             data=session_data
         )
