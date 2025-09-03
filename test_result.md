@@ -439,11 +439,11 @@ frontend:
 
   - task: "Consultation Limit UI & Upgrade Modal"
     implemented: true
-    working: "NA"
+    working: false
     file: "frontend/src/App.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -454,6 +454,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "✅ IMPLEMENTED: Added consultation limit UI with badge showing remaining consults for Standard plan users ('X/10 consults left this month'). Premium users see 'Unlimited consultations'. Added Upgrade to Premium modal with feature list when limit reached. Includes color-coded badges (red when low) and upgrade CTA. Ready for testing."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL ISSUE: Consultation limit UI is not accessible because the AI Health Coach interface itself is not reachable. Found 'Unlimited' text on landing page but no actual consultation limit badges showing 'X/10 consults left this month' or upgrade modal functionality. The landing page shows 'Unlimited AI conversations' and 'Unlimited in Demo' text but these are marketing copy, not functional consultation limit tracking. Cannot test upgrade modal as AI Health Coach chat interface is not accessible."
 
   - task: "Conversation History & Search"
     implemented: true
