@@ -3686,7 +3686,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<DemoLandingPage onDemoAccess={handleDemoAccess} />} />
-          <Route path="/coach" element={<CoachRoute currentUser={null} />} />
+          <Route path="/coach" element={<CoachRoute currentUser={currentUser} />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
