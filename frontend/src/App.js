@@ -3135,6 +3135,10 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
   const handleSendMessage = async () => {
     if (!inputText.trim()) return;
     
+    console.log('🚀 handleSendMessage called with input:', inputText);
+    console.log('🚀 effectiveUser:', effectiveUser);
+    console.log('🚀 currentSessionId:', currentSessionId);
+    
     const isFirstMessage = messages.length === 0 || (messages.length === 1 && messages[0].isWelcome);
     const messageCount = messages.filter(msg => msg.isUser).length;
     
@@ -3148,7 +3152,9 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
     
     setMessages(prev => [...prev, userMessage]);
     const currentInput = inputText;
-    setInputText('');
+    
+    // DON'T clear input immediately - only clear after successful send
+    // setInputText('');
     
     // Clear any pending question since we're sending the message
     localStorage.removeItem('nt_coach_pending_question');
@@ -3172,10 +3178,15 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
       let sessionId = currentSessionId;
       if (!sessionId) {
         console.log('🎯 Creating new session for user:', effectiveUser.id);
-        const sessionResponse = await aiCoachService.createSession(effectiveUser.id, "New Health Coach Conversation");
-        sessionId = sessionResponse.id;
-        setCurrentSessionId(sessionId);
-        console.log('🎯 Created session:', sessionId);
+        try {
+          const sessionResponse = await aiCoachService.createSession(effectiveUser.id, "New Health Coach Conversation");
+          sessionId = sessionResponse.id;
+          setCurrentSessionId(sessionId);
+          console.log('🎯 Created session:', sessionId);
+        } catch (sessionError) {
+          console.error('❌ Session creation failed:', sessionError);
+          throw new Error(`Session creation failed: ${sessionError.message}`);
+        }
       }
       
       // Prepare message payload
@@ -3185,30 +3196,58 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
       };
       
       console.log('🎯 Sending message to AI with payload:', messagePayload);
+      console.log('🎯 API URL:', `/api/coach/message`);
       
       // Call real AI backend API
       const response = await aiCoachService.sendMessage(messagePayload);
       console.log('🎯 AI response received:', response);
       
+      // Validate response
+      if (!response) {
+        throw new Error('Empty response from AI service');
+      }
+      
       // Create AI response message
+      const aiResponseText = response.ai_response?.text || response.response || response.message;
+      if (!aiResponseText) {
+        console.error('❌ No response text found in:', response);
+        throw new Error('No response text received from AI');
+      }
+      
       const aiResponse = {
         id: Date.now() + 1,
         message: '',
-        response: response.ai_response?.text || response.response || response.message || 'Thank you for your question. I received your message successfully.',
+        response: aiResponseText,
         isUser: false
       };
       
       setMessages(prev => [...prev, aiResponse]);
+      
+      // Only clear input after successful send
+      setInputText('');
       setIsLoading(false);
+      
+      console.log('✅ Message sent successfully, AI response added');
       
     } catch (error) {
       console.error('❌ Error sending message to AI:', error);
+      console.error('❌ Error details:', {
+        message: error.message,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        url: error.config?.url,
+        method: error.config?.method,
+        data: error.config?.data
+      });
       
-      // Show error message to user
+      // Restore input text since send failed
+      setInputText(currentInput);
+      
+      // Show detailed error to user
       const errorResponse = {
         id: Date.now() + 1,
         message: '',
-        response: `I apologize, but I'm having trouble connecting right now. Please try again in a moment. ${currentUser ? `I can see your ${currentUser.diabetes_type} profile is loaded and ready for personalized guidance once the connection is restored.` : 'Make sure to complete your profile for personalized advice.'}`,
+        response: `❌ **Connection Error**: ${error.message}\n\n**Debug Info:**\n- URL: ${error.config?.url || 'Unknown'}\n- Status: ${error.response?.status || 'No response'}\n\n${currentUser ? `I can see your ${currentUser.diabetes_type || 'profile'} is loaded for personalized guidance once the connection is restored.` : 'Complete your profile for personalized advice.'}\n\nPlease try again or contact support if this persists.`,
         isUser: false,
         isError: true
       };
@@ -3216,8 +3255,8 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
       setMessages(prev => [...prev, errorResponse]);
       setIsLoading(false);
       
-      // Show error toast
-      toast.error("Connection issue - please try again in a moment.");
+      // Show error toast with details
+      toast.error(`Send failed: ${error.message.substring(0, 50)}...`);
     }
   };
 
