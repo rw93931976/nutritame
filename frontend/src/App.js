@@ -3247,7 +3247,10 @@ function App() {
     return (
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<LandingPage onGetStarted={handleLandingGetStarted} />} />
+          <Route path="/" element={<LandingPage 
+            onGetStarted={handleLandingGetStarted} 
+            onNavigateToCoach={() => window.location.href = '/coach'}
+          />} />
           <Route path="/coach" element={<CoachRoute />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
