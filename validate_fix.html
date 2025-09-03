@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NutriTame Cache Fix Validation</title>
+</head>
+<body>
+    <h1>NutriTame Build Cache Fix Validation</h1>
+    <div id="results"></div>
+    
+    <script>
+        // Test 1: Check if we can access the site
+        async function validateFix() {
+            const results = document.getElementById('results');
+            
+            results.innerHTML = '<h2>🔍 Testing Build Cache Fix...</h2>';
+            
+            try {
+                // Test the main site
+                const response = await fetch('https://nutritame-deploy.preview.emergentagent.com');
+                const html = await response.text();
+                
+                results.innerHTML += `<p>✅ Site loads: HTTP ${response.status}</p>`;
+                
+                // Check for new build hash
+                const scriptMatch = html.match(/static\/js\/main\.([a-f0-9]+)\.js/);
+                if (scriptMatch) {
+                    const buildHash = scriptMatch[1];
+                    results.innerHTML += `<p>✅ Build hash found: ${buildHash}</p>`;
+                    
+                    if (buildHash === '825e4c3a') {
+                        results.innerHTML += `<p>❌ STILL OLD HASH! Cache not cleared</p>`;
+                    } else {
+                        results.innerHTML += `<p>🎉 NEW HASH DETECTED! Cache fix successful</p>`;
+                    }
+                } else {
+                    results.innerHTML += `<p>⚠️ No build hash found in HTML</p>`;
+                }
+                
+                // Test /coach route
+                const coachResponse = await fetch('https://nutritame-deploy.preview.emergentagent.com/coach');
+                results.innerHTML += `<p>✅ /coach route: HTTP ${coachResponse.status}</p>`;
+                
+                // Test backend API
+                const apiResponse = await fetch('https://nutritame-deploy.preview.emergentagent.com/api/coach/feature-flags');
+                if (apiResponse.ok) {
+                    const data = await apiResponse.json();
+                    results.innerHTML += `<p>✅ Backend API: ${JSON.stringify(data)}</p>`;
+                } else {
+                    results.innerHTML += `<p>❌ Backend API failed: HTTP ${apiResponse.status}</p>`;
+                }
+                
+            } catch (error) {
+                results.innerHTML += `<p>❌ Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Run validation
+        validateFix();
+    </script>
+</body>
+</html>
