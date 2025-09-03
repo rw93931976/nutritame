@@ -3238,7 +3238,7 @@ const CoachInterface = () => {
               
               {/* New Session Button */}
               <Button 
-                className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700"
+                className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 focus:ring-2 focus:ring-emerald-500 transition-all"
                 onClick={() => {
                   setMessages([{
                     id: 'welcome-' + Date.now(),
@@ -3248,9 +3248,10 @@ const CoachInterface = () => {
                   }]);
                   setCurrentSessionId(null);
                 }}
+                aria-label="Start a new conversation"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                New Session
+                New Chat
               </Button>
               
               {/* Search */}
