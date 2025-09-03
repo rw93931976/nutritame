@@ -3251,7 +3251,15 @@ You're doing a great job staying engaged. Keep in mind — small, steady changes
                 <div className="flex gap-2">
                   <Input
                     value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
+                    onChange={(e) => {
+                      setInputText(e.target.value);
+                      // Persist user input in case disclaimer appears
+                      if (e.target.value.trim()) {
+                        localStorage.setItem('nt_coach_pending_question', e.target.value);
+                      } else {
+                        localStorage.removeItem('nt_coach_pending_question');
+                      }
+                    }}
                     placeholder="Ask about nutrition, meals, or recipes..."
                     onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                     className="flex-1 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
