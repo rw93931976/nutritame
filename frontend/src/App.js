@@ -3268,7 +3268,7 @@ You're doing a great job staying engaged. Keep in mind — small, steady changes
                 onClick={() => {
                   setMessages([{
                     id: 'welcome-' + Date.now(),
-                    message: `Hi! I'm your AI health coach. I can help you with meal planning, restaurant recommendations, and nutrition analysis. What would you like to explore today?`,
+                    message: `Hi! I'm your AI health coach. I can help you with meal planning, restaurant recommendations, and nutrition analysis. We're here to support your journey with helpful ideas. What would you like to explore today?`,
                     response: '',
                     isWelcome: true
                   }]);
