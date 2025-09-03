@@ -554,16 +554,16 @@ class AIHealthCoachTester:
             "Error Handling - Invalid User ID",
             "GET",
             f"coach/disclaimer-status/{invalid_user_id}",
-            200  # Should still return 200 with accepted: false for new users
+            200  # Should still return 200 with disclaimer_accepted: false for new users
         )
         
         if success:
-            # For invalid/new users, should return accepted: false
-            if response.get('accepted') is False:
+            # For invalid/new users, should return disclaimer_accepted: false
+            if response.get('disclaimer_accepted') is False:
                 print("   ✅ Invalid user correctly shows no disclaimer acceptance")
                 return True
             else:
-                print(f"   ❌ Invalid user should show accepted: false, got: {response}")
+                print(f"   ❌ Invalid user should show disclaimer_accepted: false, got: {response}")
                 return False
                 
         return False
