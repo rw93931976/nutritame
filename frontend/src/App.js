@@ -3106,6 +3106,11 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
     
     welcomeMessage += ` What would you like to explore today?`;
     
+    // Add debug information in development
+    if (process.env.NODE_ENV === 'development' || window.location.search.includes('debug=true')) {
+      welcomeMessage += `\n\n🔧 **Debug Info**: Profile: type=${currentUser?.diabetes_type || 'none'}, prefs=${currentUser?.food_preferences?.join(', ') || 'none'}, allergies=${currentUser?.allergies?.join(', ') || 'none'}`;
+    }
+    
     const welcomeMsg = {
       id: 'welcome-' + Date.now(),
       message: welcomeMessage,
