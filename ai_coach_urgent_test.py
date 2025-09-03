@@ -283,8 +283,14 @@ class AIHealthCoachUrgentTester:
             data=message_data
         )
         
-        if success and 'response' in response:
-            ai_response = response['response']
+        if success and ('response' in response or 'ai_response' in response):
+            # Handle different response formats
+            if 'ai_response' in response and isinstance(response['ai_response'], dict):
+                ai_response = response['ai_response'].get('text', '')
+            elif 'response' in response:
+                ai_response = response['response']
+            else:
+                ai_response = str(response)
             self.log(f"✅ AI Response received ({len(ai_response)} characters)", "PASS")
             
             # CRITICAL: Verify profile integration in AI response
