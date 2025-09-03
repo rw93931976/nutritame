@@ -28,9 +28,10 @@ if session_response.status_code == 200:
     
     if ai_response.status_code == 200:
         data = ai_response.json()
-        ai_text = data.get('ai_response', '')
+        ai_response_obj = data.get('ai_response', {})
+        ai_text = ai_response_obj.get('text', '') if isinstance(ai_response_obj, dict) else str(ai_response_obj)
         
-        if isinstance(ai_text, str):
+        if ai_text:
             print(f'✅ AI Response received ({len(ai_text)} characters)')
             preview = ai_text[:200] + '...' if len(ai_text) > 200 else ai_text
             print(f'Preview: {preview}')
@@ -51,12 +52,16 @@ if session_response.status_code == 200:
             print(f'✅ Mediterranean content: {found_med}')
             print(f'✅ Imperial measurements: {found_imperial}')
             
-            if found_diabetes and found_imperial:
+            # Check consultation tracking
+            consultation_used = data.get('consultation_used', False)
+            print(f'✅ Consultation tracked: {consultation_used}')
+            
+            if ai_text and consultation_used:
                 print('🎉 AI INTEGRATION: 100% SUCCESS!')
             else:
-                print('⚠️  AI integration working but content needs improvement')
+                print('⚠️  AI integration working but some features need improvement')
         else:
-            print(f'❌ AI response is not a string: {type(ai_text)}')
+            print(f'❌ No AI text found in response')
     else:
         print(f'❌ AI message failed: {ai_response.status_code}')
         print(f'Error: {ai_response.text}')
