@@ -3054,34 +3054,226 @@ const CoachRoute = () => {
 // =============================================
 
 const CoachInterface = () => {
-  // All the existing AI Health Coach state and functions from the main app
-  // We'll extract this from the main component
+  // Basic AI Health Coach state
+  const [messages, setMessages] = useState([]);
+  const [inputText, setInputText] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [consultationLimit, setConsultationLimit] = useState(null);
+  const [aiCoachSessions, setAiCoachSessions] = useState([]);
+  const [currentSessionId, setCurrentSessionId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+
+  // Initialize with welcome message
+  useEffect(() => {
+    const welcomeMsg = {
+      id: 'welcome-' + Date.now(),
+      message: `Hi! I'm your AI health coach. I can help you with meal planning, restaurant recommendations, and nutrition analysis. What would you like to explore today?`,
+      response: '',
+      isWelcome: true
+    };
+    setMessages([welcomeMsg]);
+  }, []);
+
+  // Mock user for demo (in real implementation, this would come from auth)
+  const mockUser = { id: 'demo-user', plan: 'standard' };
+
+  const handleSendMessage = async () => {
+    if (!inputText.trim()) return;
+    
+    setIsLoading(true);
+    const userMessage = {
+      id: Date.now(),
+      message: inputText,
+      response: '',
+      isUser: true
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    setInputText('');
+
+    try {
+      // For now, add a simple mock response - in full implementation this would call the AI API
+      setTimeout(() => {
+        const aiResponse = {
+          id: Date.now() + 1,
+          message: '',
+          response: `Thank you for your question: "${inputText}". This is a placeholder response. The AI Health Coach interface is now accessible! In the full implementation, this would connect to the real AI backend with all the existing functionality including consultation limits, session management, and real AI responses.`,
+          isUser: false
+        };
+        setMessages(prev => [...prev, aiResponse]);
+        setIsLoading(false);
+      }, 1000);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50">
-      <div className="container mx-auto p-4">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-            AI Health Coach
-          </h1>
-          <p className="text-gray-700 text-lg">
-            Your personalized diabetes-friendly nutrition guidance
-          </p>
+      {/* Header */}
+      <div className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-40">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <ChefHat className="h-8 w-8 text-emerald-600" />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">AI Health Coach</h1>
+                <p className="text-sm text-gray-600">Diabetes-friendly nutrition guidance</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              {/* Consultation Limit Badge */}
+              <Badge className="bg-gradient-to-r from-emerald-500 to-blue-500 text-white">
+                Standard Plan: 10/month
+              </Badge>
+              
+              {/* Home Button */}
+              <Button 
+                variant="outline" 
+                onClick={() => window.location.href = '/'}
+                className="flex items-center gap-2"
+              >
+                <Navigation className="h-4 w-4" />
+                Home
+              </Button>
+            </div>
+          </div>
         </div>
-        
-        {/* For now, show a placeholder - we'll implement the full interface next */}
-        <Card className="max-w-4xl mx-auto">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ChefHat className="h-6 w-6 text-emerald-600" />
-              Chat Interface Coming Soon
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600">
-              The AI Health Coach interface will be implemented here with all the existing functionality.
-            </p>
-          </CardContent>
-        </Card>
+      </div>
+
+      {/* Main Content */}
+      <div className="container mx-auto p-4 max-w-4xl">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          
+          {/* Chat Interface - Main Column */}
+          <div className="md:col-span-3">
+            <Card className="h-[600px] flex flex-col">
+              <CardHeader className="flex-shrink-0">
+                <CardTitle className="flex items-center gap-2">
+                  <MessageCircle className="h-5 w-5 text-emerald-600" />
+                  Chat
+                </CardTitle>
+              </CardHeader>
+              
+              {/* Messages Area */}
+              <CardContent className="flex-1 overflow-y-auto p-4">
+                <div className="space-y-4">
+                  {messages.map((msg) => (
+                    <div key={msg.id} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                        msg.isUser 
+                          ? 'bg-gradient-to-r from-emerald-500 to-blue-500 text-white' 
+                          : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        <p className="text-sm">{msg.isUser ? msg.message : (msg.response || msg.message)}</p>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {/* Loading indicator */}
+                  {isLoading && (
+                    <div className="flex justify-start">
+                      <div className="bg-gray-100 text-gray-800 max-w-xs lg:max-w-md px-4 py-2 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-emerald-600"></div>
+                          <p className="text-sm">AI is thinking...</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+              
+              {/* Input Area */}
+              <div className="flex-shrink-0 p-4 border-t">
+                <div className="flex gap-2">
+                  <Input
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    placeholder="Ask me about nutrition, meal planning, or diabetes-friendly recipes..."
+                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                    className="flex-1"
+                  />
+                  <Button 
+                    onClick={handleSendMessage}
+                    disabled={!inputText.trim() || isLoading}
+                    className="bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700"
+                  >
+                    <MessageSquarePlus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </div>
+          
+          {/* Sidebar - Session Management */}
+          <div className="md:col-span-1">
+            <div className="space-y-4">
+              
+              {/* New Session Button */}
+              <Button 
+                className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700"
+                onClick={() => {
+                  setMessages([{
+                    id: 'welcome-' + Date.now(),
+                    message: `Hi! I'm your AI health coach. I can help you with meal planning, restaurant recommendations, and nutrition analysis. What would you like to explore today?`,
+                    response: '',
+                    isWelcome: true
+                  }]);
+                  setCurrentSessionId(null);
+                }}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                New Session
+              </Button>
+              
+              {/* Search */}
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Search Conversations</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Input
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="text-sm"
+                  />
+                </CardContent>
+              </Card>
+              
+              {/* Session History */}
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Recent Sessions</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-xs text-gray-500 text-center py-4">
+                    No previous sessions yet. Start a conversation to create your first session!
+                  </p>
+                </CardContent>
+              </Card>
+              
+              {/* Disclaimer Banner */}
+              <Card className="bg-yellow-50 border-yellow-200">
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-4 h-4 rounded-full bg-yellow-100 flex items-center justify-center">
+                      <span className="text-yellow-600 text-xs font-bold">!</span>
+                    </div>
+                    <p className="text-xs font-medium text-yellow-800">Medical Disclaimer</p>
+                  </div>
+                  <p className="text-xs text-yellow-700">
+                    Not a medical device. For diagnosis or treatment, consult a professional.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
