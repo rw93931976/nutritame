@@ -3276,9 +3276,11 @@ const CoachInterface = () => {
                   <CardTitle className="text-sm">Recent Sessions</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-xs text-gray-500 text-center py-4">
-                    No previous sessions yet. Start a conversation to create your first session!
-                  </p>
+                  <div className="text-center py-8">
+                    <MessageCircle className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-sm text-gray-500 mb-2">No conversations yet</p>
+                    <p className="text-xs text-gray-400">Start chatting to see your history</p>
+                  </div>
                 </CardContent>
               </Card>
               
