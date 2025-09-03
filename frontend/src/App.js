@@ -3222,7 +3222,8 @@ const CoachInterface = () => {
                   <Button 
                     onClick={handleSendMessage}
                     disabled={!inputText.trim() || isLoading}
-                    className="bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700"
+                    className="bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 focus:ring-2 focus:ring-emerald-500 transition-all"
+                    aria-label="Send message"
                   >
                     <MessageSquarePlus className="h-4 w-4" />
                   </Button>
