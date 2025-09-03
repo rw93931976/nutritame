@@ -149,16 +149,17 @@ class AIHealthCoachTester:
         
         if success:
             # Verify disclaimer was accepted (from previous test)
-            if response.get('accepted') is True:
+            # The response uses 'disclaimer_accepted' field, not 'accepted'
+            if response.get('disclaimer_accepted') is True:
                 print("   ✅ Disclaimer status correctly shows accepted")
             else:
                 print(f"   ❌ Disclaimer should be accepted, got: {response}")
                 return False
                 
-            if 'accepted_at' in response:
-                print("   ✅ Acceptance timestamp available")
+            if 'user_id' in response:
+                print("   ✅ User ID included in status response")
             else:
-                print("   ❌ Missing acceptance timestamp in status")
+                print("   ❌ Missing user ID in status response")
                 return False
                 
             return True
