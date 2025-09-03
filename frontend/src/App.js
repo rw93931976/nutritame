@@ -3324,53 +3324,10 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/coach" element={<CoachRoute />} />
-          <Route path="*" element={<Navigate to="/coach" />} />
         </Routes>
       </BrowserRouter>
     );
   }
-            setAppMode={setAppMode}
-            user={user}
-            setUser={setUser}
-            authToken={authToken}
-            setAuthToken={setAuthToken}
-            adminToken={adminToken}
-            setAdminToken={setAdminToken}
-            subscriptionInfo={subscriptionInfo}
-            setSubscriptionInfo={setSubscriptionInfo}
-            demoMode={demoMode}
-            setDemoMode={setDemoMode}
-            demoUser={demoUser}
-            setDemoUser={setDemoUser}
-            currentUser={currentUser}
-            setCurrentUser={setCurrentUser}
-            showForm={showForm}
-            setShowForm={setShowForm}
-            restaurants={restaurants}
-            setRestaurants={setRestaurants}
-            selectedRestaurant={selectedRestaurant}
-            setSelectedRestaurant={setSelectedRestaurant}
-            searchCenter={searchCenter}
-            setSearchCenter={setSearchCenter}
-            searchRadius={searchRadius}
-            setSearchRadius={setSearchRadius}
-            apiUsage={apiUsage}
-            setApiUsage={setApiUsage}
-            shoppingLists={shoppingLists}
-            setShoppingLists={setShoppingLists}
-            showShoppingListButton={showShoppingListButton}
-            setShowShoppingListButton={setShowShoppingListButton}
-            lastMealPlan={lastMealPlan}
-            setLastMealPlan={setLastMealPlan}
-          />} />
-          
-          {/* CATCH-ALL - LOWEST PRECEDENCE */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </AppLayout>
-    </BrowserRouter>
-  );
-}
 
   // Check authentication on app load (run only once, independent of disclaimer)
   useEffect(() => {
