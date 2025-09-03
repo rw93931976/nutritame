@@ -3253,6 +3253,11 @@ const CoachInterface = () => {
                     isWelcome: true
                   }]);
                   setCurrentSessionId(null);
+                  
+                  // Show encouragement toast for new session
+                  setTimeout(() => {
+                    toast.success("New session started — a fresh start is always a great way to refocus.");
+                  }, 800);
                 }}
                 aria-label="Start a new conversation"
               >
