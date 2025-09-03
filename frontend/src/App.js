@@ -2979,13 +2979,17 @@ const CoachRoute = ({ currentUser }) => {
     setAck(true);
     localStorage.setItem('nt_coach_disclaimer_ack', 'true');
     
+    // Update pendingQuestion state from localStorage after disclaimer acceptance
+    const storedQuestion = localStorage.getItem('nt_coach_pending_question');
+    if (storedQuestion) {
+      console.log('🔄 Updating pendingQuestion state from localStorage:', storedQuestion);
+      setPendingQuestion(storedQuestion);
+    }
+    
     // Show encouragement toast after disclaimer acceptance
     setTimeout(() => {
       toast.success("Thanks for confirming — remember, this is guidance only, and your healthcare provider is your best resource.");
     }, 500);
-    
-    // DON'T remove pending question here - let CoachInterface handle it after processing
-    // localStorage.removeItem('nt_coach_pending_question');
   };
 
   const handleCoachDisclaimerDecline = () => {
