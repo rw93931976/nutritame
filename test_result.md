@@ -708,8 +708,8 @@ test_plan:
         comment: "FIXED: Identified and resolved two property name mismatches in ShoppingListView component. Line 1066 was displaying 'list.title' instead of 'list.name', and line 1103 was displaying 'item.item' instead of 'item.name'. Fixed both issues - shopping lists now display correctly with proper list names and item names. Frontend rebuilt successfully with fix."
 
   - task: "User Question Lost After Disclaimer Accept"
-    implemented: false
-    working: false
+    implemented: true
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "critical"
@@ -721,10 +721,13 @@ test_plan:
       - working: false
         agent: "main"
         comment: "ISSUE IDENTIFIED: CoachInterface component doesn't have mechanism to persist user input when disclaimer state changes. CoachInterface re-mounts with fresh state after disclaimer acceptance, losing original question. Need to implement question persistence in localStorage or component state management."
+      - working: true
+        agent: "main"
+        comment: "✅ ISSUE FIXED: Implemented question persistence using localStorage. Added pendingQuestion state in CoachRoute that reads from 'nt_coach_pending_question' localStorage key. Modified input onChange to save question to localStorage. CoachInterface now receives pendingQuestion prop and auto-populates input field. Added encouragement toast when question is restored. Question now persists across disclaimer acceptance flow."
 
   - task: "Profile Data Not Persisting to AI Coach"
-    implemented: false
-    working: false
+    implemented: true
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "critical"
@@ -736,6 +739,9 @@ test_plan:
       - working: false
         agent: "main"
         comment: "ISSUE IDENTIFIED: CoachInterface component is isolated from main app's currentUser state and doesn't receive profile data as props. Main app has currentUser with profile data, but CoachInterface doesn't access it. Need to pass profile data to CoachInterface and integrate it into AI requests."
+      - working: true
+        agent: "main"
+        comment: "✅ ISSUE FIXED: Modified app routing architecture to pass currentUser profile data to CoachRoute. Updated CoachRoute and CoachInterface components to accept currentUser prop. Added profile context to AI responses and personalized welcome messages. AI Coach now shows diabetes type and preferences in responses, confirming profile data integration. Welcome message indicates when profile is available vs when profile setup is needed."
 
 agent_communication:
   - agent: "main"
