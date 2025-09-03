@@ -2962,9 +2962,8 @@ const CoachRoute = () => {
         
         if (localDisclaimerAccepted) {
           setDisclaimerAccepted(true);
-        } else {
-          setShowCoachDisclaimer(true);
         }
+        // If not accepted, disclaimerAccepted remains false and disclaimer will show
       } catch (error) {
         console.error('❌ Error checking feature flags:', error);
         setFeatureFlags({ coach_enabled: false });
