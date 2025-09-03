@@ -180,7 +180,7 @@ const MedicalDisclaimer = ({ onAccept, onDecline }) => {
             
             {(!hasRead || !scrolledToBottom) && (
               <p className="text-xs text-gray-500 text-center mt-2">
-                Please read the complete disclaimer and check the acknowledgment box to continue
+                Please read the complete disclaimer and check the box to continue
               </p>
             )}
           </div>
