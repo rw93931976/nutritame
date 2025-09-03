@@ -404,8 +404,14 @@ class AIHealthCoachUrgentTester:
             data=follow_up_data
         )
         
-        if success and 'response' in response:
-            ai_response = response['response']
+        if success and ('response' in response or 'ai_response' in response):
+            # Handle different response formats
+            if 'ai_response' in response and isinstance(response['ai_response'], dict):
+                ai_response = response['ai_response'].get('text', '')
+            elif 'response' in response:
+                ai_response = response['response']
+            else:
+                ai_response = str(response)
             self.log(f"✅ Follow-up response received ({len(ai_response)} characters)", "PASS")
             
             # Verify context awareness
