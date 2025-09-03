@@ -3302,7 +3302,7 @@ const CoachInterface = () => {
 
 // Main App Component
 function App() {
-  console.log('🔧 App component starting execution...');
+  console.log('🔧 App component starting execution...', 'Current pathname:', window.location.pathname);
   
   // SaaS State Management
   const [appMode, setAppMode] = useState('landing'); // landing, demo, success, app, admin
