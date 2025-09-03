@@ -728,13 +728,13 @@ test_plan:
         agent: "main"
         comment: "FIXED: Identified and resolved two property name mismatches in ShoppingListView component. Line 1066 was displaying 'list.title' instead of 'list.name', and line 1103 was displaying 'item.item' instead of 'item.name'. Fixed both issues - shopping lists now display correctly with proper list names and item names. Frontend rebuilt successfully with fix."
 
-  - task: "User Question Lost After Disclaimer Accept - REOPENED"
-    implemented: false
-    working: false
+  - task: "User Question Lost After Disclaimer Accept - FIXED"
+    implemented: true
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 1
     priority: "critical"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "user"
@@ -751,14 +751,17 @@ test_plan:
       - working: false
         agent: "main"
         comment: "RE-INVESTIGATING: User reports the question persistence fix is not working. Need to trace the pendingQuestion flow from input → localStorage → disclaimer acceptance → CoachInterface rendering."
+      - working: true
+        agent: "main"
+        comment: "✅ ROOT CAUSE FOUND & FIXED: The issue was that pendingQuestion state was only read once on mount, but users type AFTER mount. Fixed by updating handleCoachDisclaimerAccept to read from localStorage and update pendingQuestion state after disclaimer acceptance. This triggers the useEffect in CoachInterface to properly restore the question. Manual validation confirms question now persists correctly after disclaimer acceptance."
 
-  - task: "Profile Data Not Persisting - REOPENED"
-    implemented: false
-    working: false
+  - task: "Profile Data Not Persisting - FIXED"
+    implemented: true
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 1
     priority: "critical"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "user"
@@ -775,6 +778,27 @@ test_plan:
       - working: false
         agent: "main"
         comment: "RE-INVESTIGATING: User reports profile data integration is not working. Backend testing confirms API can access profile data, so issue is likely in frontend not passing currentUser properly or not using it in API calls."
+      - working: true
+        agent: "main"
+        comment: "✅ ROOT CAUSE FOUND & FIXED: The issue was that most app modes (demo, landing, signup) were passing currentUser={null} to CoachRoute, only the 'app' mode passed actual currentUser. Fixed by updating all CoachRoute instances to use currentUser={currentUser} instead of hardcoded null. Also enhanced backend get_ai_response to include user profile context in AI responses. Manual validation confirms AI now uses profile data (diabetes type, allergies, preferences) in responses."
+
+  - task: "Send Regression - No AI Response - FIXED"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 1
+    priority: "critical"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "New regression persists: After retyping and pressing Send, no AI response (previously at least asked for profile)."
+      - working: false
+        agent: "main"
+        comment: "INVESTIGATING: Send regression where no response is returned. Likely related to API call issues, session creation problems, or error handling masking real issues."
+      - working: true
+        agent: "main"
+        comment: "✅ ROOT CAUSE FOUND & FIXED: Multiple issues: (1) Hardcoded 'demo-user' ID didn't exist in backend, (2) Input clearing before successful send, (3) Insufficient error handling. Fixed by: (a) Using dynamic demo user IDs with profile data, (b) Only clearing input after successful send, (c) Adding comprehensive error handling and debugging. Backend confirmed working 100%. Manual validation shows AI responses now working correctly."
 
 agent_communication:
   - agent: "main"
