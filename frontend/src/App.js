@@ -3523,7 +3523,11 @@ function App() {
     return (
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<LandingPageWrapper onGetStarted={handleLandingGetStarted} />} />
+          <Route path="/" element={
+            showDisclaimer && !disclaimerAccepted ? 
+              <MedicalDisclaimer onAccept={handleDisclaimerAccept} onDecline={handleDisclaimerDecline} /> :
+              <LandingPageWrapper onGetStarted={handleLandingGetStarted} />
+          } />
           <Route path="/coach" element={<CoachRoute />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
