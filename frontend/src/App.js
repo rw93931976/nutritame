@@ -2937,12 +2937,25 @@ const LandingPageWrapper = ({ onGetStarted }) => {
 const CoachRoute = () => {
   const [featureFlags, setFeatureFlags] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showCoachDisclaimer, setShowCoachDisclaimer] = useState(false);
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
 
   useEffect(() => {
-    const checkFeatureFlags = async () => {
+    const checkFeatureFlagsAndDisclaimer = async () => {
       try {
+        // Check feature flags
         const flags = await aiCoachService.getFeatureFlags();
         setFeatureFlags(flags);
+        
+        // Check if disclaimer was already accepted (from localStorage or API)
+        const disclaimerKey = 'nutritame_coach_disclaimer_accepted';
+        const localDisclaimerAccepted = localStorage.getItem(disclaimerKey) === 'true';
+        
+        if (localDisclaimerAccepted) {
+          setDisclaimerAccepted(true);
+        } else {
+          setShowCoachDisclaimer(true);
+        }
       } catch (error) {
         console.error('Error checking feature flags:', error);
         setFeatureFlags({ coach_enabled: false });
@@ -2951,8 +2964,20 @@ const CoachRoute = () => {
       }
     };
 
-    checkFeatureFlags();
+    checkFeatureFlagsAndDisclaimer();
   }, []);
+
+  const handleCoachDisclaimerAccept = () => {
+    const disclaimerKey = 'nutritame_coach_disclaimer_accepted';
+    localStorage.setItem(disclaimerKey, 'true');
+    setDisclaimerAccepted(true);
+    setShowCoachDisclaimer(false);
+  };
+
+  const handleCoachDisclaimerDecline = () => {
+    // Redirect back to home page
+    window.location.href = '/';
+  };
 
   if (loading) {
     return (
@@ -2975,6 +3000,46 @@ const CoachRoute = () => {
           <Button onClick={() => window.location.href = '/'}>
             Return to Home
           </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show disclaimer modal if not accepted
+  if (showCoachDisclaimer && !disclaimerAccepted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md mx-4">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ChefHat className="h-5 w-5 text-emerald-600" />
+                AI Health Coach Disclaimer
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <p className="text-sm text-gray-700">
+                  <strong>Not a medical device.</strong> The AI Health Coach provides general nutrition guidance only and is not a substitute for professional medical advice. Always consult your healthcare provider.
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <Button 
+                  onClick={handleCoachDisclaimerAccept}
+                  className="flex-1 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700"
+                >
+                  Accept & Continue
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleCoachDisclaimerDecline}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
