@@ -3503,16 +3503,6 @@ function App() {
     }
   };
 
-  // Medical Disclaimer Check - Show before any other content
-  if (showDisclaimer && !disclaimerAccepted) {
-    return (
-      <MedicalDisclaimer 
-        onAccept={handleDisclaimerAccept}
-        onDecline={handleDisclaimerDecline}
-      />
-    );
-  }
-
   // Demo Mode Rendering
   if (appMode === 'demo') {
     return <DemoLandingPage onDemoAccess={handleDemoAccess} />;
