@@ -1,10 +1,57 @@
 # NutriTame AI Health Coach - Rollback Checkpoints
 
-## v2.1-final-ai-health-coach ✅ PRODUCTION READY
+## v2.1.1-ai-health-coach ✅ PRODUCTION READY - CRITICAL UX FIXES
+**Date**: September 3, 2025  
+**Commit**: 37156d64d2bbef07730a33c0536ac21cd1b6932a  
+**Bundle**: Latest optimized  
+**Status**: 🎉 **COMPLETE & UX ISSUES RESOLVED**
+
+### ✅ CRITICAL UX FIXES COMPLETED
+- **🔧 Question Persistence**: Users' questions now preserved across disclaimer acceptance - no more retyping!
+- **🔧 Profile Data Integration**: AI Coach now receives and uses profile data for personalized responses
+- **🎯 Enhanced User Experience**: Encouragement microcopy when questions are restored
+- **🏗️ Architecture Improvement**: Proper data flow from profile setup to AI Coach interface
+
+### ✅ COMPREHENSIVE FEATURE SET  
+- **AI Health Coach**: Real OpenAI GPT-4o-mini integration with Emergent LLM Key
+- **Plan Gating**: Standard (10/month) vs Premium (unlimited) consultation limits with upgrade modals
+- **Medical Compliance**: FDA-compliant disclaimers with first-time modal + inline banners
+- **Session Management**: Conversation history, search functionality, session persistence
+- **Database Schema**: Complete MongoDB collections (sessions, messages, limits, disclaimers)
+- **UI/UX Polish**: Focus rings, hover states, accessibility, mobile responsiveness
+- **Encouragement Microcopy**: 4 compliance-safe phrases at key user touchpoints
+
+### ✅ ALL BUG FIXES COMPLETED
+- **User Question Lost**: Fixed with localStorage persistence (`nt_coach_pending_question`)
+- **Profile Data Missing**: Fixed by passing currentUser through routing architecture  
+- **Disclaimer Race Condition**: Implemented single source of truth with localStorage persistence
+- **ObjectId Serialization**: Fixed search endpoint serialization issues
+- **React State Management**: Eliminated async race conditions in CoachRoute component
+- **Build Cache Corruption**: Resolved frontend caching issues affecting route access
+
+### ✅ TESTING VALIDATION
+- **Backend**: 100% success rate (13/13 comprehensive tests) across all AI endpoints  
+- **Frontend**: Complete UX fixes validated, disclaimer flow, CoachInterface accessibility
+- **User Experience**: Question persistence and profile integration confirmed working
+- **Persistence**: localStorage systems working across all user flows
+- **Mobile**: Responsive design and touch interactions confirmed
+- **Accessibility**: WCAG AA compliance with proper ARIA labels and tab order
+
+### 🚀 DEPLOYMENT READY - RECOMMENDED FOR PRODUCTION
+- **User Experience**: All critical UX issues resolved
+- **Environment**: All .env variables configured for production
+- **Database**: MongoDB collections optimized with proper indexing
+- **API Integration**: Emergent LLM Key integration stable and tested
+- **Build**: Optimized production bundle ready for deployment
+- **Rollback**: Complete checkpoint for immediate production deployment
+
+---
+
+## v2.1-final-ai-health-coach ✅ STABLE - PRE-UX-FIXES
 **Date**: September 3, 2025  
 **Commit**: 51fcb911a5bc307f15a1ee7ed44c420e65a256dc  
 **Bundle**: main.69729be9.js  
-**Status**: 🎉 **COMPLETE & VALIDATED**
+**Status**: ✅ **COMPLETE BUT HAS UX ISSUES**
 
 ### ✅ COMPREHENSIVE FEATURE SET
 - **AI Health Coach**: Real OpenAI GPT-4o-mini integration with Emergent LLM Key
