@@ -3069,8 +3069,8 @@ const CoachRoute = () => {
   }
 
   console.log('🎯 Rendering coach interface');
-  // Render full coach interface component
-  return <CoachInterface />;
+  // Render full coach interface component with pending question and current user profile
+  return <CoachInterface pendingQuestion={pendingQuestion} />;
 };
 
 // =============================================
