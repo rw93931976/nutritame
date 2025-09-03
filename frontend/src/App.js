@@ -2911,6 +2911,98 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
   );
 };
 
+// =============================================
+// COACH ROUTE COMPONENT
+// =============================================
+
+const CoachRoute = () => {
+  const [featureFlags, setFeatureFlags] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkFeatureFlags = async () => {
+      try {
+        const flags = await aiCoachService.getFeatureFlags();
+        setFeatureFlags(flags);
+      } catch (error) {
+        console.error('Error checking feature flags:', error);
+        setFeatureFlags({ coach_enabled: false });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkFeatureFlags();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading AI Health Coach...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!featureFlags?.coach_enabled) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <ChefHat className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">AI Health Coach Not Available</h2>
+          <p className="text-gray-600 mb-4">This feature is currently disabled.</p>
+          <Button onClick={() => window.location.href = '/'}>
+            Return to Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Render full coach interface component
+  return <CoachInterface />;
+};
+
+// =============================================
+// COACH INTERFACE COMPONENT
+// =============================================
+
+const CoachInterface = () => {
+  // All the existing AI Health Coach state and functions from the main app
+  // We'll extract this from the main component
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50">
+      <div className="container mx-auto p-4">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            AI Health Coach
+          </h1>
+          <p className="text-gray-700 text-lg">
+            Your personalized diabetes-friendly nutrition guidance
+          </p>
+        </div>
+        
+        {/* For now, show a placeholder - we'll implement the full interface next */}
+        <Card className="max-w-4xl mx-auto">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ChefHat className="h-6 w-6 text-emerald-600" />
+              Chat Interface Coming Soon
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600">
+              The AI Health Coach interface will be implemented here with all the existing functionality.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
 // Main App Component
 function App() {
   // SaaS State Management
