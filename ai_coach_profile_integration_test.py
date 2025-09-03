@@ -516,7 +516,7 @@ class AICoachProfileIntegrationTester:
             ("Accept Disclaimer", "POST", "coach/accept-disclaimer", 200, {"user_id": self.created_user_id}),
             ("Disclaimer Status", "GET", f"coach/disclaimer-status/{self.created_user_id}", 200, None),
             ("Consultation Limit", "GET", f"coach/consultation-limit/{self.created_user_id}", 200, None),
-            ("Create Session", "POST", "coach/sessions", 200, {"user_id": self.created_user_id, "title": "Test Session 2"}),
+            ("Create Session", "POST", f"coach/sessions?user_id={self.created_user_id}", 200, {"title": "Test Session 2"}),
             ("Get User Sessions", "GET", f"coach/sessions/{self.created_user_id}", 200, None),
             ("Send Message", "POST", "coach/message", 200, {"session_id": self.created_session_id, "message": "Quick test message"}),
             ("Get Messages", "GET", f"coach/messages/{self.created_session_id}", 200, None),
