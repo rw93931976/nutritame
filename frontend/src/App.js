@@ -2942,7 +2942,6 @@ const CoachRoute = () => {
   
   const [featureFlags, setFeatureFlags] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showCoachDisclaimer, setShowCoachDisclaimer] = useState(false);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
 
   useEffect(() => {
