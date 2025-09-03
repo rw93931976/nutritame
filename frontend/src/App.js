@@ -2935,26 +2935,28 @@ const LandingPageWrapper = ({ onGetStarted }) => {
 // =============================================
 
 const CoachRoute = () => {
+  console.log('🚀 CoachRoute component mounted!');
+  
   const [featureFlags, setFeatureFlags] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showCoachDisclaimer, setShowCoachDisclaimer] = useState(false);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
 
   useEffect(() => {
-    console.log('🚀 CoachRoute component mounted!');
+    console.log('🔍 CoachRoute useEffect started - checking feature flags...');
     
     const checkFeatureFlagsAndDisclaimer = async () => {
       try {
-        console.log('🔍 Checking feature flags...');
+        console.log('🔍 Fetching feature flags...');
         // Check feature flags
         const flags = await aiCoachService.getFeatureFlags();
-        console.log('📋 Feature flags:', flags);
+        console.log('📋 Feature flags received:', flags);
         setFeatureFlags(flags);
         
         // Check if disclaimer was already accepted (from localStorage or API)
         const disclaimerKey = 'nutritame_coach_disclaimer_accepted';
         const localDisclaimerAccepted = localStorage.getItem(disclaimerKey) === 'true';
-        console.log('📜 Disclaimer already accepted:', localDisclaimerAccepted);
+        console.log('📜 Local disclaimer already accepted:', localDisclaimerAccepted);
         
         if (localDisclaimerAccepted) {
           setDisclaimerAccepted(true);
@@ -2989,6 +2991,7 @@ const CoachRoute = () => {
   console.log('🔄 CoachRoute render - loading:', loading, 'featureFlags:', featureFlags, 'showDisclaimer:', showCoachDisclaimer, 'accepted:', disclaimerAccepted);
 
   if (loading) {
+    console.log('⏳ Rendering loading screen');
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 flex items-center justify-center">
         <div className="text-center">
@@ -3000,6 +3003,7 @@ const CoachRoute = () => {
   }
 
   if (!featureFlags?.coach_enabled) {
+    console.log('❌ Coach feature disabled');
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 flex items-center justify-center">
         <div className="text-center">
