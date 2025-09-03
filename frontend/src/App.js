@@ -3093,9 +3093,21 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
   // Initialize with welcome message
   useEffect(() => {
     console.log('🎯 CoachInterface useEffect - initializing welcome message');
+    
+    let welcomeMessage = `Hi! I'm your AI health coach. I can help you with meal planning, restaurant recommendations, and nutrition analysis.`;
+    
+    // Add personalized greeting if profile is available
+    if (currentUser && currentUser.diabetes_type) {
+      welcomeMessage += ` I see you have ${currentUser.diabetes_type} - I'll provide personalized guidance based on your profile.`;
+    } else {
+      welcomeMessage += ` For personalized advice, make sure to complete your profile first.`;
+    }
+    
+    welcomeMessage += ` What would you like to explore today?`;
+    
     const welcomeMsg = {
       id: 'welcome-' + Date.now(),
-      message: `Hi! I'm your AI health coach. I can help you with meal planning, restaurant recommendations, and nutrition analysis. What would you like to explore today?`,
+      message: welcomeMessage,
       response: '',
       isWelcome: true
     };
@@ -3111,7 +3123,7 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
         toast.success("Great question! I've restored your message - just hit send when you're ready 💬");
       }, 1000);
     }
-  }, [pendingQuestion]);
+  }, [pendingQuestion, currentUser]);
 
   // Mock user for demo (in real implementation, this would come from auth)
   const effectiveUser = currentUser || { id: 'demo-user', plan: 'standard' };
