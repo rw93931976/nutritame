@@ -3100,7 +3100,18 @@ const CoachInterface = ({ pendingQuestion }) => {
       isWelcome: true
     };
     setMessages([welcomeMsg]);
-  }, []);
+    
+    // Handle pending question if provided
+    if (pendingQuestion && pendingQuestion.trim()) {
+      console.log('🎯 Processing pending question:', pendingQuestion);
+      setInputText(pendingQuestion);
+      
+      // Add encouragement microcopy for restored question
+      setTimeout(() => {
+        toast.success("Great question! I've restored your message - just hit send when you're ready 💬");
+      }, 1000);
+    }
+  }, [pendingQuestion]);
 
   // Mock user for demo (in real implementation, this would come from auth)
   const mockUser = { id: 'demo-user', plan: 'standard' };
