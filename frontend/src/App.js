@@ -2982,7 +2982,7 @@ const CoachRoute = () => {
     const disclaimerKey = 'nutritame_coach_disclaimer_accepted';
     localStorage.setItem(disclaimerKey, 'true');
     setDisclaimerAccepted(true);
-    setShowCoachDisclaimer(false);
+    // Remove redundant state update to fix race condition
     
     // Show encouragement toast after disclaimer acceptance
     setTimeout(() => {
