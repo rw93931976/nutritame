@@ -3069,6 +3069,8 @@ const CoachRoute = () => {
 // =============================================
 
 const CoachInterface = () => {
+  console.log('🎯 CoachInterface component mounted!');
+  
   // Basic AI Health Coach state
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
@@ -3081,6 +3083,7 @@ const CoachInterface = () => {
 
   // Initialize with welcome message
   useEffect(() => {
+    console.log('🎯 CoachInterface useEffect - initializing welcome message');
     const welcomeMsg = {
       id: 'welcome-' + Date.now(),
       message: `Hi! I'm your AI health coach. I can help you with meal planning, restaurant recommendations, and nutrition analysis. What would you like to explore today?`,
