@@ -197,14 +197,13 @@ class AICoachProfileIntegrationTester:
         print(f"\n🔍 Testing AI Coach Session Creation for user {self.created_user_id}...")
         
         session_data = {
-            "user_id": self.created_user_id,
             "title": "Diabetes Meal Planning Session"
         }
         
         success, response = self.run_test(
             "Create AI Coach Session",
             "POST",
-            "coach/sessions",
+            f"coach/sessions?user_id={self.created_user_id}",
             200,
             data=session_data
         )
