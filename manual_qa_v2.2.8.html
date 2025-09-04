@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manual QA Test - v2.2.8-ack-ordering-and-resume</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-step { margin: 20px 0; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .expected { background-color: #f0f8ff; }
+        .console-log { background-color: #f5f5f5; font-family: monospace; padding: 5px; margin: 5px 0; }
+        h2 { color: #0066cc; }
+        h3 { color: #cc6600; }
+        .success { color: #007700; }
+        .error { color: #cc0000; }
+        .critical { background-color: #ffe6e6; border: 2px solid #cc0000; }
+    </style>
+</head>
+<body>
+    <h1>Manual QA Test - v2.2.8-ack-ordering-and-resume</h1>
+    
+    <div class="critical">
+        <h2>🚨 CRITICAL TEST - Block-Then-Accept-Then-Resume Flow</h2>
+        <p>This test verifies the exact ordering and unified sender functionality.</p>
+    </div>
+    
+    <h2>Test Instructions</h2>
+    <p>Open Developer Console (F12) and navigate to <a href="http://localhost:3000/coach" target="_blank">http://localhost:3000/coach</a></p>
+    
+    <div class="test-step">
+        <h3>Step 1: Clear localStorage and reload</h3>
+        <p>In browser console, run:</p>
+        <div class="console-log">
+            localStorage.clear();<br>
+            location.reload();
+        </div>
+    </div>
+    
+    <div class="test-step">
+        <h3>Step 2: Type message and press Enter (pre-accept)</h3>
+        <p>Type: <strong>create a 3 day meal plan</strong> and press Enter</p>
+        <div class="expected">
+            <strong>Expected Console Logs (EXACT ORDER):</strong>
+            <div class="console-log">
+                [SEND ATTEMPT] stateAck=false lsAck=false accepted=false<br>
+                [GATED: ack=false — no API call, no clearing]<br>
+                [PENDING] stored question="create a 3 day meal plan"<br>
+                [DISCLAIMER OPEN] type=global
+            </div>
+            <p class="success">✅ CRITICAL: NO send should happen - only gating and blocking!</p>
+            <p class="error">❌ MUST NOT see: "Sending message:" or "Making API call to AI Health Coach"</p>
+        </div>
+    </div>
+    
+    <div class="test-step">
+        <h3>Step 3: Click Accept on global disclaimer</h3>
+        <p>Click "Accept & Continue" button on the disclaimer that appeared</p>
+        <div class="expected">
+            <strong>Expected Console Logs (EXACT ORDER):</strong>
+            <div class="console-log">
+                [DISCLAIMER ACCEPT] type=global<br>
+                [ACK TRACE] BEFORE - stateAck=false lsAck=null<br>
+                [ACK TRACE] AFTER - stateAck=true lsAck=true<br>
+                [RESUME] auto-sending pending question="create a 3 day meal plan"<br>
+                [COACH REQ] id=... start body="create a 3 day meal plan"<br>
+                [COACH RES] id=... status=200<br>
+                [COACH RENDER] id=... count>=1<br>
+                AI response found: 1
+            </div>
+            <p class="success">✅ SUCCESS: AI response should appear automatically in the chat thread!</p>
+        </div>
+    </div>
+    
+    <h2>Acceptance Criteria (Pass/Fail)</h2>
+    <div class="critical">
+        <h3>🚨 CRITICAL REQUIREMENTS</h3>
+        <ul>
+            <li class="success">✅ No case where accepted=true with lsAck=false</li>
+            <li class="success">✅ Only one sender path in use; [COACH REQ/RES/RENDER/ERR] always present</li>  
+            <li class="success">✅ Pending question auto-sends after accept and renders a reply</li>
+            <li class="success">✅ Console noise items gone (Maps async warning, long setTimeout)</li>
+        </ul>
+    </div>
+    
+    <h2>Grep Report - Legacy Strings Removed</h2>
+    <p><strong>BEFORE (Legacy logging):</strong></p>
+    <ul>
+        <li class="error">❌ "Sending message:" - REMOVED</li>
+        <li class="error">❌ "Making API call to AI Health Coach" - REMOVED</li>
+    </ul>
+    
+    <p><strong>AFTER (Unified logging only):</strong></p>
+    <ul>
+        <li class="success">✅ Only [COACH REQ/RES/RENDER/ERR] format present</li>
+        <li class="success">✅ All send paths use window.sendMessageInternal</li>
+        <li class="success">✅ Direct auto-resume calls (no events/setTimeout)</li>
+    </ul>
+    
+    <h2>Key Fixes in v2.2.8</h2>
+    <ul>
+        <li><strong>Ack Normalization Ordering</strong>: Normalize BEFORE computing and logging accepted</li>
+        <li><strong>Single Sender Path</strong>: All UI elements use unified sendMessageInternal</li>
+        <li><strong>Direct Auto-Resume</strong>: Accept handlers directly await sendMessageInternal</li>
+        <li><strong>Legacy Removal</strong>: Eliminated all old send functions and logging</li>
+        <li><strong>Global Handler Registration</strong>: window.currentSendHandler for seamless resume</li>
+    </ul>
+    
+    <h2>Version Verification</h2>
+    <p>Console should show: <code>[VERSION] v2.2.8-ack-ordering-and-resume | commit=fa098e5</code></p>
+    <p>Performance log: <code>[Perf] post-load tasks scheduled (no long setTimeout)</code></p>
+    
+    <h2>Additional Validation Tests</h2>
+    <div class="test-step">
+        <h3>Test 4: Direct Coach Interface (after above test)</h3>
+        <p>Type another message directly without clearing localStorage</p>
+        <div class="expected">
+            <p>Expected: Immediate send without disclaimer</p>
+            <div class="console-log">
+                [SEND ATTEMPT] stateAck=true lsAck=true accepted=true<br>
+                [PROCEEDING] ack=true — calling backend<br>
+                [COACH REQ] ... [COACH RES] ... [COACH RENDER] ...
+            </div>
+            <p class="success">✅ Critical: lsAck must show true (not false) when stateAck=true</p>
+        </div>
+    </div>
+    
+    <div class="test-step">
+        <h3>Test 5: Console Noise Check</h3>
+        <p>Refresh the page and monitor console for first 60 seconds</p>
+        <div class="expected">
+            <p class="success">✅ Should NOT see:</p>
+            <ul>
+                <li>"Google Maps API loaded directly without loading=async"</li>
+                <li>"setTimeout handler took XXXms" violations</li>
+                <li>Demo 404 retry loops</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
