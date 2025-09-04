@@ -3149,11 +3149,16 @@ const CoachRoute = React.memo(({ currentUser }) => {
         setPendingQuestion(null);
         console.error(`[RESUME] auto-sending pending question="${pending}"`);
         
-        // Use unified auto-resume event
-        setTimeout(async () => {
-          const event = new CustomEvent('unifiedAutoResume', { detail: { message: pending } });
-          window.dispatchEvent(event);
-        }, 100);
+        // Direct call - no timers/events
+        if (window.currentSendHandler) {
+          await window.currentSendHandler(pending);
+        } else {
+          // Fallback: dispatch event if no direct handler available
+          setTimeout(async () => {
+            const event = new CustomEvent('unifiedAutoResume', { detail: { message: pending } });
+            window.dispatchEvent(event);
+          }, 100);
+        }
       }
       
       // Show encouragement toast after disclaimer acceptance
