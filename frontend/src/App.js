@@ -3437,7 +3437,7 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
               
               {/* Input Area */}
               <div className="flex-shrink-0 p-4 border-t">
-                <div className="flex gap-2">
+                <form onSubmit={handleSendMessage} className="flex gap-2">
                   <Input
                     value={inputText}
                     onChange={(e) => {
@@ -3458,19 +3458,18 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
                       }
                     }}
                     placeholder="Ask about nutrition, meals, or recipes..."
-                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                     className="flex-1 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                     aria-label="Enter your nutrition question"
                   />
                   <Button 
-                    onClick={handleSendMessage}
+                    type="submit"
                     disabled={!inputText.trim() || isLoading}
                     className="bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 focus:ring-2 focus:ring-emerald-500 transition-all"
                     aria-label="Send message"
                   >
                     <MessageSquarePlus className="h-4 w-4" />
                   </Button>
-                </div>
+                </form>
               </div>
             </Card>
           </div>
