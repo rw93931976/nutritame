@@ -3226,7 +3226,7 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
     }
     
     // Only reach here if disclaimer is accepted
-    console.log(`[${timestamp}] PROCEEDING: Disclaimer accepted, calling backend`);
+    console.log(`[${timestamp}] PROCEEDING: disclaimer accepted — calling backend`);
     console.log('🚀 effectiveUser:', effectiveUser);
     console.log('🚀 currentSessionId:', currentSessionId);
     
