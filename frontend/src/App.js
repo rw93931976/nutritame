@@ -3657,7 +3657,7 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
       )}
     </div>
   );
-};
+});
 
 // Main App Component
 function App() {
