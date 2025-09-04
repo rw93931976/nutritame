@@ -3138,13 +3138,14 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     };
   }, []);
 
-  // On AI Coach mount, prime state from LS
+  // On AI Coach mount, prime state from LS and log init
   useEffect(() => {
     const lsAckBool = localStorage.getItem('nt_coach_disclaimer_ack') === 'true';
     if (lsAckBool && setAck) {
       setAck(true);
     }
-  }, [setAck]);
+    console.error(`[ACK INIT] stateAck=${ack === true} lsAck=${lsAckBool}`);
+  }, [setAck, ack]);
   console.log('🎯 CoachInterface component mounted with pendingQuestion:', pendingQuestion, 'currentUser:', currentUser, 'ack:', ack);
   
   // Basic AI Health Coach state
