@@ -104,6 +104,22 @@
 
 user_problem_statement: "Manual QA shows: When submitting a profile, the app responds 'profile not found — create new profile.' This worked previously and is now broken. This is the ONLY bug you are tasked with fixing right now."
 
+frontend:
+  - task: "Profile Submission Bug Fix"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reports when submitting a profile, the app responds 'profile not found — create new profile.' This error occurs during profile form submission."
+      - working: true
+        agent: "main"
+        comment: "ROOT CAUSE IDENTIFIED: Demo users created via /api/demo/access exist only for JWT tokens but not in users database collection. Frontend logic incorrectly determined profile update (PUT) instead of creation (POST) because demo users have ID and diabetes_type from handleDemoAccess. FIXED: Updated UserProfileSetup logic to detect demo users and route to POST /api/users (create) instead of PUT /api/users/{id} (update). Added consistent user ID management to update nt_coach_user_id localStorage with new database user ID after successful profile creation."
+
 backend:
   - task: "AI Health Coach Real AI Integration"
     implemented: true
