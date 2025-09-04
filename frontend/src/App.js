@@ -4,7 +4,7 @@ import axios from "axios";
 import "./App.css";
 
 // VERSION BANNER - Pending Resume and Logs
-console.error('[VERSION] v2.2.6-pending-resume-and-logs | commit=<hash>');
+console.error('[VERSION] v2.2.6-pending-resume-and-logs | commit=c0891a1');
 
 // Performance logging
 console.error('[Perf] post-load tasks scheduled (no long setTimeout)');
