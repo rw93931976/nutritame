@@ -3117,8 +3117,10 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
   const [searchResults, setSearchResults] = useState([]);
 
   // Generate a proper user for demo/testing if no currentUser
+  // Use consistent ID from localStorage if available to match disclaimer acceptance
+  const storedUserId = localStorage.getItem('nt_coach_user_id');
   const effectiveUser = currentUser || { 
-    id: `demo-${Date.now()}`, 
+    id: storedUserId || `demo-${Date.now()}`, 
     plan: 'standard',
     email: 'demo@nutritame.com',
     diabetes_type: 'type2', // Default for demo
