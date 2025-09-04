@@ -3117,6 +3117,14 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
       console.error("[LIFECYCLE] CoachInterface unmounted");
     };
   }, []);
+
+  // On AI Coach mount, prime state from LS
+  useEffect(() => {
+    const lsAckBool = localStorage.getItem('nt_coach_disclaimer_ack') === 'true';
+    if (lsAckBool && setAck) {
+      setAck(true);
+    }
+  }, [setAck]);
   console.log('🎯 CoachInterface component mounted with pendingQuestion:', pendingQuestion, 'currentUser:', currentUser, 'ack:', ack);
   
   // Basic AI Health Coach state
