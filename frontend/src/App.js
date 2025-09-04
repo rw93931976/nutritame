@@ -3908,7 +3908,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<DemoLandingPage onDemoAccess={handleDemoAccess} />} />
-          <Route path="/coach" element={<CoachRoute currentUser={currentUser} />} />
+          <Route path="/coach" element={memoizedCoachRoute} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
