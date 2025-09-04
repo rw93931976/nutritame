@@ -3421,24 +3421,25 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     const body = inputText.trim();
     if (!body) return;
     
-    // Normalize ack if proceeding without LS
-    if (ack === true && !getCoachAck()) {
-      setCoachAckTrue();
+    // TOP of handleSendMessage: normalize ack before computing accepted (and before logging)
+    if (ack === true && localStorage.getItem(COACH_ACK_KEY) !== 'true') {
+      localStorage.setItem(COACH_ACK_KEY, 'true'); // normalize first
     }
-    
+
+    // Now compute and LOG:
     const stateAckBool = ack === true;
-    const lsAckBool = getCoachAck();
+    const lsAckBool = localStorage.getItem(COACH_ACK_KEY) === 'true';
     const accepted = stateAckBool || lsAckBool;
-    
     console.error(`[SEND ATTEMPT] stateAck=${stateAckBool} lsAck=${lsAckBool} accepted=${accepted}`);
     
+    // Gate before any side-effects; store pending; open disclaimer; return
     if (!accepted) {
       console.error('[GATED: ack=false — no API call, no clearing]');
       localStorage.setItem('nt_coach_pending_question', body);
       console.error(`[PENDING] stored question="${body}"`);
       console.error('[DISCLAIMER OPEN] type=coach');
-      setAck(false); // triggers modal if needed
-      return;
+      setAck(false); // shows the modal
+      return; // IMPORTANT: nothing else runs
     }
     
     console.error('[PROCEEDING] ack=true — calling backend');
