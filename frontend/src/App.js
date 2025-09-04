@@ -3647,7 +3647,8 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     prevProps.ack === nextProps.ack &&
     prevProps.pendingQuestion === nextProps.pendingQuestion &&
     prevProps.currentUser?.id === nextProps.currentUser?.id &&
-    prevProps.disclaimerAccepted === nextProps.disclaimerAccepted
+    prevProps.disclaimerAccepted === nextProps.disclaimerAccepted &&
+    prevProps.onDisclaimerAccept === nextProps.onDisclaimerAccept
   );
 });
 
