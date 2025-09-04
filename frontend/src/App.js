@@ -3699,6 +3699,11 @@ function App() {
   const [showShoppingListButton, setShowShoppingListButton] = useState(false);
   const [lastMealPain, setLastMealPlan] = useState("");
 
+  // STABILITY FIX: Memoize CoachRoute element to prevent remounting on App re-renders
+  const memoizedCoachRoute = useMemo(() => (
+    <CoachRoute currentUser={currentUser} />
+  ), [currentUser]);
+
   // Check authentication on app load (run only once, independent of disclaimer)
   useEffect(() => {
     const checkAuthentication = async () => {
