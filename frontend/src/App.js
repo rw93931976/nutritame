@@ -3216,12 +3216,12 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
     
     const timestamp = performance.now().toFixed(1);
     console.log(`[${timestamp}] handleSendMessage called with input:`, body);
-    console.log(`[${timestamp}] disclaimerAccepted prop:`, disclaimerAccepted);
+    console.log(`[${timestamp}] ack state:`, ack);
     console.log(`[${timestamp}] localStorage disclaimer_ack:`, localStorage.getItem('nt_coach_disclaimer_ack'));
     
     // HARD GATE: If disclaimer not accepted, persist input and show disclaimer modal
-    if (!disclaimerAccepted) {
-      console.log(`[${timestamp}] GATED: disclaimer not accepted — modal shown, no API call`);
+    if (!ack) {
+      console.log(`[${timestamp}] GATED: ack=false — no API call, no clearing`);
       
       // Persist input without clearing it
       localStorage.setItem('nt_coach_pending_question', body);
