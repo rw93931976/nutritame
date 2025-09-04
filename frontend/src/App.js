@@ -3324,9 +3324,8 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
       // Call real AI backend API
       const response = await aiCoachService.sendMessage(messagePayload);
       
-      console.log(`[send] status=200`);
-      console.log(`[send] response shape: keys=${Object.keys(response || {}).join(',')}`);
-      console.log('🎯 AI response received:', response);
+      console.error("[SEND] response status:", response ? 200 : 'ERROR');
+      console.error("[SEND] response received:", !!response);
       
       // Validate response
       if (!response) {
@@ -3339,6 +3338,8 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
         console.error('❌ No response text found in:', response);
         throw new Error('No response text received from AI');
       }
+      
+      console.error("[SEND] AI response text length:", aiResponseText.length);
       
       const aiResponse = {
         id: Date.now() + 1,
