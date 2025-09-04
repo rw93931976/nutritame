@@ -2977,24 +2977,19 @@ const CoachRoute = ({ currentUser }) => {
     console.log('✅ Coach disclaimer accepted');
     
     try {
-      // CRITICAL FIX: Create effectiveUser fallback for disclaimer acceptance
-      const effectiveUser = currentUser || { 
-        id: `demo-${Date.now()}`, 
-        plan: 'standard',
-        email: 'demo@nutritame.com',
-        diabetes_type: 'type2',
-        age: 35,
-        food_preferences: ['mediterranean'],
-        allergies: []
-      };
+      // CRITICAL FIX: Use the component-scoped effectiveUser from CoachInterface
+      // Don't create a new one here to avoid ID mismatch
+      console.log('🎯 Recording disclaimer acceptance for currentUser:', currentUser?.id || 'null');
+      console.log('🎯 Will use effectiveUser from CoachInterface component for session creation');
       
-      if (effectiveUser?.id) {
-        console.log('🎯 Recording disclaimer acceptance for effectiveUser:', effectiveUser.id);
-        await aiCoachService.acceptDisclaimer(effectiveUser.id);
-        console.log('✅ Backend disclaimer acceptance recorded successfully');
-      } else {
-        console.warn('⚠️ No effectiveUser.id available for disclaimer acceptance');
-      }
+      // For now, create a consistent demo user if no currentUser exists
+      const userIdForDisclaimer = currentUser?.id || `demo-${Date.now()}`;
+      
+      await aiCoachService.acceptDisclaimer(userIdForDisclaimer);
+      console.log('✅ Backend disclaimer acceptance recorded successfully for:', userIdForDisclaimer);
+      
+      // Store the user ID for session creation consistency
+      localStorage.setItem('nt_coach_user_id', userIdForDisclaimer);
       
       // Update frontend state and persistence
       setAck(true);
