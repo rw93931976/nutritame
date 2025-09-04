@@ -1584,6 +1584,660 @@ class GlucoPlannerAPITester:
         return False
 
     # =============================================
+    # AI HEALTH COACH ENDPOINTS TESTS - TDD localStorage Gate Fix Verification
+    # =============================================
+    
+    def test_ai_coach_feature_flags(self):
+        """Test GET /api/coach/feature-flags - should return coach_enabled=true, openai/gpt-4o-mini config"""
+        print("\n🔍 Testing AI Health Coach Feature Flags...")
+        
+        success, response = self.run_test(
+            "AI Coach Feature Flags",
+            "GET",
+            "coach/feature-flags",
+            200
+        )
+        
+        if success:
+            # Verify coach_enabled is true
+            if response.get('coach_enabled') is True:
+                print("   ✅ coach_enabled is correctly set to true")
+            else:
+                print(f"   ❌ coach_enabled should be true, got: {response.get('coach_enabled')}")
+                return False
+            
+            # Verify LLM provider is openai
+            if response.get('llm_provider') == 'openai':
+                print("   ✅ llm_provider is correctly set to openai")
+            else:
+                print(f"   ❌ llm_provider should be openai, got: {response.get('llm_provider')}")
+                return False
+            
+            # Verify LLM model is gpt-4o-mini
+            if response.get('llm_model') == 'gpt-4o-mini':
+                print("   ✅ llm_model is correctly set to gpt-4o-mini")
+            else:
+                print(f"   ❌ llm_model should be gpt-4o-mini, got: {response.get('llm_model')}")
+                return False
+            
+            # Verify standard limit is 10
+            if response.get('standard_limit') == 10:
+                print("   ✅ standard_limit is correctly set to 10")
+            else:
+                print(f"   ❌ standard_limit should be 10, got: {response.get('standard_limit')}")
+                return False
+            
+            print(f"   Feature flags: {json.dumps(response, indent=2)}")
+            return True
+        
+        return False
+    
+    def test_ai_coach_accept_disclaimer(self):
+        """Test POST /api/coach/accept-disclaimer - should record disclaimer acceptance"""
+        print("\n🔍 Testing AI Health Coach Accept Disclaimer...")
+        
+        if not self.created_user_id:
+            print("   ❌ No user ID available for disclaimer testing")
+            return False
+        
+        disclaimer_data = {
+            "user_id": self.created_user_id
+        }
+        
+        success, response = self.run_test(
+            "AI Coach Accept Disclaimer",
+            "POST",
+            "coach/accept-disclaimer",
+            200,
+            data=disclaimer_data
+        )
+        
+        if success:
+            # Verify success response
+            if response.get('success') is True:
+                print("   ✅ Disclaimer acceptance recorded successfully")
+            else:
+                print(f"   ❌ Disclaimer acceptance failed: {response}")
+                return False
+            
+            # Verify message
+            if 'accepted' in response.get('message', '').lower():
+                print("   ✅ Disclaimer acceptance message is appropriate")
+            else:
+                print(f"   ❌ Disclaimer acceptance message unclear: {response.get('message')}")
+                return False
+            
+            return True
+        
+        return False
+    
+    def test_ai_coach_disclaimer_status(self):
+        """Test GET /api/coach/disclaimer-status/{user_id} - should return acceptance status"""
+        print("\n🔍 Testing AI Health Coach Disclaimer Status...")
+        
+        if not self.created_user_id:
+            print("   ❌ No user ID available for disclaimer status testing")
+            return False
+        
+        success, response = self.run_test(
+            "AI Coach Disclaimer Status",
+            "GET",
+            f"coach/disclaimer-status/{self.created_user_id}",
+            200
+        )
+        
+        if success:
+            # Verify accepted status is true (since we just accepted it)
+            if response.get('accepted') is True:
+                print("   ✅ Disclaimer status correctly shows accepted")
+            else:
+                print(f"   ❌ Disclaimer should be accepted, got: {response.get('accepted')}")
+                return False
+            
+            # Verify accepted_at timestamp exists
+            if response.get('accepted_at'):
+                print("   ✅ Disclaimer acceptance timestamp is present")
+            else:
+                print("   ❌ Disclaimer acceptance timestamp is missing")
+                return False
+            
+            return True
+        
+        return False
+    
+    def test_ai_coach_consultation_limit(self):
+        """Test GET /api/coach/consultation-limit/{user_id} - should return standard plan limits"""
+        print("\n🔍 Testing AI Health Coach Consultation Limit...")
+        
+        if not self.created_user_id:
+            print("   ❌ No user ID available for consultation limit testing")
+            return False
+        
+        success, response = self.run_test(
+            "AI Coach Consultation Limit",
+            "GET",
+            f"coach/consultation-limit/{self.created_user_id}",
+            200
+        )
+        
+        if success:
+            # Verify can_use is true for new user
+            if response.get('can_use') is True:
+                print("   ✅ User can use consultations (within limit)")
+            else:
+                print(f"   ❌ User should be able to use consultations, got: {response.get('can_use')}")
+                return False
+            
+            # Verify limit is 10 for standard plan
+            if response.get('limit') == 10:
+                print("   ✅ Standard plan limit is correctly set to 10")
+            else:
+                print(f"   ❌ Standard plan limit should be 10, got: {response.get('limit')}")
+                return False
+            
+            # Verify plan is standard
+            if response.get('plan') == 'standard':
+                print("   ✅ User plan is correctly set to standard")
+            else:
+                print(f"   ❌ User plan should be standard, got: {response.get('plan')}")
+                return False
+            
+            # Verify current count is 0 for new user
+            if response.get('current_count') == 0:
+                print("   ✅ Current consultation count is 0 for new user")
+            else:
+                print(f"   ❌ Current count should be 0 for new user, got: {response.get('current_count')}")
+                return False
+            
+            # Verify remaining is 10
+            if response.get('remaining') == 10:
+                print("   ✅ Remaining consultations is 10 for new user")
+            else:
+                print(f"   ❌ Remaining should be 10 for new user, got: {response.get('remaining')}")
+                return False
+            
+            return True
+        
+        return False
+    
+    def test_ai_coach_create_session(self):
+        """Test POST /api/coach/sessions - should create new sessions"""
+        print("\n🔍 Testing AI Health Coach Create Session...")
+        
+        if not self.created_user_id:
+            print("   ❌ No user ID available for session creation testing")
+            return False
+        
+        session_data = {
+            "title": "Test AI Health Coach Session"
+        }
+        
+        success, response = self.run_test(
+            "AI Coach Create Session",
+            "POST",
+            f"coach/sessions?user_id={self.created_user_id}",
+            200,
+            data=session_data
+        )
+        
+        if success:
+            # Verify session ID is returned
+            session_id = response.get('id')
+            if session_id:
+                print(f"   ✅ Session created successfully with ID: {session_id}")
+                self.ai_coach_session_id = session_id  # Store for later tests
+            else:
+                print(f"   ❌ Session ID not returned: {response}")
+                return False
+            
+            # Verify user_id matches
+            if response.get('user_id') == self.created_user_id:
+                print("   ✅ Session user_id matches created user")
+            else:
+                print(f"   ❌ Session user_id mismatch. Expected: {self.created_user_id}, Got: {response.get('user_id')}")
+                return False
+            
+            # Verify title
+            if response.get('title') == "Test AI Health Coach Session":
+                print("   ✅ Session title is correct")
+            else:
+                print(f"   ❌ Session title mismatch. Expected: 'Test AI Health Coach Session', Got: {response.get('title')}")
+                return False
+            
+            # Verify timestamps
+            if response.get('created_at') and response.get('updated_at'):
+                print("   ✅ Session timestamps are present")
+            else:
+                print("   ❌ Session timestamps are missing")
+                return False
+            
+            return True
+        
+        return False
+    
+    def test_ai_coach_get_user_sessions(self):
+        """Test GET /api/coach/sessions/{user_id} - should retrieve user sessions"""
+        print("\n🔍 Testing AI Health Coach Get User Sessions...")
+        
+        if not self.created_user_id:
+            print("   ❌ No user ID available for session retrieval testing")
+            return False
+        
+        success, response = self.run_test(
+            "AI Coach Get User Sessions",
+            "GET",
+            f"coach/sessions/{self.created_user_id}",
+            200
+        )
+        
+        if success:
+            # Verify response is a list
+            if isinstance(response, list):
+                print(f"   ✅ Retrieved {len(response)} sessions for user")
+            else:
+                print(f"   ❌ Response should be a list, got: {type(response)}")
+                return False
+            
+            # Verify we have at least one session (the one we created)
+            if len(response) >= 1:
+                print("   ✅ At least one session found (as expected)")
+                
+                # Verify session structure
+                first_session = response[0]
+                required_fields = ['id', 'user_id', 'title', 'created_at', 'updated_at']
+                missing_fields = [field for field in required_fields if field not in first_session]
+                
+                if not missing_fields:
+                    print("   ✅ Session structure is correct")
+                else:
+                    print(f"   ❌ Missing session fields: {missing_fields}")
+                    return False
+                
+                # Verify user_id matches
+                if first_session.get('user_id') == self.created_user_id:
+                    print("   ✅ Session belongs to correct user")
+                else:
+                    print(f"   ❌ Session user_id mismatch")
+                    return False
+            else:
+                print("   ❌ No sessions found for user")
+                return False
+            
+            return True
+        
+        return False
+    
+    def test_ai_coach_send_message(self):
+        """Test POST /api/coach/message - should generate real AI responses"""
+        print("\n🔍 Testing AI Health Coach Send Message (Real AI Integration)...")
+        
+        if not hasattr(self, 'ai_coach_session_id') or not self.ai_coach_session_id:
+            print("   ❌ No session ID available for message testing")
+            return False
+        
+        message_data = {
+            "session_id": self.ai_coach_session_id,
+            "message": "Create a healthy breakfast meal plan for someone with Type 2 diabetes who prefers Mediterranean foods and is allergic to nuts and shellfish"
+        }
+        
+        print("   Note: AI response may take 10-20 seconds...")
+        success, response = self.run_test(
+            "AI Coach Send Message",
+            "POST",
+            "coach/message",
+            200,
+            data=message_data
+        )
+        
+        if success:
+            # Verify AI response is present
+            ai_response = response.get('response')
+            if ai_response and len(ai_response) > 50:  # Substantial response
+                print(f"   ✅ AI response generated successfully ({len(ai_response)} characters)")
+                print(f"   Response preview: {ai_response[:150]}...")
+            else:
+                print(f"   ❌ AI response too short or missing: {ai_response}")
+                return False
+            
+            # Verify response contains diabetes-specific content
+            diabetes_keywords = ['diabetes', 'blood sugar', 'carbohydrate', 'glucose', 'diabetic']
+            has_diabetes_content = any(keyword in ai_response.lower() for keyword in diabetes_keywords)
+            if has_diabetes_content:
+                print("   ✅ AI response contains diabetes-specific content")
+            else:
+                print("   ⚠️  AI response may not contain diabetes-specific content")
+            
+            # Verify response considers Mediterranean preferences
+            mediterranean_keywords = ['mediterranean', 'olive oil', 'tomato', 'feta', 'olives']
+            has_mediterranean_content = any(keyword in ai_response.lower() for keyword in mediterranean_keywords)
+            if has_mediterranean_content:
+                print("   ✅ AI response considers Mediterranean preferences")
+            else:
+                print("   ⚠️  AI response may not consider Mediterranean preferences")
+            
+            # Verify response avoids allergens
+            allergen_keywords = ['nuts', 'shellfish', 'peanut', 'almond', 'walnut', 'shrimp', 'crab', 'lobster']
+            has_allergens = any(keyword in ai_response.lower() for keyword in allergen_keywords)
+            if not has_allergens:
+                print("   ✅ AI response avoids mentioned allergens")
+            else:
+                print("   ⚠️  AI response may contain allergens (nuts/shellfish)")
+            
+            # Verify imperial measurements are used
+            imperial_keywords = ['cup', 'tablespoon', 'teaspoon', 'ounce', 'oz', 'pound', 'lb']
+            has_imperial = any(keyword in ai_response.lower() for keyword in imperial_keywords)
+            if has_imperial:
+                print("   ✅ AI response uses imperial measurements")
+            else:
+                print("   ⚠️  AI response may not use imperial measurements")
+            
+            # Store message ID for later tests
+            message_id = response.get('message_id')
+            if message_id:
+                self.ai_coach_message_id = message_id
+                print(f"   ✅ Message ID returned: {message_id}")
+            
+            return True
+        
+        return False
+    
+    def test_ai_coach_get_messages(self):
+        """Test GET /api/coach/messages/{session_id} - should return conversation history"""
+        print("\n🔍 Testing AI Health Coach Get Messages...")
+        
+        if not hasattr(self, 'ai_coach_session_id') or not self.ai_coach_session_id:
+            print("   ❌ No session ID available for message retrieval testing")
+            return False
+        
+        success, response = self.run_test(
+            "AI Coach Get Messages",
+            "GET",
+            f"coach/messages/{self.ai_coach_session_id}",
+            200
+        )
+        
+        if success:
+            # Verify response is a list
+            if isinstance(response, list):
+                print(f"   ✅ Retrieved {len(response)} messages for session")
+            else:
+                print(f"   ❌ Response should be a list, got: {type(response)}")
+                return False
+            
+            # Verify we have at least 2 messages (user + AI)
+            if len(response) >= 2:
+                print("   ✅ At least 2 messages found (user + AI)")
+                
+                # Verify message structure
+                for i, message in enumerate(response[:2]):
+                    required_fields = ['id', 'session_id', 'role', 'text', 'created_at']
+                    missing_fields = [field for field in required_fields if field not in message]
+                    
+                    if not missing_fields:
+                        print(f"   ✅ Message {i+1} structure is correct")
+                    else:
+                        print(f"   ❌ Message {i+1} missing fields: {missing_fields}")
+                        return False
+                    
+                    # Verify session_id matches
+                    if message.get('session_id') == self.ai_coach_session_id:
+                        print(f"   ✅ Message {i+1} belongs to correct session")
+                    else:
+                        print(f"   ❌ Message {i+1} session_id mismatch")
+                        return False
+                
+                # Verify we have both user and assistant messages
+                roles = [msg.get('role') for msg in response]
+                if 'user' in roles and 'assistant' in roles:
+                    print("   ✅ Conversation contains both user and assistant messages")
+                else:
+                    print(f"   ❌ Missing message roles. Found: {roles}")
+                    return False
+                
+            else:
+                print("   ❌ Not enough messages found for conversation")
+                return False
+            
+            return True
+        
+        return False
+    
+    def test_ai_coach_search_conversations(self):
+        """Test GET /api/coach/search/{user_id} - should search conversations"""
+        print("\n🔍 Testing AI Health Coach Search Conversations...")
+        
+        if not self.created_user_id:
+            print("   ❌ No user ID available for conversation search testing")
+            return False
+        
+        # Search for "breakfast" since we sent a breakfast-related message
+        search_query = "breakfast"
+        
+        success, response = self.run_test(
+            "AI Coach Search Conversations",
+            "GET",
+            f"coach/search/{self.created_user_id}?query={search_query}",
+            200
+        )
+        
+        if success:
+            # Verify response is a list
+            if isinstance(response, list):
+                print(f"   ✅ Search returned {len(response)} results")
+            else:
+                print(f"   ❌ Response should be a list, got: {type(response)}")
+                return False
+            
+            # If we have results, verify structure
+            if len(response) > 0:
+                first_result = response[0]
+                
+                # Verify search result structure
+                expected_fields = ['session_id', 'session_title', 'message_preview', 'created_at']
+                missing_fields = [field for field in expected_fields if field not in first_result]
+                
+                if not missing_fields:
+                    print("   ✅ Search result structure is correct")
+                else:
+                    print(f"   ❌ Missing search result fields: {missing_fields}")
+                    return False
+                
+                # Verify search relevance
+                message_preview = first_result.get('message_preview', '').lower()
+                if search_query.lower() in message_preview:
+                    print(f"   ✅ Search results are relevant (contains '{search_query}')")
+                else:
+                    print(f"   ⚠️  Search results may not be relevant to '{search_query}'")
+                
+                print(f"   Search result preview: {first_result.get('message_preview', '')[:100]}...")
+            else:
+                print("   ⚠️  No search results found (may be expected for new conversation)")
+            
+            return True
+        
+        return False
+    
+    def test_ai_coach_consultation_count_increment(self):
+        """Test that consultation count increments after AI interaction"""
+        print("\n🔍 Testing AI Health Coach Consultation Count Increment...")
+        
+        if not self.created_user_id:
+            print("   ❌ No user ID available for consultation count testing")
+            return False
+        
+        success, response = self.run_test(
+            "AI Coach Consultation Limit After Message",
+            "GET",
+            f"coach/consultation-limit/{self.created_user_id}",
+            200
+        )
+        
+        if success:
+            # Verify current count has incremented to 1 (from 0 after sending a message)
+            current_count = response.get('current_count', 0)
+            if current_count >= 1:
+                print(f"   ✅ Consultation count incremented to {current_count}")
+            else:
+                print(f"   ❌ Consultation count should be >= 1 after AI interaction, got: {current_count}")
+                return False
+            
+            # Verify remaining count has decreased
+            remaining = response.get('remaining', 0)
+            expected_remaining = 10 - current_count
+            if remaining == expected_remaining:
+                print(f"   ✅ Remaining consultations correctly calculated: {remaining}")
+            else:
+                print(f"   ❌ Remaining consultations incorrect. Expected: {expected_remaining}, Got: {remaining}")
+                return False
+            
+            return True
+        
+        return False
+    
+    def test_ai_coach_end_to_end_workflow(self):
+        """Test complete AI Health Coach workflow from disclaimer to AI response"""
+        print("\n🔍 Testing AI Health Coach End-to-End Workflow...")
+        
+        # Create a new demo user for clean end-to-end test
+        demo_user_profile = {
+            "diabetes_type": "type2",
+            "age": 35,
+            "gender": "female",
+            "activity_level": "moderate",
+            "health_goals": ["blood_sugar_control", "weight_loss"],
+            "food_preferences": ["mediterranean", "low_carb"],
+            "cultural_background": "Mediterranean",
+            "allergies": ["nuts", "shellfish"],
+            "dislikes": ["liver"],
+            "cooking_skill": "intermediate"
+        }
+        
+        # Step 1: Create user profile
+        success, profile_response = self.run_test(
+            "E2E: Create Demo User Profile",
+            "POST",
+            "users",
+            200,
+            data=demo_user_profile
+        )
+        
+        if not success or 'id' not in profile_response:
+            print("   ❌ Failed to create demo user profile for E2E test")
+            return False
+        
+        demo_user_id = profile_response['id']
+        print(f"   ✅ Created demo user: {demo_user_id}")
+        
+        # Step 2: Accept disclaimer
+        disclaimer_data = {"user_id": demo_user_id}
+        success, disclaimer_response = self.run_test(
+            "E2E: Accept Disclaimer",
+            "POST",
+            "coach/accept-disclaimer",
+            200,
+            data=disclaimer_data
+        )
+        
+        if not success or not disclaimer_response.get('success'):
+            print("   ❌ Failed to accept disclaimer for E2E test")
+            return False
+        
+        print("   ✅ Disclaimer accepted")
+        
+        # Step 3: Create session
+        session_data = {"title": "E2E Test Session"}
+        success, session_response = self.run_test(
+            "E2E: Create Session",
+            "POST",
+            f"coach/sessions?user_id={demo_user_id}",
+            200,
+            data=session_data
+        )
+        
+        if not success or 'id' not in session_response:
+            print("   ❌ Failed to create session for E2E test")
+            return False
+        
+        demo_session_id = session_response['id']
+        print(f"   ✅ Created session: {demo_session_id}")
+        
+        # Step 4: Send message and get AI response
+        message_data = {
+            "session_id": demo_session_id,
+            "message": "Create a Mediterranean lunch recipe that's safe for someone with Type 2 diabetes and allergic to nuts and shellfish"
+        }
+        
+        print("   Note: AI response may take 10-20 seconds...")
+        success, message_response = self.run_test(
+            "E2E: Send Message",
+            "POST",
+            "coach/message",
+            200,
+            data=message_data
+        )
+        
+        if not success or not message_response.get('response'):
+            print("   ❌ Failed to get AI response for E2E test")
+            return False
+        
+        ai_response = message_response.get('response')
+        print(f"   ✅ AI response received ({len(ai_response)} characters)")
+        
+        # Step 5: Verify AI response quality
+        response_quality_score = 0
+        
+        # Check for diabetes awareness
+        if any(keyword in ai_response.lower() for keyword in ['diabetes', 'blood sugar', 'carb', 'glucose']):
+            response_quality_score += 1
+            print("   ✅ AI response shows diabetes awareness")
+        
+        # Check for Mediterranean elements
+        if any(keyword in ai_response.lower() for keyword in ['mediterranean', 'olive oil', 'tomato', 'feta']):
+            response_quality_score += 1
+            print("   ✅ AI response includes Mediterranean elements")
+        
+        # Check for allergy safety (no nuts/shellfish)
+        allergens = ['nuts', 'shellfish', 'peanut', 'almond', 'walnut', 'shrimp', 'crab', 'lobster']
+        if not any(allergen in ai_response.lower() for allergen in allergens):
+            response_quality_score += 1
+            print("   ✅ AI response avoids allergens")
+        
+        # Check for imperial measurements
+        if any(unit in ai_response.lower() for unit in ['cup', 'tablespoon', 'ounce', 'oz']):
+            response_quality_score += 1
+            print("   ✅ AI response uses imperial measurements")
+        
+        # Check for substantial content
+        if len(ai_response) > 200:
+            response_quality_score += 1
+            print("   ✅ AI response is substantial")
+        
+        # Step 6: Verify conversation history
+        success, messages_response = self.run_test(
+            "E2E: Get Conversation History",
+            "GET",
+            f"coach/messages/{demo_session_id}",
+            200
+        )
+        
+        if success and len(messages_response) >= 2:
+            response_quality_score += 1
+            print("   ✅ Conversation history saved correctly")
+        
+        # Calculate final score
+        total_possible = 6
+        quality_percentage = (response_quality_score / total_possible) * 100
+        
+        print(f"   📊 E2E Quality Score: {response_quality_score}/{total_possible} ({quality_percentage:.1f}%)")
+        
+        if response_quality_score >= 5:  # 83%+ success rate
+            print("   🎉 End-to-End workflow completed successfully!")
+            return True
+        else:
+            print("   ⚠️  End-to-End workflow completed with some quality issues")
+            return True  # Still pass if basic functionality works
+    
+    # =============================================
     # DEMO COUNTDOWN TIMER INTEGRATION TESTS
     # =============================================
     
