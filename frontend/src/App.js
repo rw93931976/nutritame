@@ -3155,9 +3155,12 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
   // Basic AI Health Coach state
   const [messages, setMessages] = useState([]);
   
+  // Single source of truth for pending text until a successful send
+  const k = 'nt_coach_pending_question';
+  
   // ZERO-FLICKER FIX: Initialize inputText directly from localStorage to prevent flicker
   const [inputText, setInputText] = useState(() => {
-    const storedQuestion = localStorage.getItem('nt_coach_pending_question') || '';
+    const storedQuestion = localStorage.getItem(k) || '';
     console.log(`[${performance.now().toFixed(1)}] inputText initialized from localStorage:`, storedQuestion);
     return storedQuestion;
   });
