@@ -3,8 +3,11 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-route
 import axios from "axios";
 import "./App.css";
 
-// VERSION BANNER - ACK Gate Fix 3
-console.error('[VERSION] v2.2.5-ack-gate-fix-3 | commit=78ed961');
+// VERSION BANNER - Pending Resume and Logs
+console.error('[VERSION] v2.2.6-pending-resume-and-logs | commit=<hash>');
+
+// Performance logging
+console.error('[Perf] post-load tasks scheduled (no long setTimeout)');
 
 // CRITICAL DEBUG: This should appear in console immediately
 console.log('🏗️ App.js file loaded - module executing');
