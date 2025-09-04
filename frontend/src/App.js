@@ -2977,13 +2977,13 @@ const CoachRoute = ({ currentUser }) => {
     console.log('✅ Coach disclaimer accepted');
     
     try {
-      // CRITICAL FIX: Call backend API to record disclaimer acceptance
-      if (currentUser?.id) {
-        console.log('🎯 Recording disclaimer acceptance for user:', currentUser.id);
-        await aiCoachService.acceptDisclaimer(currentUser.id);
+      // CRITICAL FIX: Use effectiveUser instead of currentUser for disclaimer acceptance
+      if (effectiveUser?.id) {
+        console.log('🎯 Recording disclaimer acceptance for effectiveUser:', effectiveUser.id);
+        await aiCoachService.acceptDisclaimer(effectiveUser.id);
         console.log('✅ Backend disclaimer acceptance recorded successfully');
       } else {
-        console.warn('⚠️ No currentUser.id available for disclaimer acceptance');
+        console.warn('⚠️ No effectiveUser.id available for disclaimer acceptance');
       }
       
       // Update frontend state and persistence
