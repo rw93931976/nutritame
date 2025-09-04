@@ -21,16 +21,20 @@ const DemoModeBanner = ({ isMinimized = false, onToggleMinimize = null }) => {
   const [isCollapsed, setIsCollapsed] = useState(isMinimized);
 
   useEffect(() => {
-    // Load demo configuration
+    // Load demo configuration - run once only, no retry on 404
     const loadDemoConfig = async () => {
       try {
         const response = await fetch(`${API}/demo-config.php`);
         if (response.ok) {
           const config = await response.json();
           setDemoConfig(config);
+        } else if (response.status === 404) {
+          console.log('Demo config not available (404) - expected in some environments');
+          // Don't set state or retry on 404
         }
       } catch (error) {
         console.error('Failed to load demo config:', error);
+        // Don't retry or set state on error
       }
     };
 
