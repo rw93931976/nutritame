@@ -3144,6 +3144,7 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
   // Add unmount logging
   useEffect(() => {
     return () => {
+      console.error(`[UNMOUNT CoachInterface] id=${mountId.current}`);
       console.error("[LIFECYCLE] CoachInterface unmounted");
     };
   }, []);
