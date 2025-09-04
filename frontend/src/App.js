@@ -2840,7 +2840,18 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
                       disabled={loading}
                     />
                     <Button 
-                      onClick={() => sendMessage()}
+                      onClick={() => {
+                        // BLOCK ALL SEND PATHS: Check disclaimer acceptance
+                        const ack = localStorage.getItem('nt_coach_disclaimer_ack') === 'true';
+                        if (!ack) {
+                          const timestamp = performance.now().toFixed(1);
+                          console.log(`[${timestamp}] GATED: ack=false — no API call, no clearing`);
+                          // Persist the message text
+                          localStorage.setItem('nt_coach_pending_question', currentMessage.trim());
+                          return;
+                        }
+                        sendMessage();
+                      }}
                       disabled={!currentMessage.trim() || loading}
                       className="bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300 min-h-[100px]"
                     >
