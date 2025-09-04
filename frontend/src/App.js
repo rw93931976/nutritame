@@ -3142,7 +3142,7 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
   // ZERO-FLICKER FIX: Only restore from pendingQuestion prop if it's different and user hasn't typed
   useEffect(() => {
     if (pendingQuestion && pendingQuestion.trim() && !touched.current && pendingQuestion !== inputText) {
-      console.log(`[${performance.now().toFixed(1)}] Restoring from pendingQuestion prop:`, pendingQuestion);
+      console.error("[REHYDRATE] restoring input from pendingQuestion prop:", pendingQuestion);
       setInputText(pendingQuestion);
     }
   }, [pendingQuestion, inputText]);
@@ -3151,9 +3151,14 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
   useEffect(() => {
     if (ack) {
       const v = localStorage.getItem(k) || '';
+      console.error("[LS] read nt_coach_pending_question after ack=true:", v);
       if (v && !touched.current) {
-        console.log(`[${performance.now().toFixed(1)}] REHYDRATE: Restoring input after Accept:`, v);
+        console.error("[REHYDRATE] restoring input:", v);
         setInputText(v);
+      } else if (!v) {
+        console.error("[REHYDRATE] FAILED: no value in localStorage");
+      } else {
+        console.error("[REHYDRATE] skipped: user touched input, touched.current=", touched.current);
       }
     }
   }, [ack]);
