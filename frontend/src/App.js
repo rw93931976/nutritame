@@ -3960,7 +3960,7 @@ function App() {
     return (
       <BrowserRouter>
         <Routes>
-          <Route path="/coach" element={<CoachRoute currentUser={currentUser} />} />
+          <Route path="/coach" element={memoizedCoachRoute} />
           <Route path="/*" element={
             <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50">
               {/* Demo Mode Banner - only show when in demo mode */}
