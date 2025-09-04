@@ -603,9 +603,10 @@ metadata:
 test_plan:
   current_focus:
     - "AI Health Coach Question Persistence Fix"
-  stuck_tasks: []
+  stuck_tasks:
+    - "AI Health Coach Question Persistence Fix"
   test_all: false
-  test_priority: "high_first"
+  test_priority: "stuck_first"
   completed_focus: []
 
   - task: "Demo User Profile Submission Bug Fix"
