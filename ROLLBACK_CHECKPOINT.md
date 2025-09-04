@@ -1,10 +1,26 @@
 # NutriTame AI Health Coach - Rollback Checkpoints
 
-## v2.2-bugfix-question-gated-send ⚠️ IN PROGRESS - GATED SEND FIX
+## v2.2-bugfix-post-accept ⚠️ IN PROGRESS - POST-ACCEPT FIXES
+**Date**: September 3, 2025  
+**Commit**: 7cadf45c6015c22ed31941399d9ec0e9fa0360cc  
+**Bundle**: Latest with post-Accept rehydration & send fixes  
+**Status**: ⚠️ **IMPLEMENTATION COMPLETE - AWAITING USER CONFIRMATION**
+
+### 🔧 POST-ACCEPT BUG FIXES IMPLEMENTED
+- **A) Zero-Flicker Rehydration**: Input text preserved immediately after Accept with no flicker
+- **B) Real AI Response**: Post-Accept send calls real backend and returns proper AI responses
+- **Enhanced Logging**: Added [send] url, method, status, response shape logs for debugging
+- **Visible Error Handling**: Non-2xx responses show detailed error messages (no silent failures)
+- **Single Source Pattern**: Uses constant k = 'nt_coach_pending_question' throughout
+- **State Synchronization**: Fixed ack state sync between CoachRoute and CoachInterface
+
+---
+
+## v2.2-bugfix-question-gated-send ✅ GATE WORKING - PRE-POST-ACCEPT-FIXES
 **Date**: September 3, 2025  
 **Commit**: 3bba99e78777c18232916074184007fe2bc8a579  
 **Bundle**: Latest with gated send fix  
-**Status**: ⚠️ **IMPLEMENTATION COMPLETE - AWAITING USER CONFIRMATION**
+**Status**: ✅ **GATE CONFIRMED WORKING BY USER**
 
 ### 🔧 GATED SEND BUG FIX IMPLEMENTED
 - **Single Source of Truth**: Added `ack` state in CoachInterface from localStorage
