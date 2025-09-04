@@ -3094,7 +3094,8 @@ const CoachRoute = React.memo(({ currentUser }) => {
 
   const handleCoachDisclaimerAccept = async () => {
     const beforeState = ack === true;
-    const beforeLs = localStorage.getItem('nt_coach_disclaimer_ack');
+    const beforeLs = localStorage.getItem(COACH_ACK_KEY);
+    console.error(`[DISCLAIMER ACCEPT] type=coach`);
     console.error(`[ACK TRACE] BEFORE - stateAck=${beforeState} lsAck=${beforeLs===null?null:beforeLs==='true'}`);
     
     try {
@@ -3109,7 +3110,8 @@ const CoachRoute = React.memo(({ currentUser }) => {
       
       await aiCoachService.acceptDisclaimer(storedUserId);
       
-      localStorage.setItem('nt_coach_disclaimer_ack','true');
+      // Use canonical acceptance helpers
+      setCoachAckTrue();
       setAck(true);
       
       console.error(`[ACK TRACE] AFTER  - stateAck=true lsAck=true`);
@@ -3120,13 +3122,10 @@ const CoachRoute = React.memo(({ currentUser }) => {
         localStorage.removeItem('nt_coach_pending_question');
         setPendingQuestion(null);
         console.error(`[RESUME] auto-sending pending question="${pending}"`);
-        // We need to access the sendMessageInternal from CoachInterface - this will be a prop or ref
-        // For now, let's use a timeout to ensure the state is updated
+        
+        // Use unified auto-resume event
         setTimeout(async () => {
-          // Find the CoachInterface and call its sendMessageInternal
-          // This is a bit hacky but needed since we're in the CoachRoute component
-          // The proper solution would be to lift this logic up or use refs
-          const event = new CustomEvent('autoSendPending', { detail: { message: pending } });
+          const event = new CustomEvent('unifiedAutoResume', { detail: { message: pending } });
           window.dispatchEvent(event);
         }, 100);
       }
