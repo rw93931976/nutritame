@@ -3235,8 +3235,8 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     console.error("[SEND] localStorage disclaimer_ack:", localStorage.getItem('nt_coach_disclaimer_ack'));
     console.error("[SEND] lsAck boolean:", lsAck);
     
-    // HARD GATE: Use localStorage as single source of truth for disclaimer acceptance
-    if (!lsAck) {
+    // DEFENSIVE GATE: Check both localStorage and React state - proceed if either indicates accepted
+    if (!lsAck && !ack) {
       console.error("[GATE] ack=false — blocked send");
       
       // Persist input without clearing it
@@ -3244,8 +3244,10 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
       console.error("[LS] wrote nt_coach_pending_question (blocked):", body);
       setPendingQuestion(body);
       
-      // Force state sync and trigger modal via parent component
-      setAck(false);
+      // CRITICAL FIX: Do NOT reset ack state - only set if both are false
+      if (!ack) {
+        setAck(false);
+      }
       
       return; // CRITICAL: Exit early - no API call, no clearing
     }
