@@ -3159,18 +3159,29 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
     }
   }, [ack]);
 
-  // Generate a proper user for demo/testing if no currentUser
-  // Use consistent ID from localStorage if available to match disclaimer acceptance
-  const storedUserId = localStorage.getItem('nt_coach_user_id');
-  const effectiveUser = currentUser || { 
-    id: storedUserId || `demo-${Date.now()}`, 
-    plan: 'standard',
-    email: 'demo@nutritame.com',
-    diabetes_type: 'type2', // Default for demo
-    age: 35,
-    food_preferences: ['mediterranean'],
-    allergies: []
-  };
+  // STABILITY FIX: Generate stable user object to prevent remounts
+  const effectiveUser = useMemo(() => {
+    if (currentUser) return currentUser;
+    
+    // Use consistent ID from localStorage if available to prevent remounts
+    let storedUserId = localStorage.getItem('nt_coach_user_id');
+    
+    // Only create new ID if none exists (prevents dynamic ID on every render)
+    if (!storedUserId) {
+      storedUserId = `demo-${Date.now()}`;
+      localStorage.setItem('nt_coach_user_id', storedUserId);
+    }
+    
+    return {
+      id: storedUserId,
+      plan: 'standard', 
+      email: 'demo@nutritame.com',
+      diabetes_type: 'type2', // Default for demo
+      age: 35,
+      food_preferences: ['mediterranean'],
+      allergies: []
+    };
+  }, [currentUser]); // Only recreate if currentUser prop changes
 
   // Initialize with welcome message
   useEffect(() => {
