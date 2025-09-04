@@ -3352,10 +3352,7 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
   }, []); // STABILITY FIX: Only run once on mount, not on every prop change
 
   const sendMessageInternal = async (messageBody) => {
-    // Internal send function used by both button and auto-resume
-    const reqId = Math.random().toString(36).slice(2);
-    console.error(`[COACH REQ] id=${reqId} start body="${messageBody}"`);
-    
+    // Internal send function using unified sender
     const isFirstMessage = messages.length === 0 || (messages.length === 1 && messages[0].isWelcome);
     const messageCount = messages.filter(msg => msg.isUser).length;
     
@@ -3369,71 +3366,54 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     
     setMessages(prev => [...prev, userMessage]);
     
-    try {
-      // Only clear input and localStorage after successful send
-      setInputText('');
-      localStorage.removeItem('nt_coach_pending_question');
-      setPendingQuestion('');
-      
-      // Reset touched flag after successful send
-      touched.current = false;
-      
-      // Get effective user for API calls
-      const effectiveUser = currentUser || { id: localStorage.getItem('nt_coach_user_id') || `demo-${Date.now()}` };
-      
-      // Create or get session
-      let sessionId = currentSessionId;
-      if (!sessionId) {
-        const session = await aiCoachService.createSession(effectiveUser.id, `Chat ${messageCount + 1}`);
-        if (!session) return;
-        sessionId = session.id;
-        setCurrentSessionId(sessionId);
+    // Get effective user for API calls
+    const effectiveUser = currentUser || { id: localStorage.getItem('nt_coach_user_id') || `demo-${Date.now()}` };
+    
+    // Create or get session
+    let sessionId = currentSessionId;
+    if (!sessionId) {
+      const session = await aiCoachService.createSession(effectiveUser.id, `Chat ${messageCount + 1}`);
+      if (!session) {
+        setIsLoading(false);
+        return;
       }
-
-      // Send message to backend AI
-      const messagePayload = {
-        session_id: sessionId,
-        message: messageBody,
-        user_id: effectiveUser.id
-      };
-      
-      const response = await aiCoachService.sendMessage(messagePayload);
-      console.error(`[COACH RES] id=${reqId} status=${response?.status||200}`);
-      
-      if (!response) {
-        throw new Error('Empty response from AI service');
-      }
-      
-      // Create AI response message
-      const aiResponseText = response.ai_response?.text || response.response || response.message;
-      if (!aiResponseText) {
-        console.error('❌ No response text found in:', response);
-        throw new Error('No response text received from AI');
-      }
-      
-      const messages = [{ text: aiResponseText }];
-      console.error(`[COACH RENDER] id=${reqId} count=${messages.length}`);
-      console.error(`AI response found: ${messages.length}`);
-      
-      const aiResponse = {
-        id: Date.now() + 1,
-        message: '',
-        response: aiResponseText,
-        isUser: false
-      };
-      
-      setMessages(prev => [...prev, aiResponse]);
-      setIsLoading(false);
-      
-    } catch (error) {
-      console.error(`[COACH ERR] id=${reqId} name=${error?.name} message=${error?.message} status=${error?.response?.status}`);
-      console.error(`[COACH ERR BODY] ${JSON.stringify(error?.response?.data)||'<none>'}`);
-      
-      console.error('❌ Error sending message to AI:', error);
-      setMessages(prev => prev.slice(0, -1)); // Remove failed message
-      setIsLoading(false);
-      toast.error("Failed to get AI response. Please try again.");
+      sessionId = session.id;
+      setCurrentSessionId(sessionId);
     }
+
+    // Use unified send function
+    await window.sendMessageInternal(
+      messageBody, 
+      sessionId, 
+      effectiveUser,
+      (response, messages) => {
+        // Success callback
+        const aiResponseText = response.ai_response?.text || response.response || response.message;
+        if (aiResponseText) {
+          const aiResponse = {
+            id: Date.now() + 1,
+            message: '',
+            response: aiResponseText,
+            isUser: false
+          };
+          setMessages(prev => [...prev, aiResponse]);
+        }
+        
+        // Clear input after successful send
+        setInputText('');
+        localStorage.removeItem('nt_coach_pending_question');
+        setPendingQuestion('');
+        touched.current = false;
+        setIsLoading(false);
+      },
+      (error) => {
+        // Error callback
+        console.error('❌ Error sending message to AI:', error);
+        setMessages(prev => prev.slice(0, -1)); // Remove failed message
+        setIsLoading(false);
+        toast.error("Failed to get AI response. Please try again.");
+      }
+    );
   };
 
   const handleSendMessage = async (e) => {
