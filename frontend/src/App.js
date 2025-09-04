@@ -2128,6 +2128,18 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
 
   const sendMessage = async (messageText = currentMessage) => {
     if (!messageText.trim() || loading) return;
+    
+    // BLOCK ALL SEND PATHS: Check disclaimer acceptance for AI Health Coach
+    const ack = localStorage.getItem('nt_coach_disclaimer_ack') === 'true';
+    const timestamp = performance.now().toFixed(1);
+    
+    if (!ack) {
+      console.log(`[${timestamp}] GATED: ack=false — no API call, no clearing`);
+      // Persist the message text
+      localStorage.setItem('nt_coach_pending_question', messageText.trim());
+      // Don't clear the message or make API call
+      return;
+    }
 
     console.log('Sending message:', messageText);
     setCurrentMessage("");
