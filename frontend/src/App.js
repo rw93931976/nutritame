@@ -3441,6 +3441,11 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
             </div>
             
             <div className="flex items-center gap-4">
+              {/* DEV DEBUG BADGE */}
+              <Badge className="bg-red-500 text-white text-xs">
+                CoachInterface
+              </Badge>
+              
               {/* Consultation Limit Badge */}
               <Badge className="bg-gradient-to-r from-emerald-500 to-blue-500 text-white">
                 Standard Plan: 10/month
