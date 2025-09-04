@@ -1,7 +1,7 @@
 # Page snapshot
 
 ```yaml
-- generic [ref=e1]:
+- generic [active] [ref=e1]:
   - generic [ref=e2]:
     - generic [ref=e3]:
       - generic [ref=e6]:
@@ -21,44 +21,36 @@
           - generic [ref=e22]:
             - img [ref=e23]
             - text: Chat
-          - paragraph [ref=e29]: "Hi! I'm your AI health coach. I can help you with meal planning, restaurant recommendations, and nutrition analysis. I see you have type2 - I'll provide personalized guidance based on your profile. What would you like to explore today? 🔧 **Debug Info**: Profile: type=type2, prefs=mediterranean, allergies=none"
-          - generic [ref=e31]:
-            - textbox "Enter your nutrition question" [active] [ref=e32]: create meal plan
-            - button "Send message" [ref=e33] [cursor=pointer]:
+          - generic [ref=e26]:
+            - paragraph [ref=e29]: "Hi! I'm your AI health coach. I can help you with meal planning, restaurant recommendations, and nutrition analysis. I see you have type2 - I'll provide personalized guidance based on your profile. What would you like to explore today? 🔧 **Debug Info**: Profile: type=type2, prefs=mediterranean, allergies=none"
+            - paragraph [ref=e32]: create meal plan
+            - paragraph [ref=e37]: Thinking...
+          - generic [ref=e39]:
+            - textbox "Enter your nutrition question" [ref=e40]: create meal plan
+            - button "Send message" [disabled]:
               - img
-        - generic [ref=e35]:
-          - button "Start a new conversation" [ref=e36] [cursor=pointer]:
+        - generic [ref=e42]:
+          - button "Start a new conversation" [ref=e43] [cursor=pointer]:
             - img
             - text: New Chat
-          - generic [ref=e37]:
-            - generic [ref=e39]: Search Chats
-            - textbox "Search through your conversations" [ref=e41]
-          - generic [ref=e42]:
-            - generic [ref=e44]: Recent Sessions
-            - generic [ref=e46]:
-              - img [ref=e47]
-              - paragraph [ref=e49]: No conversations yet
-              - paragraph [ref=e50]: Start chatting to see your history
-          - generic [ref=e52]:
+          - generic [ref=e44]:
+            - generic [ref=e46]: Search Chats
+            - textbox "Search through your conversations" [ref=e48]
+          - generic [ref=e49]:
+            - generic [ref=e51]: Recent Sessions
             - generic [ref=e53]:
-              - generic [ref=e55]: "!"
-              - paragraph [ref=e56]: Medical Disclaimer
-            - paragraph [ref=e57]: Not a medical device. For diagnosis or treatment, consult a professional.
-      - dialog "AI Health Coach Disclaimer" [ref=e59]:
-        - generic [ref=e61]:
-          - img [ref=e62]
-          - text: AI Health Coach Disclaimer
-        - generic [ref=e64]:
-          - paragraph [ref=e66]:
-            - strong [ref=e67]: Not a medical device.
-            - text: The AI Health Coach provides general nutrition guidance only and is not a substitute for professional medical advice. Always consult your healthcare provider.
-          - generic [ref=e68]:
-            - button "Accept & Continue" [ref=e69] [cursor=pointer]
-            - button "Cancel" [ref=e70] [cursor=pointer]
+              - img [ref=e54]
+              - paragraph [ref=e56]: No conversations yet
+              - paragraph [ref=e57]: Start chatting to see your history
+          - generic [ref=e59]:
+            - generic [ref=e60]:
+              - generic [ref=e62]: "!"
+              - paragraph [ref=e63]: Medical Disclaimer
+            - paragraph [ref=e64]: Not a medical device. For diagnosis or treatment, consult a professional.
     - region "Notifications alt+T"
-  - link "Made with Emergent" [ref=e71] [cursor=pointer]:
+  - link "Made with Emergent" [ref=e65] [cursor=pointer]:
     - /url: https://app.emergent.sh/?utm_source=emergent-badge
-    - generic [ref=e72] [cursor=pointer]:
-      - img [ref=e73] [cursor=pointer]
-      - paragraph [ref=e74] [cursor=pointer]: Made with Emergent
+    - generic [ref=e66] [cursor=pointer]:
+      - img [ref=e67] [cursor=pointer]
+      - paragraph [ref=e68] [cursor=pointer]: Made with Emergent
 ```
