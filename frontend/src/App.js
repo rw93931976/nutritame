@@ -3227,19 +3227,19 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
     const body = inputText.trim();
     if (!body) return;
     
-    const timestamp = performance.now().toFixed(1);
-    console.log(`[${timestamp}] handleSendMessage called with input:`, body);
-    console.log(`[${timestamp}] ack state:`, ack);
+    console.error("[SEND] triggered with input:", body);
+    console.error("[SEND] ack state:", ack);
     const lsAck = localStorage.getItem('nt_coach_disclaimer_ack') === 'true';
-    console.log(`[${timestamp}] localStorage disclaimer_ack:`, localStorage.getItem('nt_coach_disclaimer_ack'));
-    console.log(`[${timestamp}] lsAck boolean:`, lsAck);
+    console.error("[SEND] localStorage disclaimer_ack:", localStorage.getItem('nt_coach_disclaimer_ack'));
+    console.error("[SEND] lsAck boolean:", lsAck);
     
     // HARD GATE: Use localStorage as single source of truth for disclaimer acceptance
     if (!lsAck) {
-      console.log(`[${timestamp}] GATED: lsAck=false — no API call, no clearing`);
+      console.error("[GATE] ack=false — blocked send");
       
       // Persist input without clearing it
       localStorage.setItem('nt_coach_pending_question', body);
+      console.error("[LS] wrote nt_coach_pending_question (blocked):", body);
       setPendingQuestion(body);
       
       // Force state sync and trigger modal via parent component
