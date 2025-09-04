@@ -3226,7 +3226,7 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     }
     console.error(`[ACK INIT] stateAck=${ack === true} lsAck=${lsAckBool}`);
     
-    // Listen for auto-send pending questions
+    // Listen for unified auto-send pending questions
     const handleAutoSend = (event) => {
       const { message } = event.detail;
       if (message) {
@@ -3234,10 +3234,10 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
       }
     };
     
-    window.addEventListener('autoSendPending', handleAutoSend);
+    window.addEventListener('unifiedAutoResume', handleAutoSend);
     
     return () => {
-      window.removeEventListener('autoSendPending', handleAutoSend);
+      window.removeEventListener('unifiedAutoResume', handleAutoSend);
     };
   }, [setAck, ack]);
   console.log('🎯 CoachInterface component mounted with pendingQuestion:', pendingQuestion, 'currentUser:', currentUser, 'ack:', ack);
