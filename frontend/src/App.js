@@ -3780,7 +3780,15 @@ function App() {
                 {showForm ? (
                   <UserProfileSetup 
                     onProfileComplete={(profile) => {
+                      console.log('Profile creation completed:', profile);
                       setCurrentUser(profile);
+                      
+                      // CRITICAL: Update stored user ID for AI Coach consistency
+                      if (profile.id) {
+                        localStorage.setItem('nt_coach_user_id', profile.id);
+                        console.log('✅ Updated nt_coach_user_id to:', profile.id);
+                      }
+                      
                       setShowForm(false);
                     }}
                     existingProfile={currentUser}
