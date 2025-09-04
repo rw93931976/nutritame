@@ -3328,7 +3328,8 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
         throw new Error('No response text received from AI');
       }
       
-      console.error("[SEND] AI response text length:", aiResponseText.length);
+      // REQUIRED LOGGING: Exact format specified
+      console.error("AI response found: 1");
       
       const aiResponse = {
         id: Date.now() + 1,
