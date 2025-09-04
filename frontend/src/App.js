@@ -2284,16 +2284,18 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       
-      // Use single source of truth for gating
+      // Use unified gating
       const stateAckBool = true; // Dashboard doesn't have ack state
-      const lsAckBool = localStorage.getItem('nt_coach_disclaimer_ack') === 'true';
+      const lsAckBool = getCoachAck();
       const accepted = stateAckBool || lsAckBool;
       console.error(`[SEND ATTEMPT] stateAck=${stateAckBool} lsAck=${lsAckBool} accepted=${accepted}`);
       
       if (!accepted) {
         console.error('[GATED: ack=false — no API call, no clearing]');
-        // Persist the message text
         localStorage.setItem('nt_coach_pending_question', currentMessage.trim());
+        console.error(`[PENDING] stored question="${currentMessage.trim()}"`);
+        console.error('[DISCLAIMER OPEN] type=global');
+        setShowAiCoachDisclaimer(true);
         return;
       }
       
