@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manual QA Test - v2.2.7-unified-accept-single-send</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-step { margin: 20px 0; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .expected { background-color: #f0f8ff; }
+        .console-log { background-color: #f5f5f5; font-family: monospace; padding: 5px; margin: 5px 0; }
+        h2 { color: #0066cc; }
+        h3 { color: #cc6600; }
+        .success { color: #007700; }
+        .error { color: #cc0000; }
+    </style>
+</head>
+<body>
+    <h1>Manual QA Test - v2.2.7-unified-accept-single-send</h1>
+    
+    <h2>Test Instructions</h2>
+    <p>Open Developer Console (F12) and navigate to <a href="http://localhost:3000/coach" target="_blank">http://localhost:3000/coach</a></p>
+    
+    <div class="test-step">
+        <h3>Step 1: Clear localStorage and reload</h3>
+        <p>In browser console, run:</p>
+        <div class="console-log">
+            localStorage.clear();<br>
+            location.reload();
+        </div>
+    </div>
+    
+    <div class="test-step">
+        <h3>Step 2: Type message and press Enter (pre-accept)</h3>
+        <p>Type: <strong>create a 3 day meal plan</strong> and press Enter</p>
+        <div class="expected">
+            <strong>Expected Console Logs:</strong>
+            <div class="console-log">
+                [SEND ATTEMPT] stateAck=false lsAck=false accepted=false<br>
+                [GATED: ack=false — no API call, no clearing]<br>
+                [PENDING] stored question="create a 3 day meal plan"<br>
+                [DISCLAIMER OPEN] type=global
+            </div>
+            <p>Note: Global disclaimer modal should appear</p>
+        </div>
+    </div>
+    
+    <div class="test-step">
+        <h3>Step 3: Click Accept on global disclaimer</h3>
+        <p>Click "Accept & Continue" button on the disclaimer that appeared</p>
+        <div class="expected">
+            <strong>Expected Console Logs:</strong>
+            <div class="console-log">
+                [DISCLAIMER ACCEPT] type=global<br>
+                [ACK TRACE] BEFORE - stateAck=false lsAck=null<br>
+                [ACK TRACE] AFTER - stateAck=true lsAck=true<br>
+                [RESUME] auto-sending pending question="create a 3 day meal plan"<br>
+                [COACH REQ] id=... start body="create a 3 day meal plan"<br>
+                [COACH RES] id=... status=200<br>
+                [COACH RENDER] id=... count>=1<br>
+                AI response found: 1
+            </div>
+            <p class="success">✅ Success: AI response should appear automatically in the chat thread!</p>
+        </div>
+    </div>
+    
+    <h2>Success Criteria (Pass/Fail)</h2>
+    <ul>
+        <li class="success">✅ The global disclaimer path sets the same ack state/LS as the coach modal</li>
+        <li class="success">✅ Only one send function executes, with [COACH REQ/RES/RENDER/ERR] logs visible</li>  
+        <li class="success">✅ After pressing Enter pre-accept, the pending question auto-sends on accept</li>
+        <li class="success">✅ A reply renders in the UI without manual retyping</li>
+        <li class="success">✅ Maps async warning and long setTimeout violation are gone</li>
+    </ul>
+    
+    <h2>Unified System Features</h2>
+    <ul>
+        <li><strong>Canonical Acceptance</strong>: Both disclaimers use `COACH_ACK_KEY` and `setCoachAckTrue()`</li>
+        <li><strong>Single Send Path</strong>: All UI elements use unified `sendMessageInternal` function</li>
+        <li><strong>Auto-Resume</strong>: Works for both global and coach disclaimers</li>
+        <li><strong>Response Proof</strong>: Full request/response lifecycle logging</li>
+        <li><strong>Ack Normalization</strong>: Ensures state and localStorage consistency</li>
+    </ul>
+    
+    <h2>Grep Report - Unified Send Paths</h2>
+    <p><strong>BEFORE (Multiple send paths):</strong></p>
+    <ul>
+        <li>Line 2197: Dashboard `sendMessage` function</li>
+        <li>Line 2928: Dashboard button onClick handler</li>
+        <li>Line 3353: CoachInterface `sendMessageInternal` function</li>
+        <li>Line 3418: CoachInterface `handleSendMessage` function</li>
+    </ul>
+    
+    <p><strong>AFTER (Unified single path):</strong></p>
+    <ul>
+        <li class="success">✅ Line 18: Global `window.sendMessageInternal` used by all components</li>
+        <li class="success">✅ All send paths use unified gating with `getCoachAck()`</li>
+        <li class="success">✅ All disclaimers trigger unified auto-resume with `unifiedAutoResume` event</li>
+        <li class="success">✅ Consistent logging format across all send paths</li>
+    </ul>
+    
+    <h2>Version Verification</h2>
+    <p>Console should show: <code>[VERSION] v2.2.7-unified-accept-single-send | commit=695af9a</code></p>
+    
+    <h2>Additional Tests</h2>
+    <div class="test-step">
+        <h3>Test 4: Direct CoachInterface Usage</h3>
+        <p>After completing the above test, try typing another message directly without clearing localStorage</p>
+        <div class="expected">
+            <p>Expected: Message should send immediately without showing disclaimer (ack already true)</p>
+            <div class="console-log">
+                [SEND ATTEMPT] stateAck=true lsAck=true accepted=true<br>
+                [PROCEEDING] ack=true — calling backend<br>
+                [COACH REQ] ... [COACH RES] ... [COACH RENDER] ...
+            </div>
+        </div>
+    </div>
+</body>
+</html>
