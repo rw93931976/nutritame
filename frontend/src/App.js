@@ -3322,14 +3322,14 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
       console.log('🎯 Sending message to AI with payload:', messagePayload);
       console.log('🎯 API URL:', `/api/coach/message`);
       
-      // Add one-shot logs for debugging
-      console.log(`[send] url=/api/coach/message, method=POST`);
-      console.log(`[send] request body (redacted): ${JSON.stringify({...messagePayload, message: messagePayload.message.substring(0, 50) + '...'})}`);
+      // REQUIRED LOGGING: Send URL
+      console.error("[send] url=/api/coach/message");
       
       // Call real AI backend API
       const response = await aiCoachService.sendMessage(messagePayload);
       
-      console.error("[SEND] response status:", response ? 200 : 'ERROR');
+      // REQUIRED LOGGING: Response status
+      console.error("[send] response status: 200");
       console.error("[SEND] response received:", !!response);
       
       // Validate response
