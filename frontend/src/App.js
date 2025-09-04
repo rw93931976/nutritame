@@ -3925,7 +3925,7 @@ function App() {
               <MedicalDisclaimer onAccept={handleDisclaimerAccept} onDecline={handleDisclaimerDecline} /> :
               <LandingPageWrapper onGetStarted={handleLandingGetStarted} />
           } />
-          <Route path="/coach" element={<CoachRoute currentUser={currentUser} />} />
+          <Route path="/coach" element={memoizedCoachRoute} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
