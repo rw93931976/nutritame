@@ -3312,15 +3312,17 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
       
       setMessages(prev => [...prev, aiResponse]);
       
-      // Only clear input after successful send
+      // Only clear input and localStorage after successful send (2xx)
       setInputText('');
+      localStorage.removeItem('nt_coach_pending_question');
+      setPendingQuestion('');
       
       // CRITICAL FIX: Reset touched flag after successful send to allow future question restoration
       touched.current = false;
       
       setIsLoading(false);
       
-      console.log('✅ Message sent successfully, AI response added, touched flag reset');
+      console.log(`[${performance.now().toFixed(1)}] SUCCESS: Message sent, input cleared, localStorage cleaned`);;
       
     } catch (error) {
       console.error('❌ Error sending message to AI:', error);
