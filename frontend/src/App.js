@@ -3251,6 +3251,7 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     }
     
     // Only reach here if disclaimer is accepted
+    const timestamp = performance.now().toFixed(1);
     console.log(`[${timestamp}] PROCEEDING: disclaimer accepted — calling backend`);
     console.log('🚀 effectiveUser:', effectiveUser);
     console.log('🚀 currentSessionId:', currentSessionId);
