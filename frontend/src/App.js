@@ -3,6 +3,9 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-route
 import axios from "axios";
 import "./App.css";
 
+// VERSION BANNER - Baseline restore
+console.error('[VERSION] v2.2.4-baseline-restore | commit=a326c34');
+
 // CRITICAL DEBUG: This should appear in console immediately
 console.log('🏗️ App.js file loaded - module executing');
 
