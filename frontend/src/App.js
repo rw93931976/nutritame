@@ -2210,6 +2210,17 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
+      
+      // BLOCK ALL SEND PATHS: Check disclaimer acceptance
+      const ack = localStorage.getItem('nt_coach_disclaimer_ack') === 'true';
+      if (!ack) {
+        const timestamp = performance.now().toFixed(1);
+        console.log(`[${timestamp}] GATED: ack=false — no API call, no clearing`);
+        // Persist the message text
+        localStorage.setItem('nt_coach_pending_question', currentMessage.trim());
+        return;
+      }
+      
       sendMessage();
     }
   };
