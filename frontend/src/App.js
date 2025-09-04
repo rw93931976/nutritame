@@ -3422,15 +3422,22 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     const body = inputText.trim();
     if (!body) return;
     
-    const accepted = isCoachAccepted(); // stateAck||lsAck
-    console.error(`[SEND ATTEMPT] stateAck=${ack === true} lsAck=${localStorage.getItem('nt_coach_disclaimer_ack') === 'true'} accepted=${accepted}`);
+    // Normalize ack if proceeding without LS
+    if (ack === true && !getCoachAck()) {
+      setCoachAckTrue();
+    }
+    
+    const stateAckBool = ack === true;
+    const lsAckBool = getCoachAck();
+    const accepted = stateAckBool || lsAckBool;
+    
+    console.error(`[SEND ATTEMPT] stateAck=${stateAckBool} lsAck=${lsAckBool} accepted=${accepted}`);
     
     if (!accepted) {
       console.error('[GATED: ack=false — no API call, no clearing]');
-      // store pending & one-shot resume
-      setPendingQuestion(body);
       localStorage.setItem('nt_coach_pending_question', body);
       console.error(`[PENDING] stored question="${body}"`);
+      console.error('[DISCLAIMER OPEN] type=coach');
       setAck(false); // triggers modal if needed
       return;
     }
