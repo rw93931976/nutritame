@@ -188,7 +188,7 @@ DEMO_MODE=true
 LAUNCH_DATE=2025-10-01
 
 # Frontend (.env)  
-REACT_APP_BACKEND_URL=https://health-coach-debug.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://disclaimer-flow.preview.emergentagent.com
 ```
 
 ### **Service Management Commands**

@@ -11,7 +11,7 @@ from datetime import datetime
 import time
 
 class AIHealthCoachUrgentTester:
-    def __init__(self, base_url="https://health-coach-debug.preview.emergentagent.com"):
+    def __init__(self, base_url="https://disclaimer-flow.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.tests_run = 0

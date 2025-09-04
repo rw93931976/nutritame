@@ -2,7 +2,7 @@ import requests
 import json
 
 # Test the critical AI message endpoint
-base_url = 'https://health-coach-debug.preview.emergentagent.com/api'
+base_url = 'https://disclaimer-flow.preview.emergentagent.com/api'
 test_user_id = 'test-user-123'
 
 print('🎯 TESTING CRITICAL AI MESSAGE ENDPOINT')
