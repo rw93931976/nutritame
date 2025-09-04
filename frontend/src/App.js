@@ -2194,26 +2194,21 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     }
   };
 
-  const isCoachAccepted = () => {
-    const stateAckBool = true; // Dashboard doesn't have ack state, assume true for localStorage check
-    const lsAckBool = localStorage.getItem('nt_coach_disclaimer_ack') === 'true';
-    return stateAckBool || lsAckBool;
-  };
-
   const sendMessage = async (messageText = currentMessage) => {
     if (!messageText.trim() || loading) return;
     
-    // Use single source of truth for gating
+    // Use unified gating
     const stateAckBool = true; // Dashboard doesn't have ack state
-    const lsAckBool = localStorage.getItem('nt_coach_disclaimer_ack') === 'true';
+    const lsAckBool = getCoachAck();
     const accepted = stateAckBool || lsAckBool;
     console.error(`[SEND ATTEMPT] stateAck=${stateAckBool} lsAck=${lsAckBool} accepted=${accepted}`);
     
     if (!accepted) {
       console.error('[GATED: ack=false — no API call, no clearing]');
-      // Persist the message text
       localStorage.setItem('nt_coach_pending_question', messageText.trim());
-      // Don't clear the message or make API call
+      console.error(`[PENDING] stored question="${messageText.trim()}"`);
+      console.error('[DISCLAIMER OPEN] type=global');
+      setShowAiCoachDisclaimer(true);
       return;
     }
     
