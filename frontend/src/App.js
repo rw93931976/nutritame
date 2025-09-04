@@ -3263,25 +3263,20 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     const body = inputText.trim();
     if (!body) return;
     
-    // Defensive Gating on Send - compute accepted
-    const stateAck = ack;
-    const lsAckString = localStorage.getItem('nt_coach_disclaimer_ack');
-    const lsAck = lsAckString === 'true';
-    const accepted = (stateAck === true) || (lsAckString === 'true');
+    // Send path must log exactly then branch
+    const stateAckBool = ack === true;
+    const lsAckBool = localStorage.getItem('nt_coach_disclaimer_ack') === 'true';
+    const accepted = stateAckBool || lsAckBool;
+    console.error(`[SEND ATTEMPT] stateAck=${stateAckBool} lsAck=${lsAckBool} accepted=${accepted}`);
     
-    // REQUIRED LOGGING: Exact format specified
-    console.error(`[SEND ATTEMPT] stateAck=${stateAck} lsAck=${lsAck} accepted=${accepted}`);
-    
-    // If accepted===true, proceed to call backend; else block (no API call)
     if (!accepted) {
-      // Block - no API call, no clearing
+      console.error('[GATED: ack=false — no API call, no clearing]');
       // Show disclaimer modal by setting ack to false
       setAck(false);
       return;
     }
     
-    // REQUIRED LOGGING: Exact format specified
-    console.error(`[PROCEEDING] ack=true — calling backend`);
+    console.error('[PROCEEDING] ack=true — calling backend');
     console.log('🚀 effectiveUser:', effectiveUser);
     console.log('🚀 currentSessionId:', currentSessionId);
     
