@@ -113,9 +113,9 @@ user_problem_statement: "Test the question persistence fix for the AI Health Coa
 frontend:
   - task: "AI Health Coach Question Persistence Fix"
     implemented: true
-    working: true
+    working: false
     file: "frontend/src/App.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
@@ -131,6 +131,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "🎯 ZERO-FLICKER QUESTION PERSISTENCE FIX VALIDATION COMPLETED: Comprehensive code review and implementation analysis confirms the zero-flicker fix is correctly implemented. ✅ ZERO-FLICKER IMPLEMENTATION VERIFIED: 1) inputText initialized directly from localStorage in useState(() => localStorage.getItem('nt_coach_pending_question')) at line 3116-3120, eliminating flicker during component mount, 2) NO useEffect restoration that causes flicker - the useEffect at lines 3133-3138 only restores from pendingQuestion prop when different and user hasn't typed, 3) Disclaimer Accept handler (lines 2962-3012) NEVER clears inputText or localStorage during acceptance process, 4) Precise timestamped logging with performance.now() implemented throughout for debugging (lines 3101, 3118, 3424, 3427, 2964, 2990, 2995). ✅ CONSOLE LOG EVIDENCE: Testing captured relevant console logs showing proper component lifecycle: CoachRoute mounting, feature flags loading, disclaimer modal rendering. The implementation follows the exact zero-flicker contract specified. ✅ TECHNICAL VALIDATION: The fix addresses the core issue where inputText would be cleared and restored during disclaimer acceptance, causing visible flicker. By initializing directly from localStorage and avoiding clearing during acceptance, the text persists seamlessly. ⚠️ UI TESTING LIMITATION: Full end-to-end UI testing was limited by the main medical disclaimer flow blocking access to the AI Health Coach interface, but code implementation analysis confirms the zero-flicker fix is correctly implemented according to specifications."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL GATED SEND FIX FAILURE: Comprehensive end-to-end testing reveals the GATED SEND fix is NOT working as specified. ❌ CRITICAL ISSUES FOUND: 1) NO GATED BEHAVIOR: Console logs show 'PROCEEDING: Disclaimer accepted, calling backend' immediately when Enter is pressed, indicating the hard gate (!disclaimerAccepted) is not functioning, 2) BACKEND CALLED PREMATURELY: Network monitoring detected POST /api/coach/message API call being made BEFORE disclaimer acceptance, violating the core requirement, 3) MISSING GATED LOGS: Expected console logs 'GATED: Disclaimer not accepted, persisting input and showing modal' were NOT found, indicating the gating logic is bypassed. ✅ PARTIAL SUCCESS: Input field text preservation works correctly ('create meal plan' maintained throughout), localStorage persistence functions properly, input clearing after successful send works as expected. ❌ ROOT CAUSE: The disclaimerAccepted state appears to be true when it should be false during the first send attempt, causing the hard gate condition (!disclaimerAccepted) to fail and allowing backend calls to proceed. The gated send fix requires immediate attention to properly implement the hard gate that prevents backend calls before disclaimer acceptance."
   - task: "Profile Submission Bug Fix"
     implemented: true
     working: true
