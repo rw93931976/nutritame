@@ -3187,12 +3187,12 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
   useEffect(() => {
     if (ack) {
       const v = localStorage.getItem(k) || '';
-      if (v && !touched.current && v !== inputText) {
+      if (v && !touched.current) {
         console.log(`[${performance.now().toFixed(1)}] REHYDRATE: Restoring input after Accept:`, v);
         setInputText(v);
       }
     }
-  }, [ack, inputText]);
+  }, [ack]);
 
   // Generate a proper user for demo/testing if no currentUser
   // Use consistent ID from localStorage if available to match disclaimer acceptance
