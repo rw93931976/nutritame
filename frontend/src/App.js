@@ -3208,6 +3208,8 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
     
     const timestamp = performance.now().toFixed(1);
     console.log(`[${timestamp}] handleSendMessage called with input:`, body);
+    console.log(`[${timestamp}] disclaimerAccepted state:`, disclaimerAccepted);
+    console.log(`[${timestamp}] localStorage disclaimer_ack:`, localStorage.getItem('nt_coach_disclaimer_ack'));
     
     // HARD GATE: If disclaimer not accepted, persist input and show disclaimer modal
     if (!disclaimerAccepted) {
