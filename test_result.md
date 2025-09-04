@@ -112,7 +112,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the question persistence fix for the AI Health Coach. The specific bug was that when users typed questions and then accepted the disclaimer, their typed questions would disappear from the input field. Fix implemented adds useEffect to sync inputText with pendingQuestion when component mounts or when pendingQuestion changes."
+user_problem_statement: "Fix AI Coach disclaimer gating flow where input text disappears after acceptance and send fails due to component re-mounting and ack state transition problems. Implement unified accept handler with exact logging format, defensive gating on send, and input draft persistence."
 
 frontend:
   - task: "AI Health Coach Question Persistence Fix"
