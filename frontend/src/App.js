@@ -2998,40 +2998,36 @@ const CoachRoute = ({ currentUser }) => {
 
   const handleCoachDisclaimerAccept = async () => {
     const timestamp = performance.now().toFixed(1);
-    console.log(`[${timestamp}] Accept clicked`);
+    console.error("[ACCEPT] clicked");
     
     // ZERO-FLICKER FIX: DO NOT clear inputText or localStorage here
     const beforeAccept = localStorage.getItem('nt_coach_pending_question');
-    console.log(`[${timestamp}] localStorage before Accept: "${beforeAccept}"`);
+    console.error(`[ACCEPT] localStorage before: ${beforeAccept}`);
     
     try {
-      // CRITICAL FIX: Use the component-scoped effectiveUser from CoachInterface
-      // Don't create a new one here to avoid ID mismatch
-      console.log('🎯 Recording disclaimer acceptance for currentUser:', currentUser?.id || 'null');
-      console.log('🎯 Will use effectiveUser from CoachInterface component for session creation');
+      // STABILITY FIX: Use consistent user ID - get from localStorage or create ONCE
+      let storedUserId = localStorage.getItem('nt_coach_user_id');
       
-      // For now, create a consistent demo user if no currentUser exists
-      const userIdForDisclaimer = currentUser?.id || `demo-${Date.now()}`;
+      // Only create new ID if none exists (prevents remount issues)
+      if (!storedUserId) {
+        storedUserId = currentUser?.id || `demo-${Date.now()}`;
+        localStorage.setItem('nt_coach_user_id', storedUserId);
+      }
       
-      await aiCoachService.acceptDisclaimer(userIdForDisclaimer);
-      console.log('✅ Backend disclaimer acceptance recorded successfully for:', userIdForDisclaimer);
+      console.log('🎯 Recording disclaimer acceptance for stable user ID:', storedUserId);
       
-      // Store the user ID for session creation consistency  
-      localStorage.setItem('nt_coach_user_id', userIdForDisclaimer);
+      await aiCoachService.acceptDisclaimer(storedUserId);
+      console.log('✅ Backend disclaimer acceptance recorded successfully for:', storedUserId);
       
       // Update frontend state and persistence
       setAck(true);
       localStorage.setItem('nt_coach_disclaimer_ack', 'true');
       
       const afterAccept = localStorage.getItem('nt_coach_pending_question');
-      console.log(`[${performance.now().toFixed(1)}] localStorage after Accept: "${afterAccept}"`);
+      console.error(`[ACCEPT] localStorage after: ${afterAccept}`);
       
-      // Update pendingQuestion state from localStorage after disclaimer acceptance
-      const storedQuestion = localStorage.getItem('nt_coach_pending_question');
-      if (storedQuestion) {
-        console.log(`[${performance.now().toFixed(1)}] Updating pendingQuestion state from localStorage:`, storedQuestion);
-        setPendingQuestion(storedQuestion);
-      }
+      // REMOVED: setPendingQuestion call that could trigger re-renders
+      // The CoachInterface already handles rehydration via useEffect on ack change
       
       // Show encouragement toast after disclaimer acceptance
       setTimeout(() => {
