@@ -3028,13 +3028,9 @@ const CoachRoute = React.memo(({ currentUser }) => {
   }, []);
 
   const handleCoachDisclaimerAccept = async () => {
-    // Get current state values for logging
-    const stateAck = ack;
-    const lsAck = localStorage.getItem('nt_coach_disclaimer_ack');
-    const lsAckValue = lsAck === 'true' ? true : (lsAck === 'false' ? false : null);
-    
-    // REQUIRED LOGGING: Exact format specified
-    console.error(`[ACK TRACE] BEFORE - stateAck=${stateAck} lsAck=${lsAckValue}`);
+    const beforeState = ack === true;
+    const beforeLs = localStorage.getItem('nt_coach_disclaimer_ack');
+    console.error(`[ACK TRACE] BEFORE - stateAck=${beforeState} lsAck=${beforeLs===null?null:beforeLs==='true'}`);
     
     try {
       // STABILITY FIX: Use consistent user ID - get from localStorage or create ONCE
@@ -3048,18 +3044,27 @@ const CoachRoute = React.memo(({ currentUser }) => {
       
       await aiCoachService.acceptDisclaimer(storedUserId);
       
-      // Set in-memory flag: ack=true (stateAck)
+      localStorage.setItem('nt_coach_disclaimer_ack','true');
       setAck(true);
       
-      // Persist to localStorage: localStorage.setItem('nt_coach_disclaimer_ack','true') (lsAck)
-      localStorage.setItem('nt_coach_disclaimer_ack', 'true');
+      console.error(`[ACK TRACE] AFTER  - stateAck=true lsAck=true`);
       
-      // Do not clear the input draft - preserve user's typed input
-      
-      // REQUIRED LOGGING: Exact format specified  
-      const newStateAck = true;
-      const newLsAck = true;
-      console.error(`[ACK TRACE] AFTER  - stateAck=${newStateAck} lsAck=${newLsAck}`);
+      // re-check pending question and auto-send exactly once
+      const pending = localStorage.getItem('nt_coach_pending_question');
+      if (pending) {
+        localStorage.removeItem('nt_coach_pending_question');
+        setPendingQuestion(null);
+        console.error(`[RESUME] auto-sending pending question="${pending}"`);
+        // We need to access the sendMessageInternal from CoachInterface - this will be a prop or ref
+        // For now, let's use a timeout to ensure the state is updated
+        setTimeout(async () => {
+          // Find the CoachInterface and call its sendMessageInternal
+          // This is a bit hacky but needed since we're in the CoachRoute component
+          // The proper solution would be to lift this logic up or use refs
+          const event = new CustomEvent('autoSendPending', { detail: { message: pending } });
+          window.dispatchEvent(event);
+        }, 100);
+      }
       
       // Show encouragement toast after disclaimer acceptance
       setTimeout(() => {
