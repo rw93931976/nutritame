@@ -3490,11 +3490,10 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
                     onChange={(e) => {
                       touched.current = true;
                       const v = e.target.value;
+                      console.error("[INPUT] Changed to:", v);
                       setInputText(v);
                       localStorage.setItem(k, v);
-                      
-                      const timestamp = performance.now().toFixed(1);
-                      console.log(`[${timestamp}] onChange → wrote LS '${k}'="${v}"`);
+                      console.error("[LS] wrote nt_coach_pending_question:", v);
                     }}
                     placeholder="Ask about nutrition, meals, or recipes..."
                     className="flex-1 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
