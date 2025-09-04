@@ -3247,8 +3247,7 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
     // DON'T clear input immediately - only clear after successful send
     // setInputText('');
     
-    // Clear any pending question since we're sending the message
-    localStorage.removeItem('nt_coach_pending_question');
+    // DON'T clear localStorage yet - only clear after successful 2xx send
 
     try {
       // Add encouragement for first question
