@@ -2954,7 +2954,7 @@ const LandingPageWrapper = ({ onGetStarted }) => {
 // COACH ROUTE COMPONENT
 // =============================================
 
-const CoachRoute = ({ currentUser }) => {
+const CoachRoute = React.memo(({ currentUser }) => {
   console.log('🚀 CoachRoute component mounted with currentUser:', currentUser);
   
   const [featureFlags, setFeatureFlags] = useState(null);
