@@ -2978,7 +2978,15 @@ const LandingPageWrapper = ({ onGetStarted }) => {
 // =============================================
 
 const CoachRoute = React.memo(({ currentUser }) => {
+  const mountId = useRef(Date.now());
+  console.error(`[MOUNT CoachRoute] id=${mountId.current}`);
   console.log('🚀 CoachRoute component mounted with currentUser:', currentUser);
+  
+  useEffect(() => {
+    return () => {
+      console.error(`[UNMOUNT CoachRoute] id=${mountId.current}`);
+    };
+  }, []);
   
   const [featureFlags, setFeatureFlags] = useState(null);
   const [loading, setLoading] = useState(true);
