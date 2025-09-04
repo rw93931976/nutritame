@@ -3264,17 +3264,21 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
     const timestamp = performance.now().toFixed(1);
     console.log(`[${timestamp}] handleSendMessage called with input:`, body);
     console.log(`[${timestamp}] ack state:`, ack);
+    const lsAck = localStorage.getItem('nt_coach_disclaimer_ack') === 'true';
     console.log(`[${timestamp}] localStorage disclaimer_ack:`, localStorage.getItem('nt_coach_disclaimer_ack'));
+    console.log(`[${timestamp}] lsAck boolean:`, lsAck);
     
-    // HARD GATE: If disclaimer not accepted, persist input and show disclaimer modal
-    if (!ack) {
-      console.log(`[${timestamp}] GATED: ack=false — no API call, no clearing`);
+    // HARD GATE: Use localStorage as single source of truth for disclaimer acceptance
+    if (!lsAck) {
+      console.log(`[${timestamp}] GATED: lsAck=false — no API call, no clearing`);
       
       // Persist input without clearing it
       localStorage.setItem('nt_coach_pending_question', body);
       setPendingQuestion(body);
       
-      // The modal will show automatically due to !ack condition in CoachRoute render
+      // Force state sync and trigger modal via parent component
+      setAck(false);
+      
       return; // CRITICAL: Exit early - no API call, no clearing
     }
     
