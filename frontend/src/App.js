@@ -2977,7 +2977,17 @@ const CoachRoute = ({ currentUser }) => {
     console.log('✅ Coach disclaimer accepted');
     
     try {
-      // CRITICAL FIX: Use effectiveUser instead of currentUser for disclaimer acceptance
+      // CRITICAL FIX: Create effectiveUser fallback for disclaimer acceptance
+      const effectiveUser = currentUser || { 
+        id: `demo-${Date.now()}`, 
+        plan: 'standard',
+        email: 'demo@nutritame.com',
+        diabetes_type: 'type2',
+        age: 35,
+        food_preferences: ['mediterranean'],
+        allergies: []
+      };
+      
       if (effectiveUser?.id) {
         console.log('🎯 Recording disclaimer acceptance for effectiveUser:', effectiveUser.id);
         await aiCoachService.acceptDisclaimer(effectiveUser.id);
