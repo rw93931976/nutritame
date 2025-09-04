@@ -3,8 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-route
 import axios from "axios";
 import "./App.css";
 
-// VERSION BANNER - Unified Accept Single Send
-console.error('[VERSION] v2.2.7-unified-accept-single-send | commit=695af9a');
+// VERSION BANNER - ACK Ordering and Resume
+console.error('[VERSION] v2.2.8-ack-ordering-and-resume | commit=<hash>');
 
 // Performance logging
 console.error('[Perf] post-load tasks scheduled (no long setTimeout)');
