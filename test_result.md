@@ -102,9 +102,20 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Manual QA shows: When submitting a profile, the app responds 'profile not found — create new profile.' This worked previously and is now broken. This is the ONLY bug you are tasked with fixing right now."
+user_problem_statement: "Test the question persistence fix for the AI Health Coach. The specific bug was that when users typed questions and then accepted the disclaimer, their typed questions would disappear from the input field. Fix implemented adds useEffect to sync inputText with pendingQuestion when component mounts or when pendingQuestion changes."
 
 frontend:
+  - task: "AI Health Coach Question Persistence Fix"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "IMPLEMENTED: Added useEffect to sync inputText with pendingQuestion when component mounts or when pendingQuestion changes. This fixes the bug where typed questions would disappear from input field after disclaimer acceptance. The fix includes: 1) useEffect in CoachInterface to restore pendingQuestion to inputText, 2) localStorage persistence of 'nt_coach_pending_question' during typing, 3) Question restoration after disclaimer acceptance with user feedback toast."
   - task: "Profile Submission Bug Fix"
     implemented: true
     working: true
