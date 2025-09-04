@@ -3615,21 +3615,22 @@ function App() {
       setAuthToken(demoData.access_token); // Fixed: use access_token not token
       setAppMode('app');
       
-      // Set up profile for demo mode - don't set diabetes_type so it's treated as new profile
+      // CRITICAL FIX: Set up profile with meaningful demo data for AI Coach
       setCurrentUser({
         id: demoData.user.id,
         email: demoData.user.email,
-        diabetes_type: "", // Empty so form treats as new profile
-        age: null,
-        gender: null,
-        activity_level: null,
-        health_goals: [],
-        food_preferences: [],
+        diabetes_type: "type2", // Set meaningful default for demo
+        age: 35, // Demo default age
+        gender: "not_specified",
+        activity_level: "moderate",
+        health_goals: ["blood_sugar_control", "weight_management"],
+        food_preferences: ["mediterranean", "low_carb"],
         allergies: [],
-        cooking_skill: null,
-        phone_number: null
+        cooking_skill: "intermediate",
+        phone_number: null,
+        plan: "premium" // Demo users get premium access
       });
-      setShowForm(true); // Show profile setup for demo users
+      setShowForm(true); // Show profile setup for demo users to customize further
       
       // Scroll to top of page when profile form loads
       setTimeout(() => {
