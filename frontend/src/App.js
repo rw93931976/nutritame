@@ -3273,9 +3273,13 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
       
       // Only clear input after successful send
       setInputText('');
+      
+      // CRITICAL FIX: Reset touched flag after successful send to allow future question restoration
+      touched.current = false;
+      
       setIsLoading(false);
       
-      console.log('✅ Message sent successfully, AI response added');
+      console.log('✅ Message sent successfully, AI response added, touched flag reset');
       
     } catch (error) {
       console.error('❌ Error sending message to AI:', error);
