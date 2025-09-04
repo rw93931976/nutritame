@@ -3607,8 +3607,11 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
               <div className="flex gap-3">
                 <Button 
                   onClick={async () => {
-                    const timestamp = performance.now().toFixed(1);
-                    console.log(`[${timestamp}] Accept clicked from CoachInterface modal`);
+                    console.error("[ACCEPT] clicked");
+                    
+                    // Check localStorage before accept
+                    const beforeAccept = localStorage.getItem('nt_coach_pending_question');
+                    console.error("[ACCEPT] localStorage before:", beforeAccept);
                     
                     // For now, create a consistent demo user if no currentUser exists
                     const userIdForDisclaimer = currentUser?.id || `demo-${Date.now()}`;  
@@ -3623,6 +3626,10 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
                     // Update frontend state and persistence
                     setAck(true);
                     localStorage.setItem('nt_coach_disclaimer_ack', 'true');
+                    
+                    // Check localStorage after accept
+                    const afterAccept = localStorage.getItem('nt_coach_pending_question');
+                    console.error("[ACCEPT] localStorage after:", afterAccept);
                     
                     // Store the user ID for session creation consistency  
                     localStorage.setItem('nt_coach_user_id', userIdForDisclaimer);
