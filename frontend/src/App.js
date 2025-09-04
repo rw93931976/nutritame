@@ -3111,49 +3111,6 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
 
-  // Initialize with welcome message
-  useEffect(() => {
-    console.log('🎯 CoachInterface useEffect - initializing welcome message');
-    
-    let welcomeMessage = `Hi! I'm your AI health coach. I can help you with meal planning, restaurant recommendations, and nutrition analysis.`;
-    
-    // Add personalized greeting if profile is available
-    if (currentUser && currentUser.diabetes_type) {
-      welcomeMessage += ` I see you have ${currentUser.diabetes_type} - I'll provide personalized guidance based on your profile.`;
-    } else {
-      welcomeMessage += ` For personalized advice, make sure to complete your profile first.`;
-    }
-    
-    welcomeMessage += ` What would you like to explore today?`;
-    
-    // Add debug information in development
-    if (process.env.NODE_ENV === 'development' || window.location.search.includes('debug=true')) {
-      welcomeMessage += `\n\n🔧 **Debug Info**: Profile: type=${currentUser?.diabetes_type || 'none'}, prefs=${currentUser?.food_preferences?.join(', ') || 'none'}, allergies=${currentUser?.allergies?.join(', ') || 'none'}`;
-    }
-    
-    const welcomeMsg = {
-      id: 'welcome-' + Date.now(),
-      message: welcomeMessage,
-      response: '',
-      isWelcome: true
-    };
-    setMessages([welcomeMsg]);
-    
-    // Handle pending question if provided
-    if (pendingQuestion && pendingQuestion.trim()) {
-      console.log('🎯 Processing pending question:', pendingQuestion);
-      setInputText(pendingQuestion);
-      
-      // Clear the pending question from localStorage now that we've processed it
-      localStorage.removeItem('nt_coach_pending_question');
-      
-      // Add encouragement microcopy for restored question
-      setTimeout(() => {
-        toast.success("Great question! I've restored your message - just hit send when you're ready 💬");
-      }, 1000);
-    }
-  }, [pendingQuestion, currentUser]);
-
   // Generate a proper user for demo/testing if no currentUser
   const effectiveUser = currentUser || { 
     id: `demo-${Date.now()}`, 
@@ -3165,7 +3122,7 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
     allergies: []
   };
 
-  // Initialize with welcome message using effectiveUser
+  // Initialize with welcome message
   useEffect(() => {
     console.log('🔧 CoachInterface mounted, setting up welcome message...');
     console.log('🔧 currentUser:', currentUser);
@@ -3208,7 +3165,7 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
         toast.success("Great question! I've restored your message - just hit send when you're ready 💬");
       }, 1000);
     }
-  }, [pendingQuestion, currentUser, effectiveUser]);
+  }, [pendingQuestion, currentUser]);
 
   const handleSendMessage = async () => {
     if (!inputText.trim()) return;
