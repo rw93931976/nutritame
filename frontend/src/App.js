@@ -3104,16 +3104,13 @@ const CoachRoute = ({ currentUser }) => {
 // =============================================
 
 const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setPendingQuestion, ack, setAck }) => {
-  const timestamp = performance.now().toFixed(1);
-  console.log(`[${timestamp}] CoachInterface mounted`);
-  
-  // DEBUG: Console logging for component identification
-  console.log('[runtime] Rendered CoachInterface');
+  // FORCED INSTRUMENTATION - Lifecycle
+  console.error("[LIFECYCLE] CoachInterface mounted");
   
   // Add unmount logging
   useEffect(() => {
     return () => {
-      console.log(`[${performance.now().toFixed(1)}] CoachInterface unmounted`);
+      console.error("[LIFECYCLE] CoachInterface unmounted");
     };
   }, []);
   console.log('🎯 CoachInterface component mounted with pendingQuestion:', pendingQuestion, 'currentUser:', currentUser, 'ack:', ack);
