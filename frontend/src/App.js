@@ -4,7 +4,7 @@ import axios from "axios";
 import "./App.css";
 
 // VERSION BANNER - ACK Gate Fix
-console.error('[VERSION] v2.2.5-ack-gate-fix | commit=<hash>');
+console.error('[VERSION] v2.2.5-ack-gate-fix | commit=bc1ce2d');
 
 // CRITICAL DEBUG: This should appear in console immediately
 console.log('🏗️ App.js file loaded - module executing');
