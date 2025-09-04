@@ -3022,9 +3022,12 @@ const CoachRoute = React.memo(({ currentUser }) => {
       await aiCoachService.acceptDisclaimer(storedUserId);
       console.log('✅ Backend disclaimer acceptance recorded successfully for:', storedUserId);
       
-      // Update frontend state and persistence
-      setAck(true);
+      // CRITICAL: Set localStorage FIRST, then React state
       localStorage.setItem('nt_coach_disclaimer_ack', 'true');
+      setAck(true);
+      
+      // REQUIRED LOGGING: Log ack state after accept
+      console.error("[ACK] after accept:", true, localStorage.getItem('nt_coach_disclaimer_ack'));
       
       const afterAccept = localStorage.getItem('nt_coach_pending_question');
       console.error(`[ACCEPT] localStorage after: ${afterAccept}`);
