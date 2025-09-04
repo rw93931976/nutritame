@@ -117,9 +117,9 @@ user_problem_statement: "Test the question persistence fix for the AI Health Coa
 frontend:
   - task: "AI Health Coach Question Persistence Fix"
     implemented: true
-    working: false
+    working: true
     file: "frontend/src/App.js"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
