@@ -3144,6 +3144,9 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
   const timestamp = performance.now().toFixed(1);
   console.log(`[${timestamp}] CoachInterface mounted`);
   
+  // DEBUG: Console logging for component identification
+  console.log('[runtime] Rendered CoachInterface');
+  
   // Add unmount logging
   useEffect(() => {
     return () => {
