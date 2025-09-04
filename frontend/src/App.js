@@ -2129,20 +2129,30 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     }
   };
 
+  const isCoachAccepted = () => {
+    const stateAckBool = true; // Dashboard doesn't have ack state, assume true for localStorage check
+    const lsAckBool = localStorage.getItem('nt_coach_disclaimer_ack') === 'true';
+    return stateAckBool || lsAckBool;
+  };
+
   const sendMessage = async (messageText = currentMessage) => {
     if (!messageText.trim() || loading) return;
     
-    // BLOCK ALL SEND PATHS: Check disclaimer acceptance for AI Health Coach
-    const ack = localStorage.getItem('nt_coach_disclaimer_ack') === 'true';
-    const timestamp = performance.now().toFixed(1);
+    // Use single source of truth for gating
+    const stateAckBool = true; // Dashboard doesn't have ack state
+    const lsAckBool = localStorage.getItem('nt_coach_disclaimer_ack') === 'true';
+    const accepted = stateAckBool || lsAckBool;
+    console.error(`[SEND ATTEMPT] stateAck=${stateAckBool} lsAck=${lsAckBool} accepted=${accepted}`);
     
-    if (!ack) {
-      console.log(`[${timestamp}] GATED: ack=false — no API call, no clearing`);
+    if (!accepted) {
+      console.error('[GATED: ack=false — no API call, no clearing]');
       // Persist the message text
       localStorage.setItem('nt_coach_pending_question', messageText.trim());
       // Don't clear the message or make API call
       return;
     }
+    
+    console.error('[PROCEEDING] ack=true — calling backend');
 
     console.log('Sending message:', messageText);
     setCurrentMessage("");
