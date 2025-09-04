@@ -3202,26 +3202,26 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
     }
   }, [pendingQuestion, currentUser]);
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = async (e) => {
+    e?.preventDefault?.();
+    
     const body = inputText.trim();
     if (!body) return;
     
     const timestamp = performance.now().toFixed(1);
     console.log(`[${timestamp}] handleSendMessage called with input:`, body);
-    console.log(`[${timestamp}] disclaimerAccepted state:`, disclaimerAccepted);
+    console.log(`[${timestamp}] disclaimerAccepted prop:`, disclaimerAccepted);
     console.log(`[${timestamp}] localStorage disclaimer_ack:`, localStorage.getItem('nt_coach_disclaimer_ack'));
     
     // HARD GATE: If disclaimer not accepted, persist input and show disclaimer modal
     if (!disclaimerAccepted) {
-      console.log(`[${timestamp}] GATED: Disclaimer not accepted, persisting input and showing modal`);
+      console.log(`[${timestamp}] GATED: disclaimer not accepted — modal shown, no API call`);
       
       // Persist input without clearing it
       localStorage.setItem('nt_coach_pending_question', body);
       setPendingQuestion(body);
       
-      console.log(`[${timestamp}] Input persisted, modal will show. NO backend call, NO clearing.`);
-      
-      // The modal will show automatically due to !ack condition in render
+      // The modal will show automatically due to !ack condition in CoachRoute render
       return; // CRITICAL: Exit early - no API call, no clearing
     }
     
