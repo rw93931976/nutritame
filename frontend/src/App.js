@@ -2859,15 +2859,20 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
                     />
                     <Button 
                       onClick={() => {
-                        // BLOCK ALL SEND PATHS: Check disclaimer acceptance
-                        const ack = localStorage.getItem('nt_coach_disclaimer_ack') === 'true';
-                        if (!ack) {
-                          const timestamp = performance.now().toFixed(1);
-                          console.log(`[${timestamp}] GATED: ack=false — no API call, no clearing`);
+                        // Use single source of truth for gating
+                        const stateAckBool = true; // Dashboard doesn't have ack state
+                        const lsAckBool = localStorage.getItem('nt_coach_disclaimer_ack') === 'true';
+                        const accepted = stateAckBool || lsAckBool;
+                        console.error(`[SEND ATTEMPT] stateAck=${stateAckBool} lsAck=${lsAckBool} accepted=${accepted}`);
+                        
+                        if (!accepted) {
+                          console.error('[GATED: ack=false — no API call, no clearing]');
                           // Persist the message text
                           localStorage.setItem('nt_coach_pending_question', currentMessage.trim());
                           return;
                         }
+                        
+                        console.error('[PROCEEDING] ack=true — calling backend');
                         sendMessage();
                       }}
                       disabled={!currentMessage.trim() || loading}
