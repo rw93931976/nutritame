@@ -115,13 +115,13 @@
 user_problem_statement: "Fix AI Coach disclaimer gating flow where input text disappears after acceptance and send fails due to component re-mounting and ack state transition problems. Implement unified accept handler with exact logging format, defensive gating on send, and input draft persistence."
 
 frontend:
-  - task: "AI Health Coach Question Persistence Fix"
+  - task: "AI Health Coach ACK Gate Fix (v2.2.5)"
     implemented: true
     working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
