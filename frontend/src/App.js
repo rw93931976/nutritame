@@ -14,6 +14,40 @@ const COACH_ACK_KEY = 'nt_coach_disclaimer_ack';
 const setCoachAckTrue = () => localStorage.setItem(COACH_ACK_KEY, 'true');
 const getCoachAck = () => localStorage.getItem(COACH_ACK_KEY) === 'true';
 
+// SINGLE SEND FUNCTION - Used by all UI elements
+window.sendMessageInternal = async (body, sessionId, effectiveUser, onSuccess, onError) => {
+  const reqId = Math.random().toString(36).slice(2);
+  console.error(`[COACH REQ] id=${reqId} start body="${body}"`);
+  
+  try {
+    const messagePayload = {
+      session_id: sessionId,
+      message: body,
+      user_id: effectiveUser?.id || localStorage.getItem('nt_coach_user_id')
+    };
+    
+    const res = await aiCoachService.sendMessage(messagePayload);
+    const status = res?.status ?? res?.data?.status ?? 200;
+    console.error(`[COACH RES] id=${reqId} status=${status}`);
+    
+    const messages = res?.data?.messages ?? res?.messages ?? [res];
+    console.error(`[COACH RENDER] id=${reqId} count=${messages.length}`);
+    console.error(`AI response found: ${messages.length}`);
+    
+    if (onSuccess) {
+      onSuccess(res, messages);
+    }
+    
+  } catch (e) {
+    console.error(`[COACH ERR] id=${reqId} name=${e?.name} message=${e?.message} status=${e?.response?.status}`);
+    console.error(`[COACH ERR BODY] ${JSON.stringify(e?.response?.data) || '<none>'}`);
+    
+    if (onError) {
+      onError(e);
+    }
+  }
+};
+
 // CRITICAL DEBUG: This should appear in console immediately
 console.log('🏗️ App.js file loaded - module executing');
 
