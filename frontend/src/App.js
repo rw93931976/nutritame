@@ -3000,15 +3000,13 @@ const CoachRoute = React.memo(({ currentUser }) => {
   }, []);
 
   const handleCoachDisclaimerAccept = async () => {
-    const timestamp = performance.now().toFixed(1);
-    console.error("[ACCEPT] clicked");
+    // Get current state values for logging
+    const stateAck = ack;
+    const lsAck = localStorage.getItem('nt_coach_disclaimer_ack');
+    const lsAckValue = lsAck === 'true' ? true : (lsAck === 'false' ? false : null);
     
-    // REQUIRED LOGGING: Log ack state before accept
-    console.error("[ACK] before accept:", ack, localStorage.getItem('nt_coach_disclaimer_ack'));
-    
-    // ZERO-FLICKER FIX: DO NOT clear inputText or localStorage here
-    const beforeAccept = localStorage.getItem('nt_coach_pending_question');
-    console.error(`[ACCEPT] localStorage before: ${beforeAccept}`);
+    // REQUIRED LOGGING: Exact format specified
+    console.error(`[ACK TRACE] BEFORE - stateAck=${stateAck} lsAck=${lsAckValue}`);
     
     try {
       // STABILITY FIX: Use consistent user ID - get from localStorage or create ONCE
@@ -3020,23 +3018,20 @@ const CoachRoute = React.memo(({ currentUser }) => {
         localStorage.setItem('nt_coach_user_id', storedUserId);
       }
       
-      console.log('🎯 Recording disclaimer acceptance for stable user ID:', storedUserId);
-      
       await aiCoachService.acceptDisclaimer(storedUserId);
-      console.log('✅ Backend disclaimer acceptance recorded successfully for:', storedUserId);
       
-      // CRITICAL: Set localStorage FIRST, then React state
-      localStorage.setItem('nt_coach_disclaimer_ack', 'true');
+      // Set in-memory flag: ack=true (stateAck)
       setAck(true);
       
-      // REQUIRED LOGGING: Log ack state after accept
-      console.error("[ACK] after accept:", true, localStorage.getItem('nt_coach_disclaimer_ack'));
+      // Persist to localStorage: localStorage.setItem('nt_coach_disclaimer_ack','true') (lsAck)
+      localStorage.setItem('nt_coach_disclaimer_ack', 'true');
       
-      const afterAccept = localStorage.getItem('nt_coach_pending_question');
-      console.error(`[ACCEPT] localStorage after: ${afterAccept}`);
+      // Do not clear the input draft - preserve user's typed input
       
-      // REMOVED: setPendingQuestion call that could trigger re-renders
-      // The CoachInterface already handles rehydration via useEffect on ack change
+      // REQUIRED LOGGING: Exact format specified  
+      const newStateAck = true;
+      const newLsAck = true;
+      console.error(`[ACK TRACE] AFTER  - stateAck=${newStateAck} lsAck=${newLsAck}`);
       
       // Show encouragement toast after disclaimer acceptance
       setTimeout(() => {
