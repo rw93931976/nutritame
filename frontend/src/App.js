@@ -3109,7 +3109,7 @@ const CoachRoute = React.memo(({ currentUser }) => {
 // COACH INTERFACE COMPONENT
 // =============================================
 
-const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAccepted, setPendingQuestion, ack, setAck }) => {
+const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAccepted, setPendingQuestion, ack, setAck, onDisclaimerAccept }) => {
   // FORCED INSTRUMENTATION - Lifecycle
   console.error("[LIFECYCLE] CoachInterface mounted");
   
