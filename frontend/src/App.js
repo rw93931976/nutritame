@@ -3135,13 +3135,13 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
   // Track if user has manually edited input since mount
   const touched = useRef(false);
 
-  // ZERO-FLICKER FIX: Only restore from pendingQuestion prop if it's different and user hasn't typed
+  // STABILITY FIX: Only restore from pendingQuestion prop if it's different and user hasn't typed
   useEffect(() => {
     if (pendingQuestion && pendingQuestion.trim() && !touched.current && pendingQuestion !== inputText) {
       console.error("[REHYDRATE] restoring input from pendingQuestion prop:", pendingQuestion);
       setInputText(pendingQuestion);
     }
-  }, [pendingQuestion, inputText]);
+  }, [pendingQuestion]); // STABILITY FIX: Remove inputText from deps to prevent render loops
 
   // REHYDRATE: After disclaimer acceptance, restore input from localStorage
   useEffect(() => {
