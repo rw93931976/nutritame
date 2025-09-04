@@ -571,11 +571,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "AI Health Coach Real AI Integration"
-    - "Plan Gating & Consultation Limits"
-    - "AI Coach Database Schema"
-    - "Feature Flags System"
-    - "AI Health Coach API Endpoints"
+    - "AI Health Coach Question Persistence Fix"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
