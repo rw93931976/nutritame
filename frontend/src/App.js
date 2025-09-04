@@ -3669,7 +3669,7 @@ function App() {
     // Immediately check for demo mode after disclaimer acceptance
     try {
       console.log('Checking for demo mode after disclaimer acceptance...');
-      const demoResponse = await axios.get(`${API}/demo-config.php`);
+      const demoResponse = await axios.get(`${API}/demo/config`);
       console.log('Demo config response:', demoResponse.data);
       
       if (demoResponse.data && demoResponse.data.demo_mode === true) {
