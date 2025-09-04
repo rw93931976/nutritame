@@ -1910,11 +1910,16 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
         localStorage.removeItem('nt_coach_pending_question');
         console.error(`[RESUME] auto-sending pending question="${pending}"`);
         
-        // Dispatch event for coach interface to pick up
-        setTimeout(() => {
-          const event = new CustomEvent('unifiedAutoResume', { detail: { message: pending } });
-          window.dispatchEvent(event);
-        }, 100);
+        // Direct call - no timers/events
+        if (window.currentSendHandler) {
+          await window.currentSendHandler(pending);
+        } else {
+          // Fallback: dispatch event if no direct handler available
+          setTimeout(() => {
+            const event = new CustomEvent('unifiedAutoResume', { detail: { message: pending } });
+            window.dispatchEvent(event);
+          }, 100);
+        }
       }
       
       toast.success("AI Health Coach disclaimer accepted");
