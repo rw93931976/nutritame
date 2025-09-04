@@ -3097,7 +3097,7 @@ const CoachRoute = ({ currentUser }) => {
 // COACH INTERFACE COMPONENT
 // =============================================
 
-const CoachInterface = ({ pendingQuestion, currentUser }) => {
+const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted }) => {
   const timestamp = performance.now().toFixed(1);
   console.log(`[${timestamp}] CoachInterface mounted`);
   
