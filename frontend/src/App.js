@@ -3582,6 +3582,74 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
           </div>
         </div>
       </div>
+      
+      {/* Disclaimer Modal - Only shows when user tries to send without accepting */}
+      {!ack && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md mx-4" role="dialog" aria-labelledby="disclaimer-title">
+            <CardHeader>
+              <CardTitle id="disclaimer-title" className="flex items-center gap-2">
+                <ChefHat className="h-5 w-5 text-emerald-600" />
+                AI Health Coach Disclaimer
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <p className="text-sm text-gray-700">
+                  <strong>Not a medical device.</strong> The AI Health Coach provides general nutrition guidance only and is not a substitute for professional medical advice. Always consult your healthcare provider.
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <Button 
+                  onClick={async () => {
+                    const timestamp = performance.now().toFixed(1);
+                    console.log(`[${timestamp}] Accept clicked from CoachInterface modal`);
+                    
+                    // For now, create a consistent demo user if no currentUser exists
+                    const userIdForDisclaimer = currentUser?.id || `demo-${Date.now()}`;  
+                    
+                    try {
+                      await aiCoachService.acceptDisclaimer(userIdForDisclaimer);
+                      console.log('✅ Backend disclaimer acceptance recorded successfully for:', userIdForDisclaimer);
+                    } catch (error) {
+                      console.error('❌ Failed to record disclaimer acceptance:', error);
+                    }
+                    
+                    // Update frontend state and persistence
+                    setAck(true);
+                    localStorage.setItem('nt_coach_disclaimer_ack', 'true');
+                    
+                    // Store the user ID for session creation consistency  
+                    localStorage.setItem('nt_coach_user_id', userIdForDisclaimer);
+                    
+                    // Update pendingQuestion state from localStorage after disclaimer acceptance
+                    const storedQuestion = localStorage.getItem('nt_coach_pending_question');
+                    if (storedQuestion && setPendingQuestion) {
+                      console.log(`[${performance.now().toFixed(1)}] Updating pendingQuestion state from localStorage:`, storedQuestion);
+                      setPendingQuestion(storedQuestion);
+                    }
+                    
+                    toast.success("Thanks for confirming — remember, this is guidance only, and your healthcare provider is your best resource.");
+                  }}
+                  className="flex-1 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700"
+                >
+                  Accept & Continue
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    console.log('❌ Coach disclaimer declined - redirecting to home');
+                    window.location.href = '/';
+                  }}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
