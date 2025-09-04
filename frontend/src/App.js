@@ -3116,6 +3116,12 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
   }, []);
   console.log('🎯 CoachInterface component mounted with pendingQuestion:', pendingQuestion, 'currentUser:', currentUser);
   
+  // SINGLE SOURCE OF TRUTH for disclaimer acceptance
+  const [ack, setAck] = useState(() => {
+    const stored = localStorage.getItem('nt_coach_disclaimer_ack');
+    return stored === 'true';
+  });
+  
   // Basic AI Health Coach state
   const [messages, setMessages] = useState([]);
   
