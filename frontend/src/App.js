@@ -3231,6 +3231,12 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
       return; // CRITICAL: Exit early - no API call, no clearing
     }
     
+    // SAFETY RAILS: Invariant to catch any bugs that bypass the gate
+    if (!ack) {
+      console.error('BUG: send with ack=false');
+      throw new Error('Send before accept');
+    }
+    
     // Only reach here if disclaimer is accepted
     console.log(`[${timestamp}] PROCEEDING: disclaimer accepted — calling backend`);
     console.log('🚀 effectiveUser:', effectiveUser);
