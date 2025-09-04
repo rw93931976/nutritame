@@ -2973,23 +2973,43 @@ const CoachRoute = ({ currentUser }) => {
     checkFeatureFlags();
   }, []);
 
-  const handleCoachDisclaimerAccept = () => {
+  const handleCoachDisclaimerAccept = async () => {
     console.log('✅ Coach disclaimer accepted');
-    // Single update - both state and persistence
-    setAck(true);
-    localStorage.setItem('nt_coach_disclaimer_ack', 'true');
     
-    // Update pendingQuestion state from localStorage after disclaimer acceptance
-    const storedQuestion = localStorage.getItem('nt_coach_pending_question');
-    if (storedQuestion) {
-      console.log('🔄 Updating pendingQuestion state from localStorage:', storedQuestion);
-      setPendingQuestion(storedQuestion);
+    try {
+      // CRITICAL FIX: Call backend API to record disclaimer acceptance
+      if (currentUser?.id) {
+        console.log('🎯 Recording disclaimer acceptance for user:', currentUser.id);
+        await aiCoachService.acceptDisclaimer(currentUser.id);
+        console.log('✅ Backend disclaimer acceptance recorded successfully');
+      } else {
+        console.warn('⚠️ No currentUser.id available for disclaimer acceptance');
+      }
+      
+      // Update frontend state and persistence
+      setAck(true);
+      localStorage.setItem('nt_coach_disclaimer_ack', 'true');
+      
+      // Update pendingQuestion state from localStorage after disclaimer acceptance
+      const storedQuestion = localStorage.getItem('nt_coach_pending_question');
+      if (storedQuestion) {
+        console.log('🔄 Updating pendingQuestion state from localStorage:', storedQuestion);
+        setPendingQuestion(storedQuestion);
+      }
+      
+      // Show encouragement toast after disclaimer acceptance
+      setTimeout(() => {
+        toast.success("Thanks for confirming — remember, this is guidance only, and your healthcare provider is your best resource.");
+      }, 500);
+      
+    } catch (error) {
+      console.error('❌ Failed to record disclaimer acceptance:', error);
+      // Still proceed with frontend state update for offline functionality
+      setAck(true);
+      localStorage.setItem('nt_coach_disclaimer_ack', 'true');
+      
+      toast.error('Disclaimer recorded locally. If connection issues persist, please refresh the page.');
     }
-    
-    // Show encouragement toast after disclaimer acceptance
-    setTimeout(() => {
-      toast.success("Thanks for confirming — remember, this is guidance only, and your healthcare provider is your best resource.");
-    }, 500);
   };
 
   const handleCoachDisclaimerDecline = () => {
