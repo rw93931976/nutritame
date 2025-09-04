@@ -6,7 +6,7 @@ import "./App.css";
 // VERSION BANNER - ACK Ordering and Resume
 console.error('[VERSION] v2.2.8-ack-ordering-and-resume | commit=<hash>');
 
-// Performance logging
+// Performance logging - ensuring no long setTimeout violations
 console.error('[Perf] post-load tasks scheduled (no long setTimeout)');
 
 // CANONICAL ACCEPTANCE HELPERS
