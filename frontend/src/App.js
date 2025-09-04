@@ -3093,7 +3093,10 @@ const CoachRoute = React.memo(({ currentUser }) => {
       setAck={setAck}
     />
   );
-};
+}, (prevProps, nextProps) => {
+  // STABILITY FIX: Only re-render CoachRoute if currentUser actually changes
+  return prevProps.currentUser?.id === nextProps.currentUser?.id;
+});
 
 // =============================================
 // COACH INTERFACE COMPONENT
