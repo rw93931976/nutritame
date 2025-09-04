@@ -3136,6 +3136,8 @@ const CoachRoute = React.memo(({ currentUser }) => {
 // =============================================
 
 const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAccepted, setPendingQuestion, ack, setAck, onDisclaimerAccept }) => {
+  const mountId = useRef(Date.now());
+  console.error(`[MOUNT CoachInterface] id=${mountId.current}`);
   // FORCED INSTRUMENTATION - Lifecycle
   console.error("[LIFECYCLE] CoachInterface mounted");
   
