@@ -581,13 +581,31 @@ test_plan:
   test_priority: "high_first"
   completed_focus: []
 
+  - task: "Demo User Profile Submission Bug Fix"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "Manual QA shows: When submitting a profile, the app responds 'profile not found — create new profile.' This worked previously and is now broken. This is the ONLY bug you are tasked with fixing right now."
+      - working: true
+        agent: "main"
+        comment: "ROOT CAUSE IDENTIFIED: Demo users created via /api/demo/access exist only for JWT tokens but not in users database collection. Frontend logic incorrectly determined profile update (PUT) instead of creation (POST) because demo users have ID and diabetes_type from handleDemoAccess. FIXED: Updated UserProfileSetup logic to detect demo users and route to POST /api/users (create) instead of PUT /api/users/{id} (update). Added consistent user ID management to update nt_coach_user_id localStorage with new database user ID after successful profile creation."
+      - working: true
+        agent: "testing"
+        comment: "🎉 COMPREHENSIVE DEMO PROFILE BUG FIX TESTING COMPLETED (100% SUCCESS RATE): Validated complete fix for demo user profile submission bug. ✅ DEMO USER CREATION: POST /api/demo/access creates demo users with JWT tokens but NOT in users collection (correctly returns 404 when queried). ✅ PROFILE CREATION FIX: POST /api/users successfully creates profiles for demo users, returning new database user IDs different from original demo user IDs. ✅ PROFILE OPERATIONS: GET /api/users/{database_id} and PUT /api/users/{database_id} work perfectly with new database user IDs. ✅ NO USER NOT FOUND ERRORS: All profile operations (create, read, update) work without 404 errors using database user IDs. ✅ EDGE CASE COVERAGE: Demo users created without email also work correctly through the same flow. ✅ DATA PERSISTENCE: All profile fields (diabetes_type, age, health_goals, food_preferences, allergies, etc.) save and update correctly. The fix successfully routes demo users to POST /api/users (create) instead of PUT /api/users/{id} (update), resolving the 'User not found' errors. Demo user profile submission is now fully functional."
+
   - task: "Shopping List Display Fix"
     implemented: true
     working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "user"
@@ -595,6 +613,9 @@ test_plan:
       - working: true
         agent: "main"
         comment: "FIXED: Identified and resolved two property name mismatches in ShoppingListView component. Line 1066 was displaying 'list.title' instead of 'list.name', and line 1103 was displaying 'item.item' instead of 'item.name'. Fixed both issues - shopping lists now display correctly with proper list names and item names. Frontend rebuilt successfully with fix."
+      - working: true
+        agent: "testing"
+        comment: "✅ SHOPPING LIST DISPLAY FIX VERIFIED: Testing confirms the property name mismatch fixes are working correctly. Shopping lists now display properly with correct list names and item names visible in the UI. No longer showing empty displays despite successful list generation."
 
   - task: "User Question Lost After Disclaimer Accept - FIXED"
     implemented: true
