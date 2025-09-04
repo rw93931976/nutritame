@@ -3394,17 +3394,20 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
                   <Input
                     value={inputText}
                     onChange={(e) => {
-                      // CRITICAL FIX: Mark as touched when user manually types
-                      touched.current = true;
-                      
                       const value = e.target.value;
+                      const timestamp = performance.now().toFixed(1);
+                      
+                      // Mark as touched when user manually types
+                      touched.current = true;
                       setInputText(value);
                       
                       // Persist user input in case disclaimer appears
                       if (value.trim()) {
                         localStorage.setItem('nt_coach_pending_question', value);
+                        console.log(`[${timestamp}] onChange → wrote LS 'nt_coach_pending_question'="${value}"`);
                       } else {
                         localStorage.removeItem('nt_coach_pending_question');
+                        console.log(`[${timestamp}] onChange → removed LS 'nt_coach_pending_question'`);
                       }
                     }}
                     placeholder="Ask about nutrition, meals, or recipes..."
