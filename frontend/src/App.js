@@ -3389,6 +3389,10 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
       console.log(`[${performance.now().toFixed(1)}] SUCCESS: Message sent, input cleared, localStorage cleaned`);;
       
     } catch (error) {
+      // Log non-2xx response details
+      console.log(`[send] status=${error.response?.status || 'ERROR'}`);
+      console.log(`[send] response shape: keys=${Object.keys(error.response?.data || {}).join(',')}`);
+      
       console.error('❌ Error sending message to AI:', error);
       console.error('❌ Error details:', {
         message: error.message,
