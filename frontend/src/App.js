@@ -3240,6 +3240,8 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     // If accepted===true, proceed to call backend; else block (no API call)
     if (!accepted) {
       // Block - no API call, no clearing
+      // Show disclaimer modal by setting ack to false
+      setAck(false);
       return;
     }
     
