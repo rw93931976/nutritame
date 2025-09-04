@@ -3658,13 +3658,8 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     </div>
   );
 }, (prevProps, nextProps) => {
-  // STABILITY FIX: Prevent re-renders if props haven't actually changed
-  return (
-    prevProps.ack === nextProps.ack &&
-    prevProps.pendingQuestion === nextProps.pendingQuestion &&
-    prevProps.currentUser?.id === nextProps.currentUser?.id &&
-    prevProps.disclaimerAccepted === nextProps.disclaimerAccepted
-  );
+  // STABILITY FIX: Only re-render CoachRoute if currentUser actually changes
+  return prevProps.currentUser?.id === nextProps.currentUser?.id;
 });
 
 // Main App Component
