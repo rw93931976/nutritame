@@ -3378,7 +3378,7 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
       
       // Only clear input and localStorage after successful send (2xx)
       setInputText('');
-      localStorage.removeItem('nt_coach_pending_question');
+      localStorage.removeItem(k);
       setPendingQuestion('');
       
       // CRITICAL FIX: Reset touched flag after successful send to allow future question restoration
