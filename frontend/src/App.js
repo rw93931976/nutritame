@@ -3183,7 +3183,7 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
     };
   }, [currentUser]); // Only recreate if currentUser prop changes
 
-  // Initialize with welcome message
+  // STABILITY FIX: Initialize with welcome message ONCE on mount, not on every prop change
   useEffect(() => {
     console.log('🔧 CoachInterface mounted, setting up welcome message...');
     console.log('🔧 currentUser:', currentUser);
@@ -3191,7 +3191,7 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
     
     let welcomeMessage = "Hi! I'm your AI health coach. I can help you with meal planning, restaurant recommendations, and nutrition analysis.";
     
-    // Add personalized greeting if profile is available - USE effectiveUser instead of currentUser
+    // Add personalized greeting if profile is available
     if (effectiveUser && effectiveUser.diabetes_type) {
       welcomeMessage += ` I see you have ${effectiveUser.diabetes_type} - I'll provide personalized guidance based on your profile.`;
     } else {
@@ -3200,7 +3200,7 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
     
     welcomeMessage += ` What would you like to explore today?`;
     
-    // Add debug information in development - USE effectiveUser instead of currentUser
+    // Add debug information in development
     if (process.env.NODE_ENV === 'development' || window.location.search.includes('debug=true')) {
       welcomeMessage += `\n\n🔧 **Debug Info**: Profile: type=${effectiveUser?.diabetes_type || 'none'}, prefs=${effectiveUser?.food_preferences?.join(', ') || 'none'}, allergies=${effectiveUser?.allergies?.join(', ') || 'none'}`;
     }
@@ -3212,21 +3212,7 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
       isWelcome: true
     };
     setMessages([welcomeMsg]);
-    
-    // Handle pending question if provided
-    if (pendingQuestion && pendingQuestion.trim()) {
-      console.log('🎯 Processing pending question:', pendingQuestion);
-      setInputText(pendingQuestion);
-      
-      // Clear the pending question from localStorage now that we've processed it
-      localStorage.removeItem('nt_coach_pending_question');
-      
-      // Add encouragement microcopy for restored question
-      setTimeout(() => {
-        toast.success("Great question! I've restored your message - just hit send when you're ready 💬");
-      }, 1000);
-    }
-  }, [pendingQuestion, currentUser]);
+  }, []); // STABILITY FIX: Only run once on mount, not on every prop change
 
   const handleSendMessage = async (e) => {
     e?.preventDefault?.();
