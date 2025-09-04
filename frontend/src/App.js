@@ -2202,6 +2202,9 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
   const sendMessage = async (messageText = currentMessage) => {
     if (!messageText.trim() || loading) return;
     
+    // Register this as the current send handler for auto-resume
+    window.currentSendHandler = sendMessage;
+    
     // TOP of sendMessage: normalize ack before computing accepted (and before logging)
     if (localStorage.getItem(COACH_ACK_KEY) !== 'true') {
       // Dashboard doesn't have ack state, so we need to check global disclaimer acceptance
