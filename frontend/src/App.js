@@ -3378,6 +3378,9 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
   }, []); // STABILITY FIX: Only run once on mount, not on every prop change
 
   const sendMessageInternal = async (messageBody) => {
+    // Register this as the current send handler for auto-resume
+    window.currentSendHandler = sendMessageInternal;
+    
     // Internal send function using unified sender
     const isFirstMessage = messages.length === 0 || (messages.length === 1 && messages[0].isWelcome);
     const messageCount = messages.filter(msg => msg.isUser).length;
