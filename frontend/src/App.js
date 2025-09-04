@@ -3611,42 +3611,13 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
               </div>
               <div className="flex gap-3">
                 <Button 
-                  onClick={async () => {
-                    console.error("[ACCEPT] clicked");
-                    
-                    // Check localStorage before accept
-                    const beforeAccept = localStorage.getItem('nt_coach_pending_question');
-                    console.error("[ACCEPT] localStorage before:", beforeAccept);
-                    
-                    // For now, create a consistent demo user if no currentUser exists
-                    const userIdForDisclaimer = currentUser?.id || `demo-${Date.now()}`;  
-                    
-                    try {
-                      await aiCoachService.acceptDisclaimer(userIdForDisclaimer);
-                      console.log('✅ Backend disclaimer acceptance recorded successfully for:', userIdForDisclaimer);
-                    } catch (error) {
-                      console.error('❌ Failed to record disclaimer acceptance:', error);
+                  onClick={() => {
+                    // Use the proper accept handler that has required ACK logging
+                    if (typeof handleCoachDisclaimerAccept === 'function') {
+                      handleCoachDisclaimerAccept();
+                    } else {
+                      console.error('❌ handleCoachDisclaimerAccept not available');
                     }
-                    
-                    // Update frontend state and persistence
-                    setAck(true);
-                    localStorage.setItem('nt_coach_disclaimer_ack', 'true');
-                    
-                    // Check localStorage after accept
-                    const afterAccept = localStorage.getItem('nt_coach_pending_question');
-                    console.error("[ACCEPT] localStorage after:", afterAccept);
-                    
-                    // Store the user ID for session creation consistency  
-                    localStorage.setItem('nt_coach_user_id', userIdForDisclaimer);
-                    
-                    // Update pendingQuestion state from localStorage after disclaimer acceptance
-                    const storedQuestion = localStorage.getItem('nt_coach_pending_question');
-                    if (storedQuestion && setPendingQuestion) {
-                      console.log(`[${performance.now().toFixed(1)}] Updating pendingQuestion state from localStorage:`, storedQuestion);
-                      setPendingQuestion(storedQuestion);
-                    }
-                    
-                    toast.success("Thanks for confirming — remember, this is guidance only, and your healthcare provider is your best resource.");
                   }}
                   className="flex-1 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700"
                 >
