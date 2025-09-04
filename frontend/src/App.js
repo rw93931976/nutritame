@@ -4,7 +4,7 @@ import axios from "axios";
 import "./App.css";
 
 // VERSION BANNER - Unified Accept Single Send
-console.error('[VERSION] v2.2.7-unified-accept-single-send | commit=<hash>');
+console.error('[VERSION] v2.2.7-unified-accept-single-send | commit=695af9a');
 
 // Performance logging
 console.error('[Perf] post-load tasks scheduled (no long setTimeout)');
