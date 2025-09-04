@@ -3081,47 +3081,7 @@ const CoachRoute = ({ currentUser }) => {
     );
   }
 
-  // Show disclaimer modal if not accepted
-  if (!ack) {
-    console.log('📋 Rendering coach disclaimer modal');
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 flex items-center justify-center">
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-md mx-4">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ChefHat className="h-5 w-5 text-emerald-600" />
-                AI Health Coach Disclaimer
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <p className="text-sm text-gray-700">
-                  <strong>Not a medical device.</strong> The AI Health Coach provides general nutrition guidance only and is not a substitute for professional medical advice. Always consult your healthcare provider.
-                </p>
-              </div>
-              <div className="flex gap-3">
-                <Button 
-                  onClick={handleCoachDisclaimerAccept}
-                  className="flex-1 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700"
-                >
-                  Accept & Continue
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={handleCoachDisclaimerDecline}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
+  // Always render coach interface - disclaimer gating happens at send time
   console.log('🎯 Rendering coach interface');
   // Render full coach interface component with pending question and current user profile
   return (
