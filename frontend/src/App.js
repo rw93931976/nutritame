@@ -3587,7 +3587,7 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
       </div>
       
       {/* Disclaimer Modal - Only shows when user tries to send without accepting */}
-      {!ack && (
+      {ack === false && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <Card className="w-full max-w-md mx-4" role="dialog" aria-labelledby="disclaimer-title">
             <CardHeader>
