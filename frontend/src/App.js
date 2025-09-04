@@ -3130,6 +3130,8 @@ const CoachRoute = ({ currentUser }) => {
       currentUser={currentUser} 
       disclaimerAccepted={ack}
       setPendingQuestion={setPendingQuestion}
+      ack={ack}
+      setAck={setAck}
     />
   );
 };
