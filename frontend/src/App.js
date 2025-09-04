@@ -1851,26 +1851,49 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     }
   }, [userProfile]);
 
-  // Handle AI Health Coach disclaimer acceptance
-  const handleAiCoachDisclaimerAccept = async () => {
+  // UNIFIED COMMON ACCEPT HANDLER
+  const handleUnifiedDisclaimerAccept = async (disclaimerType = 'global') => {
+    const beforeState = false; // Global context doesn't have ack state
+    const beforeLs = localStorage.getItem(COACH_ACK_KEY);
+    console.error(`[DISCLAIMER ACCEPT] type=${disclaimerType}`);
+    console.error(`[ACK TRACE] BEFORE - stateAck=${beforeState} lsAck=${beforeLs===null?null:beforeLs==='true'}`);
+    
     try {
-      if (!userProfile?.id) {
-        toast.error("User profile required");
-        return;
-      }
-
-      await aiCoachService.acceptDisclaimer(userProfile.id);
+      const userId = userProfile?.id || localStorage.getItem('nt_coach_user_id') || `demo-${Date.now()}`;
+      
+      await aiCoachService.acceptDisclaimer(userId);
+      
+      // Set canonical acceptance
+      setCoachAckTrue();
       setAiCoachDisclaimerAccepted(true);
       setShowAiCoachDisclaimer(false);
+      
+      console.error(`[ACK TRACE] AFTER  - stateAck=true lsAck=true`);
+      
+      // Trigger auto-resume for pending questions
+      const pending = localStorage.getItem('nt_coach_pending_question');
+      if (pending) {
+        localStorage.removeItem('nt_coach_pending_question');
+        console.error(`[RESUME] auto-sending pending question="${pending}"`);
+        
+        // Dispatch event for coach interface to pick up
+        setTimeout(() => {
+          const event = new CustomEvent('unifiedAutoResume', { detail: { message: pending } });
+          window.dispatchEvent(event);
+        }, 100);
+      }
+      
       toast.success("AI Health Coach disclaimer accepted");
-
-      // Refresh consultation limit after accepting disclaimer
-      const limitInfo = await aiCoachService.getConsultationLimit(userProfile.id);
-      setConsultationLimit(limitInfo);
     } catch (error) {
       console.error('Error accepting AI Coach disclaimer:', error);
       toast.error("Failed to accept disclaimer");
     }
+  };
+
+  // Handle AI Health Coach disclaimer acceptance (legacy - now calls unified)
+  const handleAiCoachDisclaimerAccept = async () => {
+    console.error('[DISCLAIMER OPEN] type=global');
+    await handleUnifiedDisclaimerAccept('global');
   };
 
   // Create new AI Coach session
