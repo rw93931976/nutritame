@@ -3,11 +3,16 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-route
 import axios from "axios";
 import "./App.css";
 
-// VERSION BANNER - Pending Resume and Logs
-console.error('[VERSION] v2.2.6-pending-resume-and-logs | commit=c0891a1');
+// VERSION BANNER - Unified Accept Single Send
+console.error('[VERSION] v2.2.7-unified-accept-single-send | commit=<hash>');
 
 // Performance logging
 console.error('[Perf] post-load tasks scheduled (no long setTimeout)');
+
+// CANONICAL ACCEPTANCE HELPERS
+const COACH_ACK_KEY = 'nt_coach_disclaimer_ack';
+const setCoachAckTrue = () => localStorage.setItem(COACH_ACK_KEY, 'true');
+const getCoachAck = () => localStorage.getItem(COACH_ACK_KEY) === 'true';
 
 // CRITICAL DEBUG: This should appear in console immediately
 console.log('🏗️ App.js file loaded - module executing');
