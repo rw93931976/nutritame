@@ -3203,7 +3203,7 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted }) =>
     console.log(`[${timestamp}] handleSendMessage called with input:`, body);
     
     // HARD GATE: If disclaimer not accepted, persist input and show disclaimer modal
-    if (!ack) {
+    if (!disclaimerAccepted) {
       console.log(`[${timestamp}] GATED: Disclaimer not accepted, persisting input and showing modal`);
       
       // Persist input without clearing it
