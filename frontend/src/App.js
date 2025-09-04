@@ -3000,6 +3000,9 @@ const CoachRoute = React.memo(({ currentUser }) => {
     const timestamp = performance.now().toFixed(1);
     console.error("[ACCEPT] clicked");
     
+    // REQUIRED LOGGING: Log ack state before accept
+    console.error("[ACK] before accept:", ack, localStorage.getItem('nt_coach_disclaimer_ack'));
+    
     // ZERO-FLICKER FIX: DO NOT clear inputText or localStorage here
     const beforeAccept = localStorage.getItem('nt_coach_pending_question');
     console.error(`[ACCEPT] localStorage before: ${beforeAccept}`);
