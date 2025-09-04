@@ -2979,17 +2979,20 @@ const CoachRoute = ({ currentUser }) => {
       await aiCoachService.acceptDisclaimer(userIdForDisclaimer);
       console.log('✅ Backend disclaimer acceptance recorded successfully for:', userIdForDisclaimer);
       
-      // Store the user ID for session creation consistency
+      // Store the user ID for session creation consistency  
       localStorage.setItem('nt_coach_user_id', userIdForDisclaimer);
       
       // Update frontend state and persistence
       setAck(true);
       localStorage.setItem('nt_coach_disclaimer_ack', 'true');
       
+      const afterAccept = localStorage.getItem('nt_coach_pending_question');
+      console.log(`[${performance.now().toFixed(1)}] localStorage after Accept: "${afterAccept}"`);
+      
       // Update pendingQuestion state from localStorage after disclaimer acceptance
       const storedQuestion = localStorage.getItem('nt_coach_pending_question');
       if (storedQuestion) {
-        console.log('🔄 Updating pendingQuestion state from localStorage:', storedQuestion);
+        console.log(`[${performance.now().toFixed(1)}] Updating pendingQuestion state from localStorage:`, storedQuestion);
         setPendingQuestion(storedQuestion);
       }
       
