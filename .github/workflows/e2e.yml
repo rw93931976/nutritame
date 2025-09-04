@@ -1,0 +1,15 @@
+name: e2e
+on: [push, pull_request]
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm ci
+      - run: npx playwright install --with-deps
+      - run: npm run start & npx wait-on http://localhost:3000
+      - env:
+          E2E_BASE_URL: http://localhost:3000
+        run: npx playwright test tests/coach-disclaimer.spec.ts --reporter=line
