@@ -3090,7 +3090,14 @@ const CoachRoute = ({ currentUser }) => {
 
   console.log('🎯 Rendering coach interface');
   // Render full coach interface component with pending question and current user profile
-  return <CoachInterface pendingQuestion={pendingQuestion} currentUser={currentUser} disclaimerAccepted={ack} />;
+  return (
+    <CoachInterface 
+      pendingQuestion={pendingQuestion} 
+      currentUser={currentUser} 
+      disclaimerAccepted={ack}
+      setPendingQuestion={setPendingQuestion}
+    />
+  );
 };
 
 // =============================================
