@@ -3098,6 +3098,15 @@ const CoachRoute = ({ currentUser }) => {
 // =============================================
 
 const CoachInterface = ({ pendingQuestion, currentUser }) => {
+  const timestamp = performance.now().toFixed(1);
+  console.log(`[${timestamp}] CoachInterface mounted`);
+  
+  // Add unmount logging
+  useEffect(() => {
+    return () => {
+      console.log(`[${performance.now().toFixed(1)}] CoachInterface unmounted`);
+    };
+  }, []);
   console.log('🎯 CoachInterface component mounted with pendingQuestion:', pendingQuestion, 'currentUser:', currentUser);
   
   // Basic AI Health Coach state
