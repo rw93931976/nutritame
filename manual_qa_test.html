@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manual QA Test - AI Coach Disclaimer Gating</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-step { margin: 20px 0; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .expected { background-color: #f0f8ff; }
+        .console-log { background-color: #f5f5f5; font-family: monospace; padding: 5px; margin: 5px 0; }
+        h2 { color: #0066cc; }
+        h3 { color: #cc6600; }
+    </style>
+</head>
+<body>
+    <h1>Manual QA Test - v2.2.5-ack-gate-fix</h1>
+    
+    <h2>Test Instructions</h2>
+    <p>Open Developer Console (F12) and navigate to <a href="http://localhost:3000/coach" target="_blank">http://localhost:3000/coach</a></p>
+    
+    <div class="test-step">
+        <h3>Step 1: Clear disclaimer state and reload</h3>
+        <p>In browser console, run:</p>
+        <div class="console-log">
+            localStorage.removeItem('nt_coach_disclaimer_ack');<br>
+            localStorage.removeItem('nt_coach_pending_question');<br>
+            location.reload();
+        </div>
+    </div>
+    
+    <div class="test-step">
+        <h3>Step 2: Type message without accepting disclaimer</h3>
+        <p>1. Type: <strong>create meal plan</strong> (do not accept disclaimer yet)</p>
+        <p>2. Click Send button</p>
+        <div class="expected">
+            <strong>Expected Console Log:</strong>
+            <div class="console-log">[SEND ATTEMPT] stateAck=false lsAck=false accepted=false</div>
+            <p>Note: No API call should be made, input should remain in field</p>
+        </div>
+    </div>
+    
+    <div class="test-step">
+        <h3>Step 3: Accept disclaimer</h3>
+        <p>Click "Accept & Continue" button on disclaimer modal</p>
+        <div class="expected">
+            <strong>Expected Console Logs:</strong>
+            <div class="console-log">
+                [ACK TRACE] BEFORE - stateAck=false lsAck=null<br>
+                [ACK TRACE] AFTER - stateAck=true lsAck=true
+            </div>
+            <p>Note: Input field should still contain "create meal plan"</p>
+        </div>
+    </div>
+    
+    <div class="test-step">
+        <h3>Step 4: Send message after acceptance</h3>
+        <p>Click Send button (input should still show "create meal plan")</p>
+        <div class="expected">
+            <strong>Expected Console Logs:</strong>
+            <div class="console-log">
+                [SEND ATTEMPT] stateAck=true lsAck=true accepted=true<br>
+                [PROCEEDING] ack=true — calling backend<br>
+                AI response found: 1
+            </div>
+            <p>Note: AI response should render in chat thread</p>
+        </div>
+    </div>
+    
+    <h2>Success Criteria</h2>
+    <ul>
+        <li>✅ Gating: After Accept, accepted===true and send triggers backend call</li>
+        <li>✅ Exact logging strings present as specified</li>
+        <li>✅ Input Persistence: Text entered before Accept remains visible after Accept and on first send</li>
+        <li>✅ Response: At least one AI message renders after send</li>
+        <li>✅ Version banner shows: [VERSION] v2.2.5-ack-gate-fix | commit=bc1ce2d</li>
+    </ul>
+    
+    <h2>Workbook Ledger Entry</h2>
+    <div class="console-log">
+        Date: 2025-09-04<br>
+        Version: v2.2.5-ack-gate-fix<br>
+        Commit: bc1ce2d<br>
+        Scope: AI Coach disclaimer accept gating + input persistence; minimal surgical changes<br>
+        Risk: Low<br>
+        Status: Awaiting manual QA verification logs<br>
+        Rollback target: v2.2.4-baseline-restore
+    </div>
+</body>
+</html>
