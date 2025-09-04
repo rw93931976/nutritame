@@ -3496,21 +3496,13 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
                   <Input
                     value={inputText}
                     onChange={(e) => {
-                      const value = e.target.value;
-                      const timestamp = performance.now().toFixed(1);
-                      
-                      // Mark as touched when user manually types
                       touched.current = true;
-                      setInputText(value);
+                      const v = e.target.value;
+                      setInputText(v);
+                      localStorage.setItem(k, v);
                       
-                      // Persist user input in case disclaimer appears
-                      if (value.trim()) {
-                        localStorage.setItem('nt_coach_pending_question', value);
-                        console.log(`[${timestamp}] onChange → wrote LS 'nt_coach_pending_question'="${value}"`);
-                      } else {
-                        localStorage.removeItem('nt_coach_pending_question');
-                        console.log(`[${timestamp}] onChange → removed LS 'nt_coach_pending_question'`);
-                      }
+                      const timestamp = performance.now().toFixed(1);
+                      console.log(`[${timestamp}] onChange → wrote LS '${k}'="${v}"`);
                     }}
                     placeholder="Ask about nutrition, meals, or recipes..."
                     className="flex-1 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
