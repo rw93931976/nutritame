@@ -3124,7 +3124,8 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
   // ZERO-FLICKER FIX: Initialize inputText directly from localStorage to prevent flicker
   const [inputText, setInputText] = useState(() => {
     const storedQuestion = localStorage.getItem(k) || '';
-    console.log(`[${performance.now().toFixed(1)}] inputText initialized from localStorage:`, storedQuestion);
+    console.error("[LS] read nt_coach_pending_question:", storedQuestion);
+    console.error("[REHYDRATE] initializing input with:", storedQuestion);
     return storedQuestion;
   });
   
