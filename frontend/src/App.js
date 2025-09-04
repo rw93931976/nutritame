@@ -3102,13 +3102,25 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
 
-  // CRITICAL FIX: Synchronize inputText with pendingQuestion to restore typed questions after disclaimer
+  // CRITICAL FIX: Track if user has manually edited input since mount to prevent auto-restore conflicts
+  const touched = useRef(false);
+
+  // CRITICAL FIX: Restore question from localStorage on mount if user hasn't manually edited
   useEffect(() => {
-    if (pendingQuestion && pendingQuestion.trim() && !inputText) {
-      console.log('🔄 Restoring pending question to input field:', pendingQuestion);
+    const storedQuestion = localStorage.getItem('nt_coach_pending_question') || '';
+    if (storedQuestion && !touched.current) {
+      console.log('🔄 Restoring pending question from localStorage (not touched):', storedQuestion);
+      setInputText(storedQuestion);
+    }
+  }, []); // Run once on mount only
+
+  // CRITICAL FIX: Also restore when pendingQuestion prop changes (after disclaimer accept)
+  useEffect(() => {
+    if (pendingQuestion && pendingQuestion.trim() && !touched.current) {
+      console.log('🔄 Restoring pending question from prop (not touched):', pendingQuestion);
       setInputText(pendingQuestion);
     }
-  }, [pendingQuestion, inputText]);
+  }, [pendingQuestion]);
 
   // Generate a proper user for demo/testing if no currentUser
   // Use consistent ID from localStorage if available to match disclaimer acceptance
