@@ -3094,7 +3094,14 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
   
   // Basic AI Health Coach state
   const [messages, setMessages] = useState([]);
-  const [inputText, setInputText] = useState('');
+  
+  // ZERO-FLICKER FIX: Initialize inputText directly from localStorage to prevent flicker
+  const [inputText, setInputText] = useState(() => {
+    const storedQuestion = localStorage.getItem('nt_coach_pending_question') || '';
+    console.log(`[${performance.now().toFixed(1)}] inputText initialized from localStorage:`, storedQuestion);
+    return storedQuestion;
+  });
+  
   const [isLoading, setIsLoading] = useState(false);
   const [consultationLimit, setConsultationLimit] = useState(null);
   const [aiCoachSessions, setAiCoachSessions] = useState([]);
@@ -3102,25 +3109,16 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
 
-  // CRITICAL FIX: Track if user has manually edited input since mount to prevent auto-restore conflicts
+  // Track if user has manually edited input since mount
   const touched = useRef(false);
 
-  // CRITICAL FIX: Restore question from localStorage on mount if user hasn't manually edited
+  // ZERO-FLICKER FIX: Only restore from pendingQuestion prop if it's different and user hasn't typed
   useEffect(() => {
-    const storedQuestion = localStorage.getItem('nt_coach_pending_question') || '';
-    if (storedQuestion && !touched.current) {
-      console.log('🔄 Restoring pending question from localStorage (not touched):', storedQuestion);
-      setInputText(storedQuestion);
-    }
-  }, []); // Run once on mount only
-
-  // CRITICAL FIX: Also restore when pendingQuestion prop changes (after disclaimer accept)
-  useEffect(() => {
-    if (pendingQuestion && pendingQuestion.trim() && !touched.current) {
-      console.log('🔄 Restoring pending question from prop (not touched):', pendingQuestion);
+    if (pendingQuestion && pendingQuestion.trim() && !touched.current && pendingQuestion !== inputText) {
+      console.log(`[${performance.now().toFixed(1)}] Restoring from pendingQuestion prop:`, pendingQuestion);
       setInputText(pendingQuestion);
     }
-  }, [pendingQuestion]);
+  }, [pendingQuestion, inputText]);
 
   // Generate a proper user for demo/testing if no currentUser
   // Use consistent ID from localStorage if available to match disclaimer acceptance
