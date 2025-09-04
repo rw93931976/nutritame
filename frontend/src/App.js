@@ -2960,7 +2960,12 @@ const CoachRoute = ({ currentUser }) => {
   }, []);
 
   const handleCoachDisclaimerAccept = async () => {
-    console.log('✅ Coach disclaimer accepted');
+    const timestamp = performance.now().toFixed(1);
+    console.log(`[${timestamp}] Accept clicked`);
+    
+    // ZERO-FLICKER FIX: DO NOT clear inputText or localStorage here
+    const beforeAccept = localStorage.getItem('nt_coach_pending_question');
+    console.log(`[${timestamp}] localStorage before Accept: "${beforeAccept}"`);
     
     try {
       // CRITICAL FIX: Use the component-scoped effectiveUser from CoachInterface
