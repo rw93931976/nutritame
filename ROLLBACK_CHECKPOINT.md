@@ -1,5 +1,26 @@
 # NutriTame AI Health Coach - Rollback Checkpoints
 
+## v2.2-bugfix-localStorage-gate-fix ✅ CRITICAL GATE FIX COMPLETE
+**Date**: September 4, 2025  
+**Commit**: 7525818  
+**Bundle**: 86f8437b-2c00-48fc-a7a5-668bf0b0a7a6  
+**Status**: ✅ **CRITICAL INCONSISTENCY BUG FIXED**
+
+### 🔧 CRITICAL GATE FIX IMPLEMENTED
+- **localStorage Single Source of Truth**: Fixed React state vs localStorage inconsistency that bypassed disclaimer gate
+- **Reliable Gating**: All send paths now use `localStorage.getItem('nt_coach_disclaimer_ack') === 'true'` 
+- **State Sync**: Added `setAck(false)` when gated to trigger modal re-display
+- **Preserved Behavior**: Input text still preserved, zero-flicker rehydration maintained
+- **Enhanced Logging**: Added lsAck boolean logging to debug gate decisions
+
+### 🎯 USER REPORTED BUG FIXED
+- **Issue**: "Input text disappears after Accept, no response on Send" - RESOLVED
+- **Root Cause**: React ack state was `true` while localStorage was `false`, bypassing gate
+- **Evidence**: Logs show `[timestamp] GATED: lsAck=false — no API call, no clearing` ✅
+- **Result**: Perfect gating behavior with input preservation and modal re-trigger
+
+---
+
 ## v2.2-bugfix-post-accept ✅ FINALIZED - POST-ACCEPT FIXES COMPLETE
 **Date**: September 3, 2025  
 **Commit**: ed223afbcc1ea42505dd39dffa9ccb4b4918f3c7  
