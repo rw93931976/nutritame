@@ -3344,8 +3344,15 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
       console.log('🎯 Sending message to AI with payload:', messagePayload);
       console.log('🎯 API URL:', `/api/coach/message`);
       
+      // Add one-shot logs for debugging
+      console.log(`[send] url=/api/coach/message, method=POST`);
+      console.log(`[send] request body (redacted): ${JSON.stringify({...messagePayload, message: messagePayload.message.substring(0, 50) + '...'})}`);
+      
       // Call real AI backend API
       const response = await aiCoachService.sendMessage(messagePayload);
+      
+      console.log(`[send] status=200`);
+      console.log(`[send] response shape: keys=${Object.keys(response || {}).join(',')}`);
       console.log('🎯 AI response received:', response);
       
       // Validate response
