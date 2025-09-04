@@ -3489,11 +3489,14 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
                 <div className="space-y-4">
                   {messages.map((msg) => (
                     <div key={msg.id} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                        msg.isUser 
-                          ? 'bg-gradient-to-r from-emerald-500 to-blue-500 text-white' 
-                          : 'bg-gray-100 text-gray-800'
-                      }`}>
+                      <div 
+                        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                          msg.isUser 
+                            ? 'bg-gradient-to-r from-emerald-500 to-blue-500 text-white' 
+                            : 'bg-gray-100 text-gray-800'
+                        }`}
+                        data-role={msg.isUser ? 'user-message' : 'ai-message'}
+                      >
                         <p className="text-sm">{msg.isUser ? msg.message : (msg.response || msg.message)}</p>
                       </div>
                     </div>
