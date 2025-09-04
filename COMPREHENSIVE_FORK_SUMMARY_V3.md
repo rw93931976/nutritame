@@ -188,7 +188,7 @@ DEMO_MODE=true
 LAUNCH_DATE=2025-10-01
 
 # Frontend (.env)  
-REACT_APP_BACKEND_URL=https://disclaimer-gate.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://nutritame-debug-2.preview.emergentagent.com
 ```
 
 ### **Service Management Commands**
