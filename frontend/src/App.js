@@ -3228,38 +3228,23 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     const body = inputText.trim();
     if (!body) return;
     
-    console.error("[SEND] triggered with input:", body);
-    console.error("[SEND] ack state:", ack);
-    const lsAck = localStorage.getItem('nt_coach_disclaimer_ack') === 'true';
-    console.error("[SEND] localStorage disclaimer_ack:", localStorage.getItem('nt_coach_disclaimer_ack'));
-    console.error("[SEND] lsAck boolean:", lsAck);
+    // Defensive Gating on Send - compute accepted
+    const stateAck = ack;
+    const lsAckString = localStorage.getItem('nt_coach_disclaimer_ack');
+    const lsAck = lsAckString === 'true';
+    const accepted = (stateAck === true) || (lsAckString === 'true');
     
-    // DEFENSIVE GATE: Check both localStorage and React state - proceed if either indicates accepted
-    if (!lsAck && !ack) {
-      console.error("[GATE] ack=false — blocked send");
-      
-      // Persist input without clearing it
-      localStorage.setItem('nt_coach_pending_question', body);
-      console.error("[LS] wrote nt_coach_pending_question (blocked):", body);
-      setPendingQuestion(body);
-      
-      // CRITICAL FIX: Do NOT reset ack state - only set if both are false
-      if (!ack) {
-        setAck(false);
-      }
-      
-      return; // CRITICAL: Exit early - no API call, no clearing
+    // REQUIRED LOGGING: Exact format specified
+    console.error(`[SEND ATTEMPT] stateAck=${stateAck} lsAck=${lsAck} accepted=${accepted}`);
+    
+    // If accepted===true, proceed to call backend; else block (no API call)
+    if (!accepted) {
+      // Block - no API call, no clearing
+      return;
     }
     
-    // SAFETY RAILS: Invariant to catch any bugs that bypass the gate
-    if (!ack) {
-      console.error('BUG: send with ack=false');
-      throw new Error('Send before accept');
-    }
-    
-    // Only reach here if disclaimer is accepted
-    const timestamp = performance.now().toFixed(1);
-    console.log(`[${timestamp}] PROCEEDING: disclaimer accepted — calling backend`);
+    // REQUIRED LOGGING: Exact format specified
+    console.error(`[PROCEEDING] ack=true — calling backend`);
     console.log('🚀 effectiveUser:', effectiveUser);
     console.log('🚀 currentSessionId:', currentSessionId);
     
