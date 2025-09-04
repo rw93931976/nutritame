@@ -2197,24 +2197,29 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
   const sendMessage = async (messageText = currentMessage) => {
     if (!messageText.trim() || loading) return;
     
-    // Use unified gating
+    // TOP of sendMessage: normalize ack before computing accepted (and before logging)
+    if (localStorage.getItem(COACH_ACK_KEY) !== 'true') {
+      // Dashboard doesn't have ack state, so we need to check global disclaimer acceptance
+    }
+
+    // Now compute and LOG:
     const stateAckBool = true; // Dashboard doesn't have ack state
-    const lsAckBool = getCoachAck();
+    const lsAckBool = localStorage.getItem(COACH_ACK_KEY) === 'true';
     const accepted = stateAckBool || lsAckBool;
     console.error(`[SEND ATTEMPT] stateAck=${stateAckBool} lsAck=${lsAckBool} accepted=${accepted}`);
     
+    // Gate before any side-effects; store pending; open disclaimer; return
     if (!accepted) {
       console.error('[GATED: ack=false — no API call, no clearing]');
       localStorage.setItem('nt_coach_pending_question', messageText.trim());
       console.error(`[PENDING] stored question="${messageText.trim()}"`);
       console.error('[DISCLAIMER OPEN] type=global');
       setShowAiCoachDisclaimer(true);
-      return;
+      return; // IMPORTANT: nothing else runs
     }
     
     console.error('[PROCEEDING] ack=true — calling backend');
 
-    console.log('Sending message:', messageText);
     setCurrentMessage("");
     setLoading(true);
 
@@ -2227,57 +2232,71 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     };
     setMessages(prev => [...prev, tempUserMsg]);
 
-    try {
-      console.log('Making API call to AI Health Coach...');
-      
-      // Use real AI Health Coach integration
-      const aiResponse = await sendAiCoachMessage(messageText);
-      
-      if (!aiResponse) {
-        // If no response (due to disclaimer or limit), remove user message
+    // Use unified send function with Dashboard-specific success/error handling
+    const effectiveUser = userProfile || { id: `demo-${Date.now()}` };
+    let sessionId = currentAiSession?.id;
+    
+    if (!sessionId) {
+      try {
+        const session = await aiCoachService.createSession(effectiveUser.id, "Dashboard Chat");
+        sessionId = session.id;
+        setCurrentAiSession(session);
+      } catch (error) {
+        console.error('❌ Session creation failed:', error);
         setMessages(prev => prev.slice(0, -1));
+        setLoading(false);
+        toast.error("Failed to create session. Please try again.");
         return;
       }
-
-      // Extract AI response text
-      const aiResponseText = aiResponse.ai_response?.text || "I apologize, but I couldn't generate a response. Please try again.";
-      
-      // Clean up AI response - remove markdown formatting
-      const cleanedResponse = aiResponseText
-        .replace(/\*\*(.*?)\*\*/g, '$1')  // Remove **bold**
-        .replace(/\*(.*?)\*/g, '$1')     // Remove *italic*
-        .replace(/#{1,6}\s/g, '')        // Remove # headers
-        .replace(/^\s*[-*+]\s/gm, '- ') // Normalize bullet points
-        .trim();
-
-      // Check if response contains meal planning and show shopping list button
-      const containsMealPlan = cleanedResponse.toLowerCase().includes('meal') && 
-                              (cleanedResponse.toLowerCase().includes('plan') || 
-                               cleanedResponse.toLowerCase().includes('breakfast') || 
-                               cleanedResponse.toLowerCase().includes('lunch') || 
-                               cleanedResponse.toLowerCase().includes('dinner'));
-      
-      if (containsMealPlan) {
-        setLastMealPlan(cleanedResponse);
-        setShowShoppingListButton(true);
-      }
-
-      // Add AI response to UI
-      setMessages(prev => [...prev.slice(0, -1), {
-        id: `ai-${Date.now()}`,
-        message: messageText,
-        response: cleanedResponse,
-        isUser: false
-      }]);
-
-      toast.success("Response received!");
-    } catch (error) {
-      console.error("Chat error:", error);
-      toast.error("Failed to get AI response. Please try again.");
-      setMessages(prev => prev.slice(0, -1)); // Remove failed message
-    } finally {
-      setLoading(false);
     }
+
+    await window.sendMessageInternal(
+      messageText,
+      sessionId,
+      effectiveUser,
+      (response, messages) => {
+        // Success callback
+        const aiResponseText = response.ai_response?.text || response.response || "I apologize, but I couldn't generate a response. Please try again.";
+        
+        // Clean up AI response - remove markdown formatting
+        const cleanedResponse = aiResponseText
+          .replace(/\*\*(.*?)\*\*/g, '$1')  // Remove **bold**
+          .replace(/\*(.*?)\*/g, '$1')     // Remove *italic*
+          .replace(/#{1,6}\s/g, '')        // Remove # headers
+          .replace(/^\s*[-*+]\s/gm, '- ') // Normalize bullet points
+          .trim();
+
+        // Check if response contains meal planning and show shopping list button
+        const containsMealPlan = cleanedResponse.toLowerCase().includes('meal') && 
+                                (cleanedResponse.toLowerCase().includes('plan') || 
+                                 cleanedResponse.toLowerCase().includes('breakfast') || 
+                                 cleanedResponse.toLowerCase().includes('lunch') || 
+                                 cleanedResponse.toLowerCase().includes('dinner'));
+        
+        if (containsMealPlan) {
+          setLastMealPlan(cleanedResponse);
+          setShowShoppingListButton(true);
+        }
+
+        // Add AI response to UI
+        setMessages(prev => [...prev.slice(0, -1), {
+          id: `ai-${Date.now()}`,
+          message: messageText,
+          response: cleanedResponse,
+          isUser: false
+        }]);
+
+        toast.success("Response received!");
+        setLoading(false);
+      },
+      (error) => {
+        // Error callback
+        console.error("Chat error:", error);
+        toast.error("Failed to get AI response. Please try again.");
+        setMessages(prev => prev.slice(0, -1)); // Remove failed message
+        setLoading(false);
+      }
+    );
   };
 
   const handleKeyPress = (e) => {
