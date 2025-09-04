@@ -2844,23 +2844,15 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
                     />
                     <Button 
                       onClick={() => {
-                        // Defensive Gating on Send - compute accepted (UPDATED FORMAT)
-                        const stateAck = true; // This component doesn't have access to state, assume true for localStorage check
-                        const lsAckString = localStorage.getItem('nt_coach_disclaimer_ack');
-                        const lsAck = lsAckString === 'true';
-                        const accepted = (stateAck === true) || (lsAckString === 'true');
-                        
-                        // REQUIRED LOGGING: Exact format specified
-                        console.error(`[SEND ATTEMPT] stateAck=${stateAck} lsAck=${lsAck} accepted=${accepted}`);
-                        
-                        // If accepted===true, proceed to call backend; else block (no API call)
-                        if (!accepted) {
-                          console.error('[GATED: ack=false — no API call, no clearing]');
+                        // BLOCK ALL SEND PATHS: Check disclaimer acceptance
+                        const ack = localStorage.getItem('nt_coach_disclaimer_ack') === 'true';
+                        if (!ack) {
+                          const timestamp = performance.now().toFixed(1);
+                          console.log(`[${timestamp}] GATED: ack=false — no API call, no clearing`);
+                          // Persist the message text
+                          localStorage.setItem('nt_coach_pending_question', currentMessage.trim());
                           return;
                         }
-                        
-                        // REQUIRED LOGGING: Exact format specified
-                        console.error(`[PROCEEDING] ack=true — calling backend`);
                         sendMessage();
                       }}
                       disabled={!currentMessage.trim() || loading}
