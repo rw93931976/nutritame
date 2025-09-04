@@ -2961,9 +2961,12 @@ const CoachRoute = ({ currentUser }) => {
   const [loading, setLoading] = useState(true);
   
   // Single source of truth for disclaimer acceptance with localStorage persistence
+  // Initialize as null to not show modal immediately - modal only appears when user tries to send
   const [ack, setAck] = useState(() => {
     const stored = localStorage.getItem('nt_coach_disclaimer_ack');
-    return stored === 'true';
+    if (stored === 'true') return true;
+    if (stored === 'false') return false; 
+    return null; // First visit - don't show modal until user tries to send
   });
 
   // State to preserve user question across disclaimer acceptance
