@@ -3171,6 +3171,12 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
 
   // Track if user has manually edited input since mount
   const touched = useRef(false);
+  // Single source of truth for Coach acceptance
+  const isCoachAccepted = () => {
+    const stateAckBool = ack === true;
+    const lsAckBool = localStorage.getItem('nt_coach_disclaimer_ack') === 'true';
+    return stateAckBool || lsAckBool;
+  };
 
   // STABILITY FIX: Only restore from pendingQuestion prop if it's different and user hasn't typed
   useEffect(() => {
