@@ -3353,13 +3353,12 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
       setInputText('');
       localStorage.removeItem(k);
       setPendingQuestion('');
+      console.error("[SEND] SUCCESS: input cleared");
       
       // CRITICAL FIX: Reset touched flag after successful send to allow future question restoration
       touched.current = false;
       
-      setIsLoading(false);
-      
-      console.log(`[${performance.now().toFixed(1)}] SUCCESS: Message sent, input cleared, localStorage cleaned`);;
+      setIsLoading(false);;
       
     } catch (error) {
       // Log non-2xx response details
