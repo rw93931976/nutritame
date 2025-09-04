@@ -3102,6 +3102,14 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
 
+  // CRITICAL FIX: Synchronize inputText with pendingQuestion to restore typed questions after disclaimer
+  useEffect(() => {
+    if (pendingQuestion && pendingQuestion.trim() && !inputText) {
+      console.log('🔄 Restoring pending question to input field:', pendingQuestion);
+      setInputText(pendingQuestion);
+    }
+  }, [pendingQuestion, inputText]);
+
   // Generate a proper user for demo/testing if no currentUser
   // Use consistent ID from localStorage if available to match disclaimer acceptance
   const storedUserId = localStorage.getItem('nt_coach_user_id');
