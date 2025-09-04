@@ -367,36 +367,22 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
       console.log('Sending profile data:', profileData);
 
       let response;
-      // Check if this is a real profile update (has diabetes_type) or should be treated as new profile creation
-      const isRealProfileUpdate = existingProfile?.id && existingProfile?.diabetes_type;
+      // FIXED: Check if this is a real profile update from database vs demo profile creation
+      // Demo users and new users should always create via POST, not update via PUT
+      const isDemoUser = existingProfile?.email?.includes('@demo.nutritame.com') || 
+                        existingProfile?.is_demo_user === true;
+      const isRealProfileUpdate = existingProfile?.id && 
+                                 existingProfile?.diabetes_type && 
+                                 !isDemoUser && 
+                                 existingProfile?.created_at; // Indicates it came from database
       
       if (isRealProfileUpdate) {
         console.log(`Updating existing profile with ID: ${existingProfile.id}`);
         response = await axios.put(`${API}/users/${existingProfile.id}`, profileData);
       } else {
-        console.log('Creating new profile');
-        // Mock profile creation for preview environment
-        const mockProfile = {
-          id: 'profile_' + Math.random().toString(36).substr(2, 9),
-          email: profileData.email || 'profile_' + Math.random().toString(36).substr(2, 8) + '@nutritame.com',
-          tenant_id: 'tenant_' + Math.random().toString(36).substr(2, 9),
-          diabetes_type: profileData.diabetes_type || 'type2',
-          age: profileData.age || null,
-          gender: profileData.gender || null,
-          activity_level: profileData.activity_level || null,
-          health_goals: profileData.health_goals || [],
-          food_preferences: profileData.food_preferences || [],
-          cultural_background: profileData.cultural_background || null,
-          allergies: profileData.allergies || [],
-          dislikes: profileData.dislikes || [],
-          cooking_skill: profileData.cooking_skill || null,
-          phone_number: profileData.phone_number || null,
-          subscription_tier: 'premium',
-          subscription_status: 'active',
-          is_demo_user: true,
-          created_at: new Date().toISOString()
-        };
-        response = { data: mockProfile };
+        console.log('Creating new profile (demo user or new user)');
+        // Create new profile via backend API for demo users and new users
+        response = await axios.post(`${API}/users`, profileData);
       }
 
       console.log('Profile save response:', response.data);
