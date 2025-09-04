@@ -3,8 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-route
 import axios from "axios";
 import "./App.css";
 
-// VERSION BANNER - ACK Gate Fix
-console.error('[VERSION] v2.2.5-ack-gate-fix | commit=bc1ce2d');
+// VERSION BANNER - ACK Gate Fix 2
+console.error('[VERSION] v2.2.5-ack-gate-fix-2 | commit=35baf0e');
 
 // CRITICAL DEBUG: This should appear in console immediately
 console.log('🏗️ App.js file loaded - module executing');
