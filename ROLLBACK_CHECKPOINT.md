@@ -1,5 +1,28 @@
 # NutriTame AI Health Coach - Rollback Checkpoints
 
+## v2.2-bugfix-question-gated-send ⚠️ IN PROGRESS - GATED SEND FIX
+**Date**: September 3, 2025  
+**Commit**: 3bba99e78777c18232916074184007fe2bc8a579  
+**Bundle**: Latest with gated send fix  
+**Status**: ⚠️ **IMPLEMENTATION COMPLETE - AWAITING USER CONFIRMATION**
+
+### 🔧 GATED SEND BUG FIX IMPLEMENTED
+- **Single Source of Truth**: Added `ack` state in CoachInterface from localStorage
+- **Block ALL Send Paths**: Added disclaimer gating to ALL send triggers (Enter, form submit, onClick)
+- **Safety Rails**: Added invariant to catch send attempts when ack=false
+- **Zero API Calls**: No backend calls until disclaimer accepted
+- **Input Preservation**: Text preserved through disclaimer flow, cleared only after 2xx success
+- **Console Logging**: Added timestamped logs to prove gating ("GATED: ack=false — no API call")
+
+### 🚨 CRITICAL FIXES APPLIED
+- **handleSendMessage**: Early return gate with `if (!ack)` and safety rails invariant
+- **sendMessage**: Added disclaimer check at function start with early return
+- **handleKeyPress**: Added disclaimer check before calling sendMessage  
+- **onClick Handler**: Added disclaimer check in button click handler
+- **Form Pattern**: Centralized to `<form onSubmit={handleSendMessage}>` with `e?.preventDefault?.()`
+
+---
+
 ## v2.1.1-ai-health-coach ✅ PRODUCTION READY - CRITICAL UX FIXES
 **Date**: September 3, 2025  
 **Commit**: 37156d64d2bbef07730a33c0536ac21cd1b6932a  
