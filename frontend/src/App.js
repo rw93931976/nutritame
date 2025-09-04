@@ -3140,7 +3140,7 @@ const CoachRoute = ({ currentUser }) => {
 // COACH INTERFACE COMPONENT
 // =============================================
 
-const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setPendingQuestion }) => {
+const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setPendingQuestion, ack, setAck }) => {
   const timestamp = performance.now().toFixed(1);
   console.log(`[${timestamp}] CoachInterface mounted`);
   
@@ -3150,13 +3150,7 @@ const CoachInterface = ({ pendingQuestion, currentUser, disclaimerAccepted, setP
       console.log(`[${performance.now().toFixed(1)}] CoachInterface unmounted`);
     };
   }, []);
-  console.log('🎯 CoachInterface component mounted with pendingQuestion:', pendingQuestion, 'currentUser:', currentUser);
-  
-  // SINGLE SOURCE OF TRUTH for disclaimer acceptance
-  const [ack, setAck] = useState(() => {
-    const stored = localStorage.getItem('nt_coach_disclaimer_ack');
-    return stored === 'true';
-  });
+  console.log('🎯 CoachInterface component mounted with pendingQuestion:', pendingQuestion, 'currentUser:', currentUser, 'ack:', ack);
   
   // Basic AI Health Coach state
   const [messages, setMessages] = useState([]);
