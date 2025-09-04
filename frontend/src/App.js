@@ -3097,6 +3097,7 @@ const CoachRoute = React.memo(({ currentUser }) => {
       setPendingQuestion={setPendingQuestion}
       ack={ack}
       setAck={setAck}
+      onDisclaimerAccept={handleCoachDisclaimerAccept}
     />
   );
 }, (prevProps, nextProps) => {
