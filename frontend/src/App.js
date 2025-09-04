@@ -3161,6 +3161,20 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
       setAck(true);
     }
     console.error(`[ACK INIT] stateAck=${ack === true} lsAck=${lsAckBool}`);
+    
+    // Listen for auto-send pending questions
+    const handleAutoSend = (event) => {
+      const { message } = event.detail;
+      if (message) {
+        sendMessageInternal(message);
+      }
+    };
+    
+    window.addEventListener('autoSendPending', handleAutoSend);
+    
+    return () => {
+      window.removeEventListener('autoSendPending', handleAutoSend);
+    };
   }, [setAck, ack]);
   console.log('🎯 CoachInterface component mounted with pendingQuestion:', pendingQuestion, 'currentUser:', currentUser, 'ack:', ack);
   
