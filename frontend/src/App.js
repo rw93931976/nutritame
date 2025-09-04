@@ -3392,10 +3392,15 @@ const CoachInterface = ({ pendingQuestion, currentUser }) => {
                   <Input
                     value={inputText}
                     onChange={(e) => {
-                      setInputText(e.target.value);
+                      // CRITICAL FIX: Mark as touched when user manually types
+                      touched.current = true;
+                      
+                      const value = e.target.value;
+                      setInputText(value);
+                      
                       // Persist user input in case disclaimer appears
-                      if (e.target.value.trim()) {
-                        localStorage.setItem('nt_coach_pending_question', e.target.value);
+                      if (value.trim()) {
+                        localStorage.setItem('nt_coach_pending_question', value);
                       } else {
                         localStorage.removeItem('nt_coach_pending_question');
                       }
