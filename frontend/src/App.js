@@ -3460,16 +3460,9 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     const body = inputText.trim();
     if (!body) return;
     
-    // TOP of handleSendMessage: normalize ack before computing accepted (and before logging)
-    if (ack === true && localStorage.getItem(COACH_ACK_KEY) !== 'true') {
-      localStorage.setItem(COACH_ACK_KEY, 'true'); // normalize first
-    }
-
-    // Now compute and LOG:
-    const stateAckBool = ack === true;
-    const lsAckBool = localStorage.getItem(COACH_ACK_KEY) === 'true';
-    const accepted = stateAckBool || lsAckBool;
-    console.error(`[SEND ATTEMPT] stateAck=${stateAckBool} lsAck=${lsAckBool} accepted=${accepted}`);
+    // TOP of handleSendMessage: Single source of truth = localStorage only
+    const accepted = localStorage.getItem(COACH_ACK_KEY) === 'true';
+    console.error(`[SEND ATTEMPT] stateAck=${ack} lsAck=${localStorage.getItem(COACH_ACK_KEY)} accepted=${accepted}`);
     
     // Gate before any side-effects; store pending; open disclaimer; return
     if (!accepted) {
