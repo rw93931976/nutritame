@@ -1957,6 +1957,9 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     }
   };
 
+  // Expose globally immediately when function is defined
+  window.onCoachConsentAccept = onCoachConsentAccept;
+
   // Expose globally so both Dashboard and CoachInterface can use it
   React.useEffect(() => {
     window.onCoachConsentAccept = onCoachConsentAccept;
