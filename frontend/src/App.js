@@ -3298,7 +3298,9 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
 
     // 4) Focus input + scroll to bottom
     inputRef?.current?.focus?.();
+    console.error('[UX] input focused');
     scrollToBottomSoon?.();
+    console.error('[UX] scrolled to bottom');
 
     // 5) Get effective user and session for the unified sender
     const effectiveUser = currentUser || { id: localStorage.getItem('nt_coach_user_id') || `demo-${Date.now()}` };
