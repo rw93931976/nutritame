@@ -3762,12 +3762,13 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
               </div>
               <div className="flex gap-3">
                 <Button 
+                  type="button"
                   onClick={() => {
-                    // Legacy compatibility - use prop handler
-                    if (typeof onDisclaimerAccept === 'function') {
-                      onDisclaimerAccept();
+                    // Use the global single consent handler
+                    if (typeof window.onCoachConsentAccept === 'function') {
+                      window.onCoachConsentAccept();
                     } else {
-                      console.error('❌ onDisclaimerAccept not available');
+                      console.error('❌ window.onCoachConsentAccept not available');
                     }
                   }}
                   className="flex-1 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700"
