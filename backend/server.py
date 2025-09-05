@@ -249,6 +249,20 @@ class DisclaimerAcceptance(BaseModel):
     accepted_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     disclaimer_text: str
 
+class ConsentLedger(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    disclaimer_version: str
+    consent_source: str  # "global_screen", "demo_auto"
+    is_demo: bool = False
+    consented_at_utc: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    consent_ui_hash: str
+    signature: str  # HMAC signature for verification
+    country: Optional[str] = None
+    locale: Optional[str] = None
+    user_agent: Optional[str] = None
+    # No raw IP stored for privacy
+
 class RestaurantSearchRequest(BaseModel):
     latitude: float
     longitude: float
