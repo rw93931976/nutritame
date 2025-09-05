@@ -1798,27 +1798,73 @@ async def get_coach_feature_flags():
 
 @api_router.post("/coach/accept-disclaimer")
 async def accept_disclaimer(request: dict):
-    """Accept AI Health Coach disclaimer"""
+    """Accept AI Health Coach disclaimer with consent ledger tracking"""
     try:
+        # Extract required fields
         user_id = request.get("user_id")
+        disclaimer_version = request.get("disclaimer_version", CURRENT_DISCLAIMER_VERSION)
+        consent_source = request.get("consent_source", "global_screen")
+        consent_ui_hash = request.get("consent_ui_hash", "")
+        is_demo = request.get("is_demo", False)
+        
+        # Optional fields
+        country = request.get("country")
+        locale = request.get("locale")
+        user_agent = request.get("user_agent")
+        
         if not user_id:
             raise HTTPException(status_code=400, detail="User ID required")
         
-        # Check if already accepted
-        already_accepted = await check_disclaimer_acceptance(user_id)
-        if already_accepted:
+        # Check if consent already exists for this user and version (append-only, but avoid duplicates)
+        existing_consent = await db.consent_ledger.find_one({
+            "user_id": user_id,
+            "disclaimer_version": disclaimer_version
+        })
+        
+        if existing_consent:
             return {"message": "Disclaimer already accepted", "accepted": True}
         
-        # Save acceptance
-        success = await save_disclaimer_acceptance(user_id)
-        if not success:
-            raise HTTPException(status_code=500, detail="Failed to save disclaimer acceptance")
+        # Create consent record
+        consented_at_utc = datetime.now(timezone.utc)
+        consent_id = str(uuid.uuid4())
         
-        return {"message": "Disclaimer accepted successfully", "accepted": True}
+        # Generate signature for integrity verification
+        signature = generate_consent_signature(
+            user_id, disclaimer_version, consent_source, is_demo, 
+            consented_at_utc, consent_ui_hash
+        )
+        
+        # Create ledger entry
+        consent_record = {
+            "id": consent_id,
+            "user_id": user_id,
+            "disclaimer_version": disclaimer_version,
+            "consent_source": consent_source,
+            "is_demo": is_demo,
+            "consented_at_utc": consented_at_utc,
+            "consent_ui_hash": consent_ui_hash,
+            "signature": signature,
+            "country": country,
+            "locale": locale,  
+            "user_agent": user_agent
+        }
+        
+        # Insert into consent ledger (append-only)
+        await db.consent_ledger.insert_one(consent_record)
+        
+        logging.info(f"Consent recorded: user_id={user_id}, version={disclaimer_version}, source={consent_source}, demo={is_demo}")
+        
+        return {
+            "message": "Disclaimer accepted successfully", 
+            "accepted": True,
+            "consent_id": consent_id,
+            "disclaimer_version": disclaimer_version
+        }
         
     except HTTPException:
         raise
     except Exception as e:
+        logging.error(f"Error accepting disclaimer: {e}")
         raise HTTPException(status_code=500, detail=f"Error accepting disclaimer: {str(e)}")
 
 @api_router.get("/coach/disclaimer-status/{user_id}")
