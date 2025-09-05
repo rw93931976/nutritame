@@ -3402,19 +3402,18 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     // Register this as the current send handler for auto-resume
     window.currentSendHandler = sendMessageInternal;
     
-    // Internal send function using unified sender
-    const isFirstMessage = messages.length === 0 || (messages.length === 1 && messages[0].isWelcome);
-    const messageCount = messages.filter(msg => msg.isUser).length;
+    // Always prefer the argument; ignore current input state for echo
+    const body = (messageBody ?? '').trim();
+    if (!body) return;
+
+    // UX: echo the user's message immediately
+    pushUserBubble(body);
+
+    // UX: clear the input NOW for both manual and auto-resume paths
+    if (typeof setInputText === 'function') setInputText('');
+    inputRef.current?.focus();
     
     setIsLoading(true);
-    const userMessage = {
-      id: Date.now(),
-      message: messageBody,
-      response: '',
-      isUser: true
-    };
-    
-    setMessages(prev => [...prev, userMessage]);
     
     // Get effective user for API calls
     const effectiveUser = currentUser || { id: localStorage.getItem('nt_coach_user_id') || `demo-${Date.now()}` };
@@ -3425,7 +3424,7 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
 
       // Use unified send function
       await window.sendMessageInternal(
-        messageBody, 
+        body, 
         sessionId, 
         effectiveUser,
         (response, messages) => {
@@ -3441,17 +3440,24 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
             setMessages(prev => [...prev, aiResponse]);
           }
           
-          // Clear input after successful send
-          setInputText('');
+          // Clear localStorage after successful send
           localStorage.removeItem('nt_coach_pending_question');
           setPendingQuestion('');
           touched.current = false;
+          
+          // UX: scroll and refocus after success
+          scrollToBottomSoon();
+          inputRef.current?.focus();
         },
         (error) => {
           // Error callback
           console.error('❌ Error sending message to AI:', error);
           setMessages(prev => prev.slice(0, -1)); // Remove failed message
           toast.error("Failed to get AI response. Please try again.");
+          
+          // UX: scroll and refocus after error
+          scrollToBottomSoon();
+          inputRef.current?.focus();
         }
       );
     } catch (error) {
