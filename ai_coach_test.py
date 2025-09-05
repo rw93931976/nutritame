@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 """
 AI Health Coach Backend Endpoint Tests
-TDD localStorage Gate Fix Verification
+v2.2.9 Session Reference Fixes Verification
 
-Tests all 9 core AI Health Coach endpoints after frontend fixes
-to ensure no regressions from TDD localStorage gate implementation.
+Tests all 9 core AI Health Coach endpoints after v2.2.9 session reference fixes
+to verify real AI integration with OpenAI GPT-4o-mini and ensure no regressions.
 """
 
 import requests
 import json
 import sys
 from datetime import datetime
+import uuid
 
 class AIHealthCoachTester:
     def __init__(self, base_url="https://nutritame-fix.preview.emergentagent.com"):
@@ -20,6 +21,7 @@ class AIHealthCoachTester:
         self.tests_passed = 0
         self.created_user_id = None
         self.ai_coach_session_id = None
+        self.test_results = []
 
     def run_test(self, name, method, endpoint, expected_status, data=None, headers=None):
         """Run a single API test"""
