@@ -3824,6 +3824,9 @@ function App() {
         window.COACH_TOKEN = demoData.access_token;       // optional global
         setCoachAuthToken(demoData.access_token);         // <-- 1A
         console.log("[AUTH] token set");                  // Required log
+        
+        // SURGICAL CHANGE 1: Demo flag propagation
+        localStorage.setItem('nt_is_demo', 'true');  // Demo path
       }
       
       setAppMode('app');
