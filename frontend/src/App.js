@@ -3724,11 +3724,11 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
               <div className="flex gap-3">
                 <Button 
                   onClick={() => {
-                    // Use the proper accept handler that has required ACK logging
-                    if (typeof onDisclaimerAccept === 'function') {
-                      onDisclaimerAccept();
+                    // Use the UX wrapper that handles resume polish
+                    if (typeof handleDisclaimerAcceptWithUX === 'function') {
+                      handleDisclaimerAcceptWithUX();
                     } else {
-                      console.error('❌ onDisclaimerAccept not available');
+                      console.error('❌ handleDisclaimerAcceptWithUX not available');
                     }
                   }}
                   className="flex-1 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700"
