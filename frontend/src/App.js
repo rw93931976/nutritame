@@ -2221,16 +2221,9 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     // Register this as the current send handler for auto-resume
     window.currentSendHandler = sendMessage;
     
-    // TOP of sendMessage: normalize ack before computing accepted (and before logging)
-    if (localStorage.getItem(COACH_ACK_KEY) !== 'true') {
-      // Dashboard doesn't have ack state, so we need to check global disclaimer acceptance
-    }
-
-    // Now compute and LOG:
-    const stateAckBool = true; // Dashboard doesn't have ack state
-    const lsAckBool = localStorage.getItem(COACH_ACK_KEY) === 'true';
-    const accepted = stateAckBool || lsAckBool;
-    console.error(`[SEND ATTEMPT] stateAck=${stateAckBool} lsAck=${lsAckBool} accepted=${accepted}`);
+    // TOP of sendMessage: Single source of truth = localStorage only
+    const accepted = localStorage.getItem(COACH_ACK_KEY) === 'true';
+    console.error(`[SEND ATTEMPT] stateAck=N/A lsAck=${localStorage.getItem(COACH_ACK_KEY)} accepted=${accepted}`);
     
     // Gate before any side-effects; store pending; open disclaimer; return
     if (!accepted) {
