@@ -1886,30 +1886,33 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     }
   }, [userProfile]);
 
-  // SINGLE CONSENT HANDLER - Only uses unified sender
+  // GLOBAL DISCLAIMER CONSENT HANDLER 
   const onCoachConsentAccept = async () => {
-    console.log('[WIRE] Accept -> onCoachConsentAccept');
+    console.log('[CONSENT] Global disclaimer accepted - calling backend to record consent');
     
     try {
-      localStorage.setItem(COACH_ACK_KEY, 'true');
-      setShowAiCoachDisclaimer?.(false);
-      if (window.coachSetAck) window.coachSetAck(true);
-
-      const pending = localStorage.getItem(PENDING_KEY);
-      if (pending) localStorage.removeItem(PENDING_KEY);
-
-      if (!pending?.trim()) return;
-
-      if (typeof window.unifiedCoachSend === 'function') {
-        console.log('[WIRE] using unified sender');
-        return window.unifiedCoachSend(pending);
+      const userId = localStorage.getItem('nt_coach_user_id') || `demo-${Date.now()}`;
+      
+      // Call consent endpoint from global disclaimer acceptance
+      const consentData = {
+        user_id: userId,
+        disclaimer_version: "v1.0-2025-09-05",
+        consent_source: "global_screen",
+        consent_ui_hash: await generateConsentUIHash() // To be implemented
+      };
+      
+      await api.post('/coach/accept-disclaimer', consentData);
+      console.log('[CONSENT] Consent recorded successfully');
+      
+      // Handle pending question if any
+      const pending = localStorage.getItem('nt_coach_pending_question');
+      if (pending) {
+        sendPendingWithUX(pending);
+        localStorage.removeItem('nt_coach_pending_question');
       }
-
-      console.error('[WIRE] unified sender missing unexpectedly; re-queuing pending');
-      localStorage.setItem(PENDING_KEY, pending);
       
     } catch (error) {
-      console.error('[WIRE] onCoachConsentAccept error', error);
+      console.error('[CONSENT] Failed to record consent:', error);
     }
   };
 
