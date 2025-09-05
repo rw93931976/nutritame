@@ -2234,50 +2234,45 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     
     // Use try/catch/finally to ensure UI flags are always cleared
     try {
-      const sessionId = await getOrCreateSessionId(currentChatId, setCurrentChatId, effectiveUser);
+      // Get session ID using unified approach
+      const userId = userProfile?.id || localStorage.getItem('nt_coach_user_id') || `demo-${Date.now()}`;
+      const sessionId = await getOrCreateSessionId(userId);
 
-      await window.sendMessageInternal(
-        messageText,
-        sessionId,
-        effectiveUser,
-        (response, messages) => {
-          // Success callback
-          const aiResponseText = response.ai_response?.text || response.response || "I apologize, but I couldn't generate a response. Please try again.";
-          
-          // Clean up AI response - remove markdown formatting
-          const cleanedResponse = aiResponseText
-            .replace(/\*\*(.*?)\*\*/g, '$1')  // Remove **bold**
-            .replace(/\*(.*?)\*/g, '$1')     // Remove *italic*
-            .replace(/#{1,6}\s/g, '')        // Remove # headers
-            .replace(/^\s*[-*+]\s/gm, '- ') // Normalize bullet points
-            .trim();
+      // Send message directly via unified sender 
+      const response = await window.unifiedCoachSend(messageText);
+      
+      // Success - process AI response
+      const aiResponseText = response.ai_response?.text || "I apologize, but I couldn't generate a response. Please try again.";
+      
+      // Clean up AI response - remove markdown formatting
+      const cleanedResponse = aiResponseText
+        .replace(/\*\*(.*?)\*\*/g, '$1')  // Remove **bold**
+        .replace(/\*(.*?)\*/g, '$1')     // Remove *italic*
+        .replace(/#{1,6}\s/g, '')        // Remove # headers
+        .replace(/^\s*[-*+]\s/gm, '- ') // Normalize bullet points
+        .trim();
 
-          // Check if response contains meal planning and show shopping list button
-          const containsMealPlan = cleanedResponse.toLowerCase().includes('meal') && 
-                                  (cleanedResponse.toLowerCase().includes('plan') || 
-                                   cleanedResponse.toLowerCase().includes('breakfast') || 
-                                   cleanedResponse.toLowerCase().includes('lunch') || 
-                                   cleanedResponse.toLowerCase().includes('dinner'));
-          
-          if (containsMealPlan) {
-            setLastMealPlan(cleanedResponse);
-            setShowShoppingListButton(true);
-          }
+      // Check if response contains meal planning and show shopping list button
+      const containsMealPlan = cleanedResponse.toLowerCase().includes('meal') && 
+                              (cleanedResponse.toLowerCase().includes('plan') || 
+                               cleanedResponse.toLowerCase().includes('breakfast') || 
+                               cleanedResponse.toLowerCase().includes('lunch') || 
+                               cleanedResponse.toLowerCase().includes('dinner'));
+      
+      if (containsMealPlan) {
+        setLastMealPlan(cleanedResponse);
+        setShowShoppingListButton(true);
+      }
 
-          // Add AI response to UI
-          setMessages(prev => [...prev.slice(0, -1), {
-            id: `ai-${Date.now()}`,
-            message: messageText,
-            response: cleanedResponse,
-            isUser: false
-          }]);
+      // Add AI response to UI
+      setMessages(prev => [...prev.slice(0, -1), {
+        id: `ai-${Date.now()}`,
+        message: messageText,
+        response: cleanedResponse,
+        isUser: false
+      }]);
 
-          toast.success("Response received!");
-        },
-        (error) => {
-          // Error callback
-          console.error("Chat error:", error);
-          toast.error("Failed to get AI response. Please try again.");
+      toast.success("Response received!");
           setMessages(prev => prev.slice(0, -1)); // Remove failed message
         }
       );
