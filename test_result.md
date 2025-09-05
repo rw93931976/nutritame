@@ -128,6 +128,17 @@ frontend:
       - working: true
         agent: "main"
         comment: "✅ PERFECT IMPLEMENTATION v2.2.13-kill-legacy-resume-hardreturn: Created unified onCoachConsentAccept handler as single source of truth for all disclaimer acceptance. ✅ LEGACY PATHS ELIMINATED: Completely removed all window.currentSendHandler assignments, CustomEvent('unifiedAutoResume') dispatching, and indirect resume fallbacks. ✅ HARD RETURN IMPLEMENTED: After sendPendingWithUX completes, function returns immediately preventing any fallthrough to legacy paths. ✅ ONCE-ONLY GUARD: acceptHandledRef prevents double-firing of accept handler. ✅ PERFECT UX SEQUENCE: Manual QA confirms exact log order: [ACK TRACE] BEFORE/AFTER → [RESUME] → [UX] accept handler → [UX] input cleared → [UX] user bubble echoed → [UX] resume toast shown → [UX] input focused → [UX] scrolled to bottom → [COACH REQ/RES/RENDER]. ✅ BACKEND INTEGRATION: API call to /api/coach/accept-disclaimer integrated into unified handler with error handling. ✅ ALL GREP ASSERTIONS PASS: currentSendHandler(0), unifiedAutoResume(0), resumeCoachAfterConsent(0), UX logs present, window.sendMessageInternal(4 - correct). ✅ REAL AI RESPONSE: Full end-to-end flow completes with actual AI Coach response. Input clears, user bubble echoes, green toast shows, focus/scroll work perfectly. Zero duplicate sends. Production ready."
+  - task: "AI Coach Messaging System Refactor (1A + 2A + 3B)"
+    implemented: true
+    working: false
+    file: "frontend/src/App.js, frontend/src/apiClient.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "✅ COMPREHENSIVE REFACTOR IMPLEMENTED: Created new unified messaging system according to specifications 1A + 2A + 3B. ✅ NEW API CLIENT (Choice 1A): Created src/apiClient.js with axios instance pointing to production URL and setCoachAuthToken() function for Bearer token management. Integrated token setting in both demo access (handleDemoAccess) and normal auth (payment success) flows with required '[AUTH] token set' logging. ✅ UNIFIED SESSION MANAGEMENT (Choice 2A): Replaced legacy session helpers with single-path getOrCreateSessionId() function using memory caching (cachedSessionId) and in-flight promise handling to prevent duplicate requests. Uses new api client with proper auth headers. ✅ ENHANCED MESSAGE HANDLING (Choice 3B): Implemented comprehensive message status tracking with echoUserBubble(), markBubble(), sendMessageUnified(), and retrySend() functions. Added immediate user message echoing with status indicators ('sending', 'sent', 'failed') and clickable retry functionality. ✅ UPDATED ACCEPT FLOW: Modified onCoachConsentAccept to use unified sendMessageUnified with proper handler parameters (userId, addMessage, updateMessage, setInputValue, openDisclaimer) while maintaining fallback to existing sendPendingWithUX. ✅ GLOBAL FUNCTION EXPOSURE: Exposed all necessary functions from CoachInterface to window object for Dashboard access: sendMessageUnified, coachAddMessage, coachUpdateMessage, coachSetInputValue, coachInputFocus. ✅ UI STATUS INDICATORS: Added message status UI with 'Sending…' and 'Failed — Retry' displays with functional retry buttons. Preserved existing legacy window.sendMessageInternal for compatibility. Ready for testing with first send attempt and retry functionality."
   - task: "Profile Submission Bug Fix"
     implemented: true
     working: true
