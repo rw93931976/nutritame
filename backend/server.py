@@ -1077,10 +1077,35 @@ User Profile Context:
         return "I'm sorry, I'm having trouble connecting right now. Please try again in a moment. If the issue persists, please contact support."
 
 async def check_disclaimer_acceptance(user_id: str) -> bool:
-    """Check if user has accepted the disclaimer"""
+    """Check if user has accepted the disclaimer using consent ledger"""
     try:
-        disclaimer_doc = await db.disclaimer_acceptances.find_one({"user_id": user_id})
-        return disclaimer_doc is not None
+        # Check in new consent ledger first
+        consent_doc = await db.consent_ledger.find_one({
+            "user_id": user_id,
+            "disclaimer_version": CURRENT_DISCLAIMER_VERSION
+        })
+        
+        if consent_doc:
+            # Verify signature for integrity
+            if verify_consent_signature(consent_doc):
+                return True
+            else:
+                logging.warning(f"Invalid consent signature for user {user_id}")
+        
+        # For demo mode, also check if there's a demo consent record
+        demo_consent = await db.consent_ledger.find_one({
+            "user_id": user_id,
+            "disclaimer_version": CURRENT_DISCLAIMER_VERSION,
+            "is_demo": True
+        })
+        
+        if demo_consent and verify_consent_signature(demo_consent):
+            return True
+            
+        # Fallback: check old disclaimer_acceptances for backward compatibility
+        old_disclaimer_doc = await db.disclaimer_acceptances.find_one({"user_id": user_id})
+        return old_disclaimer_doc is not None
+        
     except Exception as e:
         logging.error(f"Error checking disclaimer acceptance: {e}")
         return False
