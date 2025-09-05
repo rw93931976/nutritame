@@ -3122,11 +3122,7 @@ const CoachRoute = React.memo(({ currentUser }) => {
     checkFeatureFlags();
   }, []);
 
-  // REMOVED: handleCoachDisclaimerAccept - replaced by onCoachConsentAccept in CoachInterface
-  // Dummy handler since CoachInterface now handles consent internally
-  const handleCoachDisclaimerAccept = async () => {
-    console.error('[LEGACY] handleCoachDisclaimerAccept called - should use onCoachConsentAccept in CoachInterface');
-  };
+  // REMOVED: All legacy accept handlers - replaced by onCoachConsentAccept in Dashboard
   
   const handleCoachDisclaimerDecline = () => {
     console.log('❌ Coach disclaimer declined - redirecting to home');
