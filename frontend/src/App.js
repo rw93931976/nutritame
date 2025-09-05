@@ -1927,13 +1927,9 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
         console.error(`[RESUME] auto-sending pending question="${pending}"`);
         console.error('[UX] accept handler: with-ux resume path engaged');
         
-        // Direct call to sendPendingWithUX - Note: this calls whatever handler is registered
-        // The CoachInterface should handle this via handleDisclaimerAcceptWithUX instead
-        if (window.currentSendHandler) {
-          await window.currentSendHandler(pending);
-        } else {
-          console.error('❌ No currentSendHandler available for unified resume');
-        }
+        // REMOVED: All legacy fallback mechanisms (window.currentSendHandler, CustomEvent)
+        // Resume should be handled by handleDisclaimerAcceptWithUX in the CoachInterface instead
+        console.error('❌ Legacy unified resume path - should use handleDisclaimerAcceptWithUX in CoachInterface');
       }
       
       toast.success("AI Health Coach disclaimer accepted");
