@@ -1685,6 +1685,9 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
   const [searchResults, setSearchResults] = useState(null);
   const [showSearchResults, setShowSearchResults] = useState(false);
 
+  // Consent acceptance guard
+  const acceptHandledRef = useRef(false);
+
   // Auto-scroll to show start of latest AI response (not the very bottom)
   const scrollToLatestResponse = () => {
     // Find all messages
