@@ -3529,6 +3529,18 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     }
   };
 
+  // Expose unified sender globally after sendMessage is defined
+  useEffect(() => {
+    if (typeof window !== 'undefined' && typeof sendMessage === 'function') {
+      window.unifiedCoachSend = async (text) => sendMessage(text);
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        delete window.unifiedCoachSend;
+      }
+    };
+  }, [sendMessage]);
+
   const handleSendMessage = async (e) => {
     e?.preventDefault?.();
     
