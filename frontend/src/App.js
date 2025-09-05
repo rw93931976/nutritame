@@ -18,23 +18,37 @@ const PENDING_KEY = 'nt_coach_pending_question';
 const setCoachAckTrue = () => localStorage.setItem(COACH_ACK_KEY, 'true');
 const getCoachAck = () => localStorage.getItem(COACH_ACK_KEY) === 'true';
 
-// LEGACY SEND FUNCTION - DISABLED to prevent wrong endpoint calls
-window.sendMessageInternal = async (body, sessionId, effectiveUser, onSuccess, onError) => {
-  console.error(`[WIRE] LEGACY sendMessageInternal called - redirecting to unified sender`);
-  console.error(`[WIRE] This should not happen - check for remaining legacy calls`);
+// UNIFIED SENDER - Direct API integration (no legacy paths)
+window.unifiedCoachSend = async (messageText) => {
+  console.error(`[UNIFIED] unifiedCoachSend called with: "${messageText}"`);
   
-  // Redirect to unified sender with warning
-  if (typeof window.unifiedCoachSend === 'function') {
-    console.error(`[WIRE] Redirecting to unified sender`);
-    try {
-      await window.unifiedCoachSend(body);
-      if (onSuccess) onSuccess({ ai_response: { text: 'Legacy call redirected successfully' } });
-    } catch (error) {
-      if (onError) onError(error);
+  try {
+    // Get user ID
+    const userId = localStorage.getItem('nt_coach_user_id') || `demo-${Date.now()}`;
+    
+    // Accept disclaimer if needed  
+    if (!getCoachAck()) {
+      console.error(`[UNIFIED] Accepting disclaimer first`);
+      await api.post('/coach/accept-disclaimer', { user_id: userId });
+      setCoachAckTrue();
     }
-  } else {
-    console.error(`[WIRE] No unified sender available for legacy redirect`);
-    if (onError) onError(new Error('Legacy sender disabled, unified sender not available'));
+    
+    // Get or create session
+    const sessionId = await getOrCreateSessionId(userId);
+    console.error(`[UNIFIED] Using session: ${sessionId}`);
+    
+    // Send message via API client
+    const response = await sendCoachMessage({ 
+      sessionId, 
+      message: messageText 
+    });
+    
+    console.error(`[UNIFIED] Message sent successfully, AI response:`, response.ai_response?.text?.substring(0, 100));
+    return response;
+    
+  } catch (error) {
+    console.error(`[UNIFIED] Send failed:`, error);
+    throw error;
   }
 };
 
