@@ -4055,6 +4055,14 @@ function App() {
       setDemoMode(true);
       setDemoUser(demoData.user);
       setAuthToken(demoData.access_token); // Fixed: use access_token not token
+      
+      // Wire token once (choice 1A) - Set auth token immediately after demo access
+      if (demoData?.access_token) {
+        window.COACH_TOKEN = demoData.access_token;       // optional global
+        setCoachAuthToken(demoData.access_token);         // <-- 1A
+        console.log("[AUTH] token set");                  // Required log
+      }
+      
       setAppMode('app');
       
       // CRITICAL FIX: Set up profile with meaningful demo data for AI Coach
