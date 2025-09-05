@@ -3396,21 +3396,12 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
       return;
     }
     
-    // TOP of handleSendMessage: Single source of truth = localStorage only
-    const accepted = localStorage.getItem(COACH_ACK_KEY) === 'true';
-    console.error(`[SEND ATTEMPT] stateAck=${ack} lsAck=${localStorage.getItem(COACH_ACK_KEY)} accepted=${accepted}`);
+    // HOTFIX: No more disclaimer gating - proceed directly
+    const body = messageText || inputText.trim();
+    if (!body) return;
     
-    // Gate before any side-effects; store pending; open disclaimer; return
-    if (!accepted) {
-      console.error('[GATED: ack=false — no API call, no clearing]');
-      localStorage.setItem('nt_coach_pending_question', body);
-      console.error(`[PENDING] stored question="${body}"`);
-      console.error('[DISCLAIMER OPEN] type=coach');
-      setAck(false); // shows the modal
-      return; // IMPORTANT: nothing else runs
-    }
-    
-    console.error('[PROCEEDING] ack=true — calling backend');
+    console.log('[SEND] Enter key pressed, sending message...');
+    setInputText('');
     await sendMessage(body);
   };
 
