@@ -1978,12 +1978,8 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
         toast.error("User profile required");
         return;
       }
-
-      // Check if user has accepted disclaimer
-      if (!aiCoachDisclaimerAccepted) {
-        setShowAiCoachDisclaimer(true);
-        return;
-      }
+      
+      // No more disclaimer gating - proceed directly
 
       // Check consultation limits
       if (consultationLimit && !consultationLimit.can_use) {
