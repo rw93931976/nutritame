@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
 import { Button } from './components/ui/button';
 import { Alert, AlertDescription } from './components/ui/alert';
 import { AlertTriangle, Check } from 'lucide-react';
+import { api } from './apiClient';
 
 const MedicalDisclaimer = ({ onAccept, onDecline }) => {
   const [hasRead, setHasRead] = useState(false);
