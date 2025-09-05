@@ -13,6 +13,8 @@ console.error('[VERSION] v2.2.13-kill-legacy-resume-hardreturn | commit=6fe794b'
 console.error('[Perf] post-load tasks scheduled (no long setTimeout)');
 
 // CONSTANTS (no more coach ACK gating)
+const COACH_ACK_KEY = 'nt_coach_ack';
+const PENDING_KEY = 'nt_coach_pending_question';
 
 // UNIFIED SENDER - Direct API integration (no disclaimer gating)
 window.unifiedCoachSend = async (messageText) => {
