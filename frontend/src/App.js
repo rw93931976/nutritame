@@ -1890,11 +1890,13 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
 
   // Generate consent UI hash for tracking consent UI version
   const generateConsentUIHash = async () => {
-    // Simple hash based on current timestamp and UI version
-    // In production, this could be a hash of the actual UI elements
-    const uiVersion = "v1.0-2025-09-05";
-    const timestamp = Date.now();
-    return `${uiVersion}-${timestamp}`;
+    // Generate SHA256 hash of the disclaimer text for tracking
+    const disclaimerText = "IMPORTANT MEDICAL DISCLAIMER - NutriTame provides meal planning guidance for educational purposes only...";
+    const encoder = new TextEncoder();
+    const data = encoder.encode(disclaimerText + "v1.0-2025-09-05");
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   };
 
   // GLOBAL DISCLAIMER CONSENT HANDLER 
