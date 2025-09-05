@@ -188,7 +188,7 @@ DEMO_MODE=true
 LAUNCH_DATE=2025-10-01
 
 # Frontend (.env)  
-REACT_APP_BACKEND_URL=https://diabetic-meal-fix.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://nutritame-fix.preview.emergentagent.com
 ```
 
 ### **Service Management Commands**
