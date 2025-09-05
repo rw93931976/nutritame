@@ -2950,11 +2950,9 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
                     />
                     <Button 
                       onClick={() => {
-                        // Use unified gating
-                        const stateAckBool = true; // Dashboard doesn't have ack state
-                        const lsAckBool = getCoachAck();
-                        const accepted = stateAckBool || lsAckBool;
-                        console.error(`[SEND ATTEMPT] stateAck=${stateAckBool} lsAck=${lsAckBool} accepted=${accepted}`);
+                        // Use localStorage-only gating
+                        const accepted = localStorage.getItem(COACH_ACK_KEY) === 'true';
+                        console.error(`[SEND ATTEMPT] stateAck=N/A lsAck=${localStorage.getItem(COACH_ACK_KEY)} accepted=${accepted}`);
                         
                         if (!accepted) {
                           console.error('[GATED: ack=false — no API call, no clearing]');
