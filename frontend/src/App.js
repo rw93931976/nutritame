@@ -2239,26 +2239,9 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
   const sendMessage = async (messageText = currentMessage) => {
     if (!messageText.trim() || loading) return;
     
-    // Register this as the current send handler for auto-resume
-    // REMOVED: window.currentSendHandler = sendMessage; (legacy fallback removed)
-    
-    // TOP of sendMessage: Single source of truth = localStorage only
-    const accepted = localStorage.getItem(COACH_ACK_KEY) === 'true';
-    console.error(`[SEND ATTEMPT] stateAck=N/A lsAck=${localStorage.getItem(COACH_ACK_KEY)} accepted=${accepted}`);
-    
-    // Gate before any side-effects; store pending; open disclaimer; return
-    if (!accepted) {
-      console.error('[GATED: ack=false — no API call, no clearing]');
-      localStorage.setItem('nt_coach_pending_question', messageText.trim());
-      console.error(`[PENDING] stored question="${messageText.trim()}"`);
-      console.error('[NO MORE DISCLAIMER GATING] proceeding directly');
-      // No more disclaimer modal - proceed with message send
-    }
-    
-    console.error('[PROCEEDING] ack=true — calling backend');
-
+    console.log('[SEND] Starting send with text:', messageText);
     setCurrentMessage("");
-    setLoading(true);
+    setLoading(true);  // HOTFIX: Button disabled while sending
 
     // Add user message to UI
     const tempUserMsg = {
@@ -2269,16 +2252,9 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     };
     setMessages(prev => [...prev, tempUserMsg]);
 
-    // Use unified send function with Dashboard-specific success/error handling
-    const effectiveUser = userProfile || { id: `demo-${Date.now()}` };
-    
-    // Use try/catch/finally to ensure UI flags are always cleared
+    // HOTFIX: Strict await with unified sender only
     try {
-      // Get session ID using unified approach
-      const userId = userProfile?.id || localStorage.getItem('nt_coach_user_id') || `demo-${Date.now()}`;
-      const sessionId = await getOrCreateSessionId(userId);
-
-      // Send message directly via unified sender 
+      console.log('[SEND] Calling unified sender...');
       const response = await window.unifiedCoachSend(messageText);
       
       // Success - process AI response
