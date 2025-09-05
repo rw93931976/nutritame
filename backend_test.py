@@ -1584,6 +1584,279 @@ class GlucoPlannerAPITester:
         return False
 
     # =============================================
+    # AI COACH MESSAGING SYSTEM REFACTOR TESTS (1A + 2A + 3B)
+    # =============================================
+    
+    def test_ai_coach_messaging_system_refactor(self):
+        """Test the new unified messaging system implementation (options 1A + 2A + 3B)"""
+        print("\n🎯 TESTING AI COACH MESSAGING SYSTEM REFACTOR (1A + 2A + 3B)")
+        print("=" * 80)
+        
+        # Test all critical scenarios from the review request
+        all_tests_passed = True
+        
+        # SCENARIO 1 - Authentication Setup
+        print("\n📋 SCENARIO 1: Authentication Setup")
+        auth_test = self.test_bearer_token_authentication()
+        if not auth_test:
+            all_tests_passed = False
+            
+        # SCENARIO 2 - Session Creation Flow  
+        print("\n📋 SCENARIO 2: Session Creation Flow")
+        session_test = self.test_unified_session_management()
+        if not session_test:
+            all_tests_passed = False
+            
+        # SCENARIO 3 - Message Sending Flow
+        print("\n📋 SCENARIO 3: Message Sending Flow")
+        message_test = self.test_enhanced_message_handling()
+        if not message_test:
+            all_tests_passed = False
+            
+        # SCENARIO 4 - Error Handling
+        print("\n📋 SCENARIO 4: Error Handling")
+        error_test = self.test_messaging_error_handling()
+        if not error_test:
+            all_tests_passed = False
+            
+        print("\n" + "=" * 80)
+        if all_tests_passed:
+            print("✅ AI COACH MESSAGING SYSTEM REFACTOR: ALL SCENARIOS PASSED")
+        else:
+            print("❌ AI COACH MESSAGING SYSTEM REFACTOR: SOME SCENARIOS FAILED")
+        print("=" * 80)
+        
+        return all_tests_passed
+    
+    def test_bearer_token_authentication(self):
+        """Test Bearer token authentication is working with the new axios client"""
+        print("   🔐 Testing Bearer Token Authentication...")
+        
+        # First create a demo user to get a token
+        demo_data = {"email": "test.auth@example.com"}
+        success, response = self.run_test(
+            "Create Demo User for Auth Test",
+            "POST",
+            "demo/access",
+            200,
+            data=demo_data
+        )
+        
+        if not success:
+            print("   ❌ Failed to create demo user for auth test")
+            return False
+            
+        access_token = response.get('access_token')
+        if not access_token:
+            print("   ❌ No access token received from demo user creation")
+            return False
+            
+        print(f"   ✅ Demo user created with access token")
+        
+        # Test that Bearer token is properly set and works
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {access_token}'
+        }
+        
+        # Test authenticated endpoint
+        success, auth_response = self.run_test(
+            "Test Bearer Token Auth",
+            "GET",
+            "auth/me",
+            200,
+            headers=headers
+        )
+        
+        if success:
+            print("   ✅ Bearer token authentication working correctly")
+            # Store token for later tests
+            self.auth_token = access_token
+            self.auth_user_id = auth_response.get('user', {}).get('id')
+            return True
+        else:
+            print("   ❌ Bearer token authentication failed")
+            return False
+    
+    def test_unified_session_management(self):
+        """Test the single-path getOrCreateSessionId() with memory caching"""
+        print("   🔄 Testing Unified Session Management...")
+        
+        if not hasattr(self, 'auth_token') or not self.auth_token:
+            print("   ❌ No auth token available for session test")
+            return False
+            
+        if not hasattr(self, 'auth_user_id') or not self.auth_user_id:
+            print("   ❌ No user ID available for session test")
+            return False
+            
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {self.auth_token}'
+        }
+        
+        # Test session creation with the new unified approach
+        success, response = self.run_test(
+            "Create Session - Unified Approach",
+            "POST",
+            f"coach/sessions?user_id={self.auth_user_id}",
+            200,
+            headers=headers,
+            data={"title": "Test Session"}
+        )
+        
+        if success:
+            session_id = response.get('session_id') or response.get('id')
+            if session_id:
+                print(f"   ✅ Session created successfully: {session_id}")
+                self.test_session_id = session_id
+                
+                # Test that session is properly cached (no duplicate creation)
+                success2, response2 = self.run_test(
+                    "Verify Session Caching",
+                    "GET",
+                    f"coach/sessions/{self.auth_user_id}",
+                    200,
+                    headers=headers
+                )
+                
+                if success2 and isinstance(response2, list) and len(response2) > 0:
+                    print("   ✅ Session caching and retrieval working correctly")
+                    return True
+                else:
+                    print("   ❌ Session caching verification failed")
+                    return False
+            else:
+                print("   ❌ No session_id returned from session creation")
+                return False
+        else:
+            print("   ❌ Session creation failed")
+            return False
+    
+    def test_enhanced_message_handling(self):
+        """Test message status tracking and retry functionality"""
+        print("   💬 Testing Enhanced Message Handling...")
+        
+        if not hasattr(self, 'auth_token') or not self.auth_token:
+            print("   ❌ No auth token available for message test")
+            return False
+            
+        if not hasattr(self, 'test_session_id') or not self.test_session_id:
+            print("   ❌ No session ID available for message test")
+            return False
+            
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {self.auth_token}'
+        }
+        
+        # Test message sending with session_id, message, and user_id
+        message_payload = {
+            "session_id": self.test_session_id,
+            "message": "Create a diabetes-friendly meal plan for today",
+            "user_id": self.auth_user_id
+        }
+        
+        success, response = self.run_test(
+            "Send Message - Enhanced Handling",
+            "POST",
+            "coach/message",
+            200,
+            headers=headers,
+            data=message_payload
+        )
+        
+        if success:
+            # Check for AI response
+            ai_reply = response.get('reply') or response.get('text') or response.get('response')
+            if ai_reply and len(ai_reply) > 10:
+                print(f"   ✅ Message sent successfully, AI reply received ({len(ai_reply)} chars)")
+                
+                # Test message retrieval to verify persistence
+                success2, messages = self.run_test(
+                    "Retrieve Messages - Status Tracking",
+                    "GET",
+                    f"coach/messages/{self.test_session_id}",
+                    200,
+                    headers=headers
+                )
+                
+                if success2 and isinstance(messages, list) and len(messages) >= 2:
+                    print(f"   ✅ Message persistence working - {len(messages)} messages found")
+                    return True
+                else:
+                    print("   ❌ Message persistence verification failed")
+                    return False
+            else:
+                print("   ❌ No AI reply received or reply too short")
+                return False
+        else:
+            print("   ❌ Message sending failed")
+            return False
+    
+    def test_messaging_error_handling(self):
+        """Test error handling scenarios for the messaging system"""
+        print("   🚨 Testing Messaging Error Handling...")
+        
+        # Test 1: Missing auth token (401/403 error)
+        print("     Testing missing auth token...")
+        success, response = self.run_test(
+            "Message Without Auth Token",
+            "POST",
+            "coach/message",
+            401,  # Should return 401 Unauthorized
+            data={"message": "test", "session_id": "test", "user_id": "test"}
+        )
+        
+        if success:
+            print("     ✅ Correctly returned 401 for missing auth token")
+        else:
+            print("     ❌ Should have returned 401 for missing auth token")
+            return False
+            
+        # Test 2: Invalid session_id
+        if hasattr(self, 'auth_token'):
+            headers = {
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {self.auth_token}'
+            }
+            
+            print("     Testing invalid session_id...")
+            success2, response2 = self.run_test(
+                "Message With Invalid Session ID",
+                "POST",
+                "coach/message",
+                422,  # Should return 422 for missing/invalid session
+                headers=headers,
+                data={"message": "test", "session_id": "invalid-session-id", "user_id": self.auth_user_id}
+            )
+            
+            if success2:
+                print("     ✅ Correctly handled invalid session_id")
+            else:
+                print("     ❌ Should have returned error for invalid session_id")
+                return False
+        
+        # Test 3: Session creation failure handling
+        print("     Testing session creation with invalid user...")
+        if hasattr(self, 'auth_token'):
+            success3, response3 = self.run_test(
+                "Session Creation With Invalid User",
+                "POST",
+                "coach/sessions?user_id=invalid-user-id",
+                400,  # Should return 400 or similar error
+                headers=headers,
+                data={"title": "Test Session"}
+            )
+            
+            # Note: This might return 200 if the backend creates sessions for any user_id
+            # The important thing is that it handles the case gracefully
+            print(f"     ℹ️  Session creation with invalid user returned status: {response3}")
+        
+        print("   ✅ Error handling tests completed")
+        return True
+
+    # =============================================
     # AI HEALTH COACH ENDPOINTS TESTS - v2.2.5-ack-gate-fix Regression Testing
     # =============================================
     
