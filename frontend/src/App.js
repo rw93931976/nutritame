@@ -135,7 +135,8 @@ const aiCoachService = {
   // Session management
   async createSession(userId, title = "New Conversation") {
     try {
-      const response = await axios.post(`${API}/coach/sessions?user_id=${userId}`, {
+      const response = await axios.post(`${API}/coach/sessions`, {
+        user_id: userId,
         title: title
       });
       return response.data;
