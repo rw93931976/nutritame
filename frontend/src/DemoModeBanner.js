@@ -21,10 +21,10 @@ const DemoModeBanner = ({ isMinimized = false, onToggleMinimize = null }) => {
   const [isCollapsed, setIsCollapsed] = useState(isMinimized);
 
   useEffect(() => {
-    // Load demo configuration - run once only, no retry on 404
+    // Load demo configuration - use backend demo endpoint
     const loadDemoConfig = async () => {
       try {
-        const response = await fetch(`${API}/demo-config.php`);
+        const response = await fetch(`${API}/demo/config`);
         if (response.ok) {
           const config = await response.json();
           setDemoConfig(config);
