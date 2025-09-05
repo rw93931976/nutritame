@@ -431,6 +431,34 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
       }
 
       console.log('Profile save response:', response.data);
+      
+      // HOTFIX: User ID continuity - write consent after final user_id
+      const user_id = response.data.id;
+      localStorage.setItem('nt_coach_user_id', user_id);
+      
+      // Reset session cache to force fresh session with correct user_id
+      window.__coachSessionId = null;
+      if (window.sessionStorage) {
+        window.sessionStorage.removeItem('coach_session_id');
+      }
+      
+      // Ensure consent is recorded with final user_id
+      if (!localStorage.getItem('NT_COACH_ACK')) {
+        try {
+          console.log('[CONSENT] Writing consent with final user_id:', user_id);
+          await api.post('/coach/accept-disclaimer', {
+            user_id: user_id,
+            disclaimer_version: "v1.0-2025-09-05",
+            consent_source: "global_screen",
+            consent_ui_hash: "global"
+          });
+          localStorage.setItem('NT_COACH_ACK', 'true');
+          console.log('[CONSENT] Consent recorded successfully');
+        } catch (error) {
+          console.error('[CONSENT] Failed to record consent:', error);
+        }
+      }
+      
       const isUpdate = existingProfile?.id && existingProfile?.diabetes_type;
       toast.success(isUpdate ? "Profile updated successfully!" : "Profile created successfully!");
       onProfileComplete(response.data);
