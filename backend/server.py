@@ -157,6 +157,48 @@ NOTES:
 - Do not diagnose conditions or recommend changes to medication—always direct users back to their healthcare team for medical decisions.
 - ALWAYS use imperial measurements - never metric."""
 
+# =============================================
+# CONSENT LEDGER UTILITIES
+# =============================================
+
+# Server secret for HMAC signatures (in production, use environment variable)
+SERVER_SECRET = os.environ.get('CONSENT_SIGNATURE_SECRET', secrets.token_hex(32))
+CURRENT_DISCLAIMER_VERSION = "v1.0-2025-09-05"
+
+def generate_consent_signature(user_id: str, version: str, source: str, is_demo: bool, 
+                              consented_at_utc: datetime, consent_ui_hash: str) -> str:
+    """Generate HMAC signature for consent record verification"""
+    # Concatenate fields for signature
+    signature_data = f"{user_id}|{version}|{source}|{is_demo}|{consented_at_utc.isoformat()}|{consent_ui_hash}"
+    
+    # Generate HMAC-SHA256 signature
+    signature = hmac.new(
+        SERVER_SECRET.encode('utf-8'),
+        signature_data.encode('utf-8'),
+        hashlib.sha256
+    ).hexdigest()
+    
+    return signature
+
+def verify_consent_signature(consent_record: dict) -> bool:
+    """Verify the integrity of a consent record using its signature"""
+    try:
+        expected_signature = generate_consent_signature(
+            consent_record['user_id'],
+            consent_record['disclaimer_version'],
+            consent_record['consent_source'],
+            consent_record['is_demo'],
+            consent_record['consented_at_utc'],
+            consent_record['consent_ui_hash']
+        )
+        return hmac.compare_digest(expected_signature, consent_record['signature'])
+    except Exception:
+        return False
+
+# =============================================
+# PYDANTIC MODELS
+# =============================================
+
 # Pydantic Models
 class UserProfile(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
