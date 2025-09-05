@@ -18,7 +18,7 @@ const PENDING_KEY = 'nt_coach_pending_question';
 const setCoachAckTrue = () => localStorage.setItem(COACH_ACK_KEY, 'true');
 const getCoachAck = () => localStorage.getItem(COACH_ACK_KEY) === 'true';
 
-// UNIFIED SENDER - Direct API integration with explicit breadcrumbs
+// UNIFIED SENDER - Direct API integration (no disclaimer gating)
 window.unifiedCoachSend = async (messageText) => {
   console.error(`[UNIFIED] unifiedCoachSend called with: "${messageText}"`);
   
@@ -26,42 +26,13 @@ window.unifiedCoachSend = async (messageText) => {
     // Get user ID
     const userId = localStorage.getItem('nt_coach_user_id') || `demo-${Date.now()}`;
     
-    // STEP 1: Accept disclaimer if needed (with breadcrumb)
-    if (!getCoachAck()) {
-      const disclaimerUrl = `${api.defaults.baseURL}/coach/accept-disclaimer`;
-      console.error(`[CONSENT] POST ${disclaimerUrl}`);
-      await api.post('/coach/accept-disclaimer', { user_id: userId });
-      setCoachAckTrue();
-      console.error(`[CONSENT] Disclaimer accepted successfully`);
-    }
+    // STEP 1: Get or create session (with breadcrumb)
+    const sessionUrl = `${api.defaults.baseURL}/coach/sessions`;
+    console.error(`[SESSION] POST ${sessionUrl}`);
+    const sessionId = await getOrCreateSessionId(userId);
+    console.error(`[SESSION] Session created/retrieved: ${sessionId}`);
     
-    // STEP 2: Get or create session (with breadcrumb and auto-recovery)
-    let sessionId;
-    try {
-      const sessionUrl = `${api.defaults.baseURL}/coach/sessions`;
-      console.error(`[SESSION] POST ${sessionUrl}`);
-      sessionId = await getOrCreateSessionId(userId);
-      console.error(`[SESSION] Session created/retrieved: ${sessionId}`);
-    } catch (sessionError) {
-      // Auto-recovery for 403 disclaimer errors
-      if (sessionError?.response?.status === 403 && sessionError?.response?.data?.detail?.includes('Disclaimer')) {
-        console.error(`[SESSION] 403 disclaimer error, auto-recovering...`);
-        const disclaimerUrl = `${api.defaults.baseURL}/coach/accept-disclaimer`;
-        console.error(`[CONSENT] POST ${disclaimerUrl} (auto-recovery)`);
-        await api.post('/coach/accept-disclaimer', { user_id: userId });
-        setCoachAckTrue();
-        
-        // Retry session creation once
-        const sessionUrl = `${api.defaults.baseURL}/coach/sessions`;
-        console.error(`[SESSION] POST ${sessionUrl} (retry after disclaimer)`);
-        sessionId = await getOrCreateSessionId(userId);
-        console.error(`[SESSION] Session created after auto-recovery: ${sessionId}`);
-      } else {
-        throw sessionError;
-      }
-    }
-    
-    // STEP 3: Send message (with breadcrumb)
+    // STEP 2: Send message (with breadcrumb)
     const messageUrl = `${api.defaults.baseURL}/coach/message`;
     console.error(`[MESSAGE] POST ${messageUrl}`);
     const response = await sendCoachMessage({ 
