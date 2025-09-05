@@ -3407,51 +3407,49 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     // Get effective user for API calls
     const effectiveUser = currentUser || { id: localStorage.getItem('nt_coach_user_id') || `demo-${Date.now()}` };
     
-    // Create or get session
-    let sessionId = currentSessionId;
-    if (!sessionId) {
-      const session = await aiCoachService.createSession(effectiveUser.id, `Chat ${messageCount + 1}`);
-      if (!session) {
-        setIsLoading(false);
-        return;
-      }
-      sessionId = session.id;
-      setCurrentSessionId(sessionId);
-    }
+    // Use try/catch/finally to ensure UI flags are always cleared
+    try {
+      const sessionId = await getOrCreateSessionId(currentSessionId, setCurrentSessionId, effectiveUser);
 
-    // Use unified send function
-    await window.sendMessageInternal(
-      messageBody, 
-      sessionId, 
-      effectiveUser,
-      (response, messages) => {
-        // Success callback
-        const aiResponseText = response.ai_response?.text || response.response || response.message;
-        if (aiResponseText) {
-          const aiResponse = {
-            id: Date.now() + 1,
-            message: '',
-            response: aiResponseText,
-            isUser: false
-          };
-          setMessages(prev => [...prev, aiResponse]);
+      // Use unified send function
+      await window.sendMessageInternal(
+        messageBody, 
+        sessionId, 
+        effectiveUser,
+        (response, messages) => {
+          // Success callback
+          const aiResponseText = response.ai_response?.text || response.response || response.message;
+          if (aiResponseText) {
+            const aiResponse = {
+              id: Date.now() + 1,
+              message: '',
+              response: aiResponseText,
+              isUser: false
+            };
+            setMessages(prev => [...prev, aiResponse]);
+          }
+          
+          // Clear input after successful send
+          setInputText('');
+          localStorage.removeItem('nt_coach_pending_question');
+          setPendingQuestion('');
+          touched.current = false;
+        },
+        (error) => {
+          // Error callback
+          console.error('❌ Error sending message to AI:', error);
+          setMessages(prev => prev.slice(0, -1)); // Remove failed message
+          toast.error("Failed to get AI response. Please try again.");
         }
-        
-        // Clear input after successful send
-        setInputText('');
-        localStorage.removeItem('nt_coach_pending_question');
-        setPendingQuestion('');
-        touched.current = false;
-        setIsLoading(false);
-      },
-      (error) => {
-        // Error callback
-        console.error('❌ Error sending message to AI:', error);
-        setMessages(prev => prev.slice(0, -1)); // Remove failed message
-        setIsLoading(false);
-        toast.error("Failed to get AI response. Please try again.");
-      }
-    );
+      );
+    } catch (error) {
+      console.error("Coach send error:", error);
+      toast.error("Failed to send message. Please try again.");
+      setMessages(prev => prev.slice(0, -1)); // Remove failed message
+    } finally {
+      // Always clear UI flags
+      setIsLoading(false);
+    }
   };
 
   const handleSendMessage = async (e) => {
