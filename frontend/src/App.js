@@ -3769,11 +3769,11 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
               <div className="flex gap-3">
                 <Button 
                   onClick={() => {
-                    // Use the UX wrapper that handles resume polish
-                    if (typeof handleDisclaimerAcceptWithUX === 'function') {
-                      handleDisclaimerAcceptWithUX();
+                    // Use the unified consent accept handler
+                    if (typeof onCoachConsentAccept === 'function') {
+                      onCoachConsentAccept();
                     } else {
-                      console.error('❌ handleDisclaimerAcceptWithUX not available');
+                      console.error('❌ onCoachConsentAccept not available');
                     }
                   }}
                   className="flex-1 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700"
