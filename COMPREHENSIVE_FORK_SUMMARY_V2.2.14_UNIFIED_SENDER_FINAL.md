@@ -230,7 +230,7 @@ async def create_coach_session(session_request: CoachSessionCreate):
 ### **5. `/app/backend/.env` - CORS CONFIGURATION**
 ```bash
 # Updated CORS to allow specific frontend origins
-CORS_ORIGINS="https://coach-consent.preview.emergentagent.com,https://meal-plan-assist.preview.emergentagent.com"
+CORS_ORIGINS="https://ai-coach-bridge.preview.emergentagent.com,https://ai-coach-bridge.preview.emergentagent.com"
 ```
 
 ---
@@ -291,7 +291,7 @@ CORS_ORIGINS="https://coach-consent.preview.emergentagent.com,https://meal-plan-
 ### **Frontend Environment Variables:**
 ```bash
 # /app/frontend/.env
-REACT_APP_BACKEND_URL="https://meal-plan-assist.preview.emergentagent.com"
+REACT_APP_BACKEND_URL="https://ai-coach-bridge.preview.emergentagent.com"
 GENERATE_SOURCEMAP=false
 ```
 
@@ -300,7 +300,7 @@ GENERATE_SOURCEMAP=false
 # /app/backend/.env  
 MONGO_URL="mongodb://localhost:27017"
 DB_NAME="test_nutritame"
-CORS_ORIGINS="https://coach-consent.preview.emergentagent.com,https://meal-plan-assist.preview.emergentagent.com"
+CORS_ORIGINS="https://ai-coach-bridge.preview.emergentagent.com,https://ai-coach-bridge.preview.emergentagent.com"
 EMERGENT_LLM_KEY="[configured]"
 LLM_PROVIDER=openai
 LLM_MODEL=gpt-4o-mini
@@ -321,8 +321,8 @@ sudo supervisorctl status
 ```
 
 ### **URLs and Endpoints:**
-- **Frontend**: `https://meal-plan-assist.preview.emergentagent.com`
-- **Backend API**: `https://meal-plan-assist.preview.emergentagent.com/api`
+- **Frontend**: `https://ai-coach-bridge.preview.emergentagent.com`
+- **Backend API**: `https://ai-coach-bridge.preview.emergentagent.com/api`
 - **Key API Endpoints**:
   - `POST /api/demo/access` - Demo user creation
   - `POST /api/coach/accept-disclaimer` - Disclaimer acceptance

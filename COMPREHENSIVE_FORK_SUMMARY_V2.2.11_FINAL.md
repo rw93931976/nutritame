@@ -368,7 +368,7 @@ sudo supervisorctl status
 ### **Environment Variables (Critical)**
 ```bash
 # Frontend (.env)
-REACT_APP_BACKEND_URL=https://coach-consent.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://ai-coach-bridge.preview.emergentagent.com
 
 # Backend (.env)
 MONGO_URL=mongodb://localhost:27017/nutritame

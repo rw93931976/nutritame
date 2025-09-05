@@ -3,7 +3,7 @@
 AI COACH FLOW FIXES - FINAL VALIDATION TEST
 
 This test validates the specific issues mentioned in the bug report:
-1. CORS Configuration: Test that `https://coach-consent.preview.emergentagent.com` origin is allowed
+1. CORS Configuration: Test that `https://ai-coach-bridge.preview.emergentagent.com` origin is allowed
 2. Session Creation: Verify POST /api/coach/sessions with user_id in body (not query param) works
 3. Token Authentication: Confirm Bearer token authentication is working
 4. No 422 Errors: Ensure session creation doesn't return 422 due to null user_id
@@ -21,7 +21,7 @@ import sys
 from datetime import datetime
 
 class AICoachFlowTester:
-    def __init__(self, base_url="https://coach-consent.preview.emergentagent.com"):
+    def __init__(self, base_url="https://ai-coach-bridge.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.tests_run = 0
@@ -84,7 +84,7 @@ class AICoachFlowTester:
         
         # Test preflight OPTIONS request
         headers = {
-            'Origin': 'https://coach-consent.preview.emergentagent.com',
+            'Origin': 'https://ai-coach-bridge.preview.emergentagent.com',
             'Access-Control-Request-Method': 'POST',
             'Access-Control-Request-Headers': 'Content-Type, Authorization'
         }
