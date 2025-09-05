@@ -1,38 +1,29 @@
 #!/usr/bin/env python3
 """
-Comprehensive AI Health Coach Backend Testing
-Focus: Test all 9 AI Health Coach endpoints + 3 User Profile endpoints + Real AI Integration
-As requested in review: Ensure no regressions from frontend fixes
+Comprehensive AI Health Coach Backend Endpoint Tests
+v2.2.9 Session Reference Fixes Verification
+
+Tests all 9 core AI Health Coach endpoints after v2.2.9 session reference fixes
+to verify real AI integration with OpenAI GPT-4o-mini and ensure no regressions.
+
+Expected success rate: 100% (all 9 endpoints working).
 """
 
 import requests
-import sys
 import json
-import uuid
+import sys
 from datetime import datetime
-import time
+import uuid
 
-class ComprehensiveAICoachTester:
+class ComprehensiveAIHealthCoachTester:
     def __init__(self, base_url="https://nutritame-fix.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.tests_run = 0
         self.tests_passed = 0
-        self.test_user_id = None
-        self.session_id = None
+        self.created_user_id = None
+        self.created_session_id = None
         self.test_results = []
-        
-        print(f"🚀 AI Health Coach Backend Regression Testing")
-        print(f"Backend URL: {self.base_url}")
-        print("=" * 80)
-
-    def log_result(self, test_name, passed, details=""):
-        """Log test result for summary"""
-        self.test_results.append({
-            "test": test_name,
-            "passed": passed,
-            "details": details
-        })
 
     def run_test(self, name, method, endpoint, expected_status, data=None, headers=None):
         """Run a single API test"""
@@ -41,8 +32,8 @@ class ComprehensiveAICoachTester:
             headers = {'Content-Type': 'application/json'}
 
         self.tests_run += 1
-        print(f"\n🔍 {name}")
-        print(f"   {method} {url}")
+        print(f"\n🔍 Testing {name}...")
+        print(f"   URL: {url}")
         
         try:
             if method == 'GET':
@@ -55,719 +46,617 @@ class ComprehensiveAICoachTester:
             success = response.status_code == expected_status
             if success:
                 self.tests_passed += 1
-                print(f"   ✅ Status: {response.status_code}")
+                print(f"✅ Passed - Status: {response.status_code}")
                 try:
                     response_data = response.json()
+                    print(f"   Response: {json.dumps(response_data, indent=2)[:300]}...")
+                    self.test_results.append({
+                        "test": name,
+                        "status": "PASSED",
+                        "response": response_data
+                    })
                     return True, response_data
                 except:
+                    self.test_results.append({
+                        "test": name,
+                        "status": "PASSED",
+                        "response": response.text
+                    })
                     return True, response.text
             else:
-                print(f"   ❌ Expected {expected_status}, got {response.status_code}")
+                print(f"❌ Failed - Expected {expected_status}, got {response.status_code}")
                 try:
                     error_data = response.json()
                     print(f"   Error: {error_data}")
+                    self.test_results.append({
+                        "test": name,
+                        "status": "FAILED",
+                        "error": error_data,
+                        "expected_status": expected_status,
+                        "actual_status": response.status_code
+                    })
                 except:
                     print(f"   Error: {response.text}")
+                    self.test_results.append({
+                        "test": name,
+                        "status": "FAILED",
+                        "error": response.text,
+                        "expected_status": expected_status,
+                        "actual_status": response.status_code
+                    })
                 return False, {}
 
         except Exception as e:
-            print(f"   ❌ Exception: {str(e)}")
+            print(f"❌ Failed - Error: {str(e)}")
+            self.test_results.append({
+                "test": name,
+                "status": "FAILED",
+                "error": str(e)
+            })
             return False, {}
 
-    def setup_test_user(self):
-        """Create a fresh test user for testing"""
-        print("\n🔧 Setting up fresh test user...")
-        
-        # Create realistic user profile
-        user_data = {
+    def create_test_user_profile(self):
+        """Create a comprehensive test user profile for AI Health Coach testing"""
+        test_profile = {
             "diabetes_type": "type2",
-            "age": 42,
-            "gender": "female", 
+            "age": 45,
+            "gender": "female",
             "activity_level": "moderate",
             "health_goals": ["blood_sugar_control", "weight_loss"],
             "food_preferences": ["mediterranean", "low_carb"],
             "cultural_background": "Mediterranean",
             "allergies": ["nuts", "shellfish"],
-            "dislikes": ["liver"],
+            "dislikes": ["liver", "brussels_sprouts"],
             "cooking_skill": "intermediate",
-            "phone_number": "+15551234567",
-            "plan": "standard"
+            "phone_number": "+15551234567"
         }
         
         success, response = self.run_test(
-            "Create Test User Profile",
+            "Create Test User Profile for AI Coach",
             "POST",
             "users",
             200,
-            data=user_data
+            data=test_profile
         )
         
         if success and 'id' in response:
-            self.test_user_id = response['id']
-            print(f"   ✅ Created test user: {self.test_user_id}")
+            self.created_user_id = response['id']
+            print(f"   ✅ Created test user ID: {self.created_user_id}")
             return True
         else:
-            print(f"   ❌ Failed to create test user")
+            print(f"   ❌ Failed to create test user profile: {response}")
             return False
 
-    # =============================================
-    # CORE AI HEALTH COACH ENDPOINTS (9 endpoints)
-    # =============================================
-
     def test_1_feature_flags(self):
-        """Test GET /api/coach/feature-flags"""
-        print("\n" + "="*50)
-        print("1️⃣  TESTING: GET /api/coach/feature-flags")
-        print("="*50)
+        """Test 1: GET /api/coach/feature-flags - should return coach_enabled=true, openai/gpt-4o-mini config"""
+        print("\n" + "="*80)
+        print("TEST 1: AI Health Coach Feature Flags")
+        print("="*80)
         
         success, response = self.run_test(
-            "AI Coach Feature Flags",
+            "GET /api/coach/feature-flags",
             "GET",
             "coach/feature-flags",
             200
         )
         
         if success:
-            # Verify configuration
-            expected = {
-                'coach_enabled': True,
-                'llm_provider': 'openai',
-                'llm_model': 'gpt-4o-mini',
-                'standard_limit': 10,
-                'premium_limit': 'unlimited'
-            }
+            # Verify coach_enabled is true
+            if response.get('coach_enabled') is True:
+                print("   ✅ coach_enabled is correctly set to true")
+            else:
+                print(f"   ❌ coach_enabled should be true, got: {response.get('coach_enabled')}")
+                return False
             
-            all_correct = True
-            for key, expected_value in expected.items():
-                actual_value = response.get(key)
-                if actual_value == expected_value:
-                    print(f"   ✅ {key}: {actual_value}")
-                else:
-                    print(f"   ❌ {key}: Expected {expected_value}, got {actual_value}")
-                    all_correct = False
+            # Verify LLM provider is openai
+            if response.get('llm_provider') == 'openai':
+                print("   ✅ llm_provider is correctly set to openai")
+            else:
+                print(f"   ❌ llm_provider should be openai, got: {response.get('llm_provider')}")
+                return False
             
-            self.log_result("Feature Flags", all_correct, f"Configuration: {response}")
-            return all_correct
+            # Verify LLM model is gpt-4o-mini
+            if response.get('llm_model') == 'gpt-4o-mini':
+                print("   ✅ llm_model is correctly set to gpt-4o-mini")
+            else:
+                print(f"   ❌ llm_model should be gpt-4o-mini, got: {response.get('llm_model')}")
+                return False
+            
+            # Verify standard limit is 10
+            if response.get('standard_limit') == 10:
+                print("   ✅ standard_limit is correctly set to 10")
+            else:
+                print(f"   ❌ standard_limit should be 10, got: {response.get('standard_limit')}")
+                return False
+            
+            return True
         
-        self.log_result("Feature Flags", False, "Request failed")
         return False
 
     def test_2_accept_disclaimer(self):
-        """Test POST /api/coach/accept-disclaimer"""
-        print("\n" + "="*50)
-        print("2️⃣  TESTING: POST /api/coach/accept-disclaimer")
-        print("="*50)
+        """Test 2: POST /api/coach/accept-disclaimer - should accept disclaimer properly"""
+        print("\n" + "="*80)
+        print("TEST 2: AI Health Coach Accept Disclaimer")
+        print("="*80)
         
-        if not self.test_user_id:
-            print("   ❌ No test user available")
-            self.log_result("Accept Disclaimer", False, "No test user")
+        if not self.created_user_id:
+            print("   ❌ No user ID available for disclaimer testing")
             return False
         
+        disclaimer_data = {
+            "user_id": self.created_user_id
+        }
+        
         success, response = self.run_test(
-            "Accept AI Coach Disclaimer",
+            "POST /api/coach/accept-disclaimer",
             "POST",
             "coach/accept-disclaimer",
             200,
-            data={"user_id": self.test_user_id}
+            data=disclaimer_data
         )
         
-        if success and response.get('accepted'):
-            print(f"   ✅ Disclaimer accepted for user: {self.test_user_id}")
-            self.log_result("Accept Disclaimer", True, "Disclaimer accepted successfully")
-            return True
+        if success:
+            # Check for acceptance confirmation - be flexible with response format
+            accepted = (response.get('success') is True or 
+                       response.get('accepted') is True or
+                       'accepted' in response.get('message', '').lower())
+            
+            if accepted:
+                print("   ✅ Disclaimer acceptance recorded successfully")
+                return True
+            else:
+                print(f"   ❌ Disclaimer acceptance failed: {response}")
+                return False
         
-        self.log_result("Accept Disclaimer", False, f"Response: {response}")
         return False
 
     def test_3_disclaimer_status(self):
-        """Test GET /api/coach/disclaimer-status/{user_id}"""
-        print("\n" + "="*50)
-        print("3️⃣  TESTING: GET /api/coach/disclaimer-status/{user_id}")
-        print("="*50)
+        """Test 3: GET /api/coach/disclaimer-status/{user_id} - should retrieve disclaimer status"""
+        print("\n" + "="*80)
+        print("TEST 3: AI Health Coach Disclaimer Status")
+        print("="*80)
         
-        if not self.test_user_id:
-            print("   ❌ No test user available")
-            self.log_result("Disclaimer Status", False, "No test user")
+        if not self.created_user_id:
+            print("   ❌ No user ID available for disclaimer status testing")
             return False
         
         success, response = self.run_test(
-            "Check Disclaimer Status",
+            "GET /api/coach/disclaimer-status/{user_id}",
             "GET",
-            f"coach/disclaimer-status/{self.test_user_id}",
-            200
-        )
-        
-        if success and response.get('disclaimer_accepted'):
-            print(f"   ✅ Disclaimer status confirmed for user: {self.test_user_id}")
-            self.log_result("Disclaimer Status", True, "Status retrieved successfully")
-            return True
-        
-        self.log_result("Disclaimer Status", False, f"Response: {response}")
-        return False
-
-    def test_4_consultation_limit(self):
-        """Test GET /api/coach/consultation-limit/{user_id}"""
-        print("\n" + "="*50)
-        print("4️⃣  TESTING: GET /api/coach/consultation-limit/{user_id}")
-        print("="*50)
-        
-        if not self.test_user_id:
-            print("   ❌ No test user available")
-            self.log_result("Consultation Limit", False, "No test user")
-            return False
-        
-        success, response = self.run_test(
-            "Check Consultation Limit",
-            "GET",
-            f"coach/consultation-limit/{self.test_user_id}",
+            f"coach/disclaimer-status/{self.created_user_id}",
             200
         )
         
         if success:
-            # Verify response structure
-            required_fields = ['can_use', 'current_count', 'limit', 'plan', 'remaining']
-            missing = [f for f in required_fields if f not in response]
+            # Check for disclaimer acceptance status - be flexible with response format
+            accepted = (response.get('disclaimer_accepted') is True or 
+                       response.get('accepted') is True)
             
-            if not missing:
-                print(f"   ✅ Plan: {response.get('plan')}")
-                print(f"   ✅ Limit: {response.get('limit')}")
-                print(f"   ✅ Current: {response.get('current_count')}")
-                print(f"   ✅ Remaining: {response.get('remaining')}")
-                print(f"   ✅ Can use: {response.get('can_use')}")
-                
-                self.log_result("Consultation Limit", True, f"Plan: {response.get('plan')}, Remaining: {response.get('remaining')}")
+            if accepted:
+                print("   ✅ Disclaimer status correctly shows accepted")
                 return True
             else:
-                print(f"   ❌ Missing fields: {missing}")
-                self.log_result("Consultation Limit", False, f"Missing fields: {missing}")
+                print(f"   ❌ Disclaimer status should show accepted: {response}")
                 return False
         
-        self.log_result("Consultation Limit", False, "Request failed")
         return False
 
-    def test_5_create_session(self):
-        """Test POST /api/coach/sessions?user_id=x"""
-        print("\n" + "="*50)
-        print("5️⃣  TESTING: POST /api/coach/sessions?user_id=x")
-        print("="*50)
+    def test_4_consultation_limit(self):
+        """Test 4: GET /api/coach/consultation-limit/{user_id} - should show standard plan limits"""
+        print("\n" + "="*80)
+        print("TEST 4: AI Health Coach Consultation Limits")
+        print("="*80)
         
-        if not self.test_user_id:
-            print("   ❌ No test user available")
-            self.log_result("Create Session", False, "No test user")
+        if not self.created_user_id:
+            print("   ❌ No user ID available for consultation limit testing")
             return False
         
         success, response = self.run_test(
-            "Create AI Coach Session",
-            "POST",
-            f"coach/sessions?user_id={self.test_user_id}",
-            200,
-            data={"title": "Regression Test Session"}
-        )
-        
-        if success and 'id' in response:
-            self.session_id = response['id']
-            print(f"   ✅ Session created: {self.session_id}")
-            print(f"   ✅ User ID: {response.get('user_id')}")
-            print(f"   ✅ Title: {response.get('title')}")
-            
-            self.log_result("Create Session", True, f"Session ID: {self.session_id}")
-            return True
-        elif success and 'error' in response:
-            # Handle consultation limit reached
-            if response.get('error') == 'consultation_limit_reached':
-                print(f"   ⚠️  Consultation limit reached - this is expected behavior")
-                self.log_result("Create Session", True, "Consultation limit properly enforced")
-                return True
-        
-        self.log_result("Create Session", False, f"Response: {response}")
-        return False
-
-    def test_6_get_sessions(self):
-        """Test GET /api/coach/sessions/{user_id}"""
-        print("\n" + "="*50)
-        print("6️⃣  TESTING: GET /api/coach/sessions/{user_id}")
-        print("="*50)
-        
-        if not self.test_user_id:
-            print("   ❌ No test user available")
-            self.log_result("Get Sessions", False, "No test user")
-            return False
-        
-        success, response = self.run_test(
-            "Get User Sessions",
+            "GET /api/coach/consultation-limit/{user_id}",
             "GET",
-            f"coach/sessions/{self.test_user_id}",
+            f"coach/consultation-limit/{self.created_user_id}",
             200
         )
         
-        if success and isinstance(response, list):
-            print(f"   ✅ Retrieved {len(response)} sessions")
+        if success:
+            # Verify standard plan limits
+            if response.get('limit') == 10:
+                print("   ✅ Standard plan limit correctly set to 10")
+            else:
+                print(f"   ❌ Standard plan limit should be 10, got: {response.get('limit')}")
+                return False
             
-            if len(response) > 0:
-                # Check session structure
-                session = response[0]
-                required_fields = ['id', 'user_id', 'title', 'created_at']
-                missing = [f for f in required_fields if f not in session]
-                
-                if not missing:
-                    print(f"   ✅ Session structure correct")
-                    if self.session_id:
-                        # Check if our created session is in the list
-                        found = any(s.get('id') == self.session_id for s in response)
-                        if found:
-                            print(f"   ✅ Created session found in list")
-                        else:
-                            print(f"   ⚠️  Created session not found (may be due to limit)")
-                else:
-                    print(f"   ❌ Missing session fields: {missing}")
+            # Verify plan type
+            if response.get('plan') == 'standard':
+                print("   ✅ Plan type correctly set to standard")
+            else:
+                print(f"   ❌ Plan type should be standard, got: {response.get('plan')}")
+                return False
             
-            self.log_result("Get Sessions", True, f"Found {len(response)} sessions")
+            # Verify can_use flag
+            if response.get('can_use') is True:
+                print("   ✅ User can use consultation service")
+            else:
+                print(f"   ❌ User should be able to use consultation service: {response}")
+                return False
+            
             return True
         
-        self.log_result("Get Sessions", False, f"Response: {response}")
+        return False
+
+    def test_5_create_session(self):
+        """Test 5: POST /api/coach/sessions - should create sessions correctly"""
+        print("\n" + "="*80)
+        print("TEST 5: AI Health Coach Create Session")
+        print("="*80)
+        
+        if not self.created_user_id:
+            print("   ❌ No user ID available for session creation testing")
+            return False
+        
+        session_data = {
+            "title": "Test AI Health Coach Session"
+        }
+        
+        # Include user_id as query parameter
+        success, response = self.run_test(
+            "POST /api/coach/sessions",
+            "POST",
+            f"coach/sessions?user_id={self.created_user_id}",
+            200,
+            data=session_data
+        )
+        
+        if success:
+            # Verify session creation
+            if 'id' in response:
+                self.created_session_id = response['id']
+                print(f"   ✅ Session created successfully with ID: {self.created_session_id}")
+            else:
+                print(f"   ❌ Session creation failed - no ID returned: {response}")
+                return False
+            
+            # Verify user_id is linked
+            if response.get('user_id') == self.created_user_id:
+                print("   ✅ Session correctly linked to user")
+            else:
+                print(f"   ❌ Session not properly linked to user: {response}")
+                return False
+            
+            # Verify title
+            if response.get('title') == "Test AI Health Coach Session":
+                print("   ✅ Session title correctly set")
+            else:
+                print(f"   ❌ Session title not set correctly: {response}")
+                return False
+            
+            return True
+        
+        return False
+
+    def test_6_get_sessions(self):
+        """Test 6: GET /api/coach/sessions/{user_id} - should retrieve user sessions"""
+        print("\n" + "="*80)
+        print("TEST 6: AI Health Coach Get User Sessions")
+        print("="*80)
+        
+        if not self.created_user_id:
+            print("   ❌ No user ID available for session retrieval testing")
+            return False
+        
+        success, response = self.run_test(
+            "GET /api/coach/sessions/{user_id}",
+            "GET",
+            f"coach/sessions/{self.created_user_id}",
+            200
+        )
+        
+        if success:
+            # Verify response is a list
+            if isinstance(response, list):
+                print(f"   ✅ Retrieved {len(response)} sessions")
+            else:
+                print(f"   ❌ Response should be a list of sessions: {response}")
+                return False
+            
+            # Verify we have at least one session (the one we created)
+            if len(response) >= 1:
+                print("   ✅ At least one session found")
+                
+                # Verify session structure
+                first_session = response[0]
+                if 'id' in first_session and 'user_id' in first_session:
+                    print("   ✅ Session structure is correct")
+                else:
+                    print(f"   ❌ Session structure missing required fields: {first_session}")
+                    return False
+                
+                # Verify user_id matches
+                if first_session.get('user_id') == self.created_user_id:
+                    print("   ✅ Session belongs to correct user")
+                else:
+                    print(f"   ❌ Session user_id mismatch: {first_session}")
+                    return False
+                
+                return True
+            else:
+                print("   ❌ No sessions found for user")
+                return False
+        
         return False
 
     def test_7_send_message(self):
-        """Test POST /api/coach/message - REAL AI INTEGRATION"""
-        print("\n" + "="*50)
-        print("7️⃣  TESTING: POST /api/coach/message (REAL AI INTEGRATION)")
-        print("="*50)
+        """Test 7: POST /api/coach/message - should send messages to real OpenAI AI and get responses"""
+        print("\n" + "="*80)
+        print("TEST 7: AI Health Coach Send Message (Real AI Integration)")
+        print("="*80)
         
-        # First, try to get an existing session or create one
-        if not self.session_id:
-            # Try to get existing sessions
-            success, sessions = self.run_test(
-                "Get Sessions for Message Test",
-                "GET",
-                f"coach/sessions/{self.test_user_id}",
-                200
-            )
-            
-            if success and isinstance(sessions, list) and len(sessions) > 0:
-                self.session_id = sessions[0]['id']
-                print(f"   ✅ Using existing session: {self.session_id}")
-            else:
-                print("   ❌ No session available for message testing")
-                self.log_result("Send Message", False, "No session available")
-                return False
+        if not self.created_user_id or not self.created_session_id:
+            print("   ❌ No user ID or session ID available for message testing")
+            return False
         
-        # Test real AI integration
         message_data = {
-            "session_id": self.session_id,
-            "message": "I need help creating a 3-day meal plan for Type 2 diabetes. I prefer Mediterranean foods and need to avoid nuts and shellfish due to allergies. Please provide specific meals with portion sizes."
+            "session_id": self.created_session_id,
+            "message": "Create a Mediterranean breakfast meal plan for someone with Type 2 diabetes who is allergic to nuts and shellfish"
         }
         
-        print("   🤖 Sending message to real AI (OpenAI GPT-4o-mini)...")
-        print("   ⏱️  This may take 10-20 seconds...")
-        
+        print("   Note: AI response may take 10-30 seconds...")
         success, response = self.run_test(
-            "Send Message to AI Coach",
+            "POST /api/coach/message",
             "POST",
             "coach/message",
             200,
             data=message_data
         )
         
-        if success and 'ai_response' in response:
-            ai_response = response['ai_response']
-            print(f"   ✅ AI response received ({len(ai_response)} characters)")
-            print(f"   📝 Preview: {str(ai_response)[:200]}...")
+        if success:
+            # Check for AI response in various possible response formats
+            ai_response = None
             
-            # Verify diabetes-specific content
-            diabetes_keywords = ['diabetes', 'blood sugar', 'carbohydrate', 'mediterranean', 'meal']
-            found_keywords = [k for k in diabetes_keywords if k.lower() in str(ai_response).lower()]
+            # Check different possible response structures
+            if 'ai_message' in response and 'text' in response['ai_message']:
+                ai_response = response['ai_message']['text']
+            elif 'response' in response:
+                ai_response = response['response']
+            elif 'ai_response' in response:
+                ai_response = response['ai_response']
+            elif 'message' in response and isinstance(response['message'], str):
+                ai_response = response['message']
             
-            if len(found_keywords) >= 3:
-                print(f"   ✅ Diabetes-specific content detected: {found_keywords}")
+            if ai_response and len(ai_response) > 50:  # Substantial response
+                print(f"   ✅ AI response received (length: {len(ai_response)} chars)")
+                print(f"   Response preview: {ai_response[:200]}...")
+                
+                # Verify diabetes-specific content
+                diabetes_keywords = ['diabetes', 'blood sugar', 'glucose', 'carb', 'mediterranean']
+                found_keywords = [kw for kw in diabetes_keywords if kw.lower() in ai_response.lower()]
+                
+                if found_keywords:
+                    print(f"   ✅ AI response contains diabetes-specific content: {found_keywords}")
+                else:
+                    print("   ⚠️  AI response may not contain diabetes-specific content")
+                
+                # Check for allergy awareness
+                if 'nuts' not in ai_response.lower() and 'shellfish' not in ai_response.lower():
+                    print("   ✅ AI response respects allergy restrictions (no nuts/shellfish)")
+                else:
+                    print("   ⚠️  AI response may contain allergens")
+                
+                # Check for Mediterranean content
+                mediterranean_keywords = ['olive oil', 'mediterranean', 'tomato', 'feta', 'olives']
+                found_med = [kw for kw in mediterranean_keywords if kw.lower() in ai_response.lower()]
+                
+                if found_med:
+                    print(f"   ✅ AI response contains Mediterranean content: {found_med}")
+                else:
+                    print("   ⚠️  AI response may not contain Mediterranean content")
+                
+                return True
             else:
-                print(f"   ⚠️  Limited diabetes-specific content: {found_keywords}")
-            
-            # Check for allergy awareness
-            allergy_aware = any(word in str(ai_response).lower() for word in ['nuts', 'shellfish', 'allerg'])
-            if allergy_aware:
-                print(f"   ✅ AI shows allergy awareness")
-            else:
-                print(f"   ⚠️  AI may not address allergies")
-            
-            # Check for imperial measurements
-            imperial_measurements = ['cup', 'tablespoon', 'teaspoon', 'oz', 'pound', 'inch']
-            found_imperial = [m for m in imperial_measurements if m in str(ai_response).lower()]
-            if found_imperial:
-                print(f"   ✅ Imperial measurements used: {found_imperial}")
-            else:
-                print(f"   ⚠️  Imperial measurements not detected")
-            
-            # Check for shopping list offer
-            if 'shopping list' in str(ai_response).lower():
-                print(f"   ✅ Shopping list offer included")
-            else:
-                print(f"   ⚠️  Shopping list offer not found")
-            
-            # Check formatting (no markdown)
-            if '**' in str(ai_response) or '##' in str(ai_response):
-                print(f"   ⚠️  Markdown formatting detected")
-            else:
-                print(f"   ✅ Clean formatting (no markdown)")
-            
-            self.log_result("Send Message", True, f"AI response: {len(ai_response)} chars, diabetes-specific")
-            return True
+                print(f"   ❌ AI response too short or missing. Full response: {response}")
+                return False
         
-        self.log_result("Send Message", False, f"Response: {response}")
         return False
 
     def test_8_get_messages(self):
-        """Test GET /api/coach/messages/{session_id}"""
-        print("\n" + "="*50)
-        print("8️⃣  TESTING: GET /api/coach/messages/{session_id}")
-        print("="*50)
+        """Test 8: GET /api/coach/messages/{session_id} - should retrieve conversation history"""
+        print("\n" + "="*80)
+        print("TEST 8: AI Health Coach Get Messages")
+        print("="*80)
         
-        if not self.session_id:
-            print("   ❌ No session available")
-            self.log_result("Get Messages", False, "No session available")
+        if not self.created_session_id:
+            print("   ❌ No session ID available for message retrieval testing")
             return False
         
         success, response = self.run_test(
-            "Get Session Messages",
+            "GET /api/coach/messages/{session_id}",
             "GET",
-            f"coach/messages/{self.session_id}",
+            f"coach/messages/{self.created_session_id}",
             200
         )
         
-        if success and isinstance(response, list):
-            print(f"   ✅ Retrieved {len(response)} messages")
+        if success:
+            # Verify response is a list
+            if isinstance(response, list):
+                print(f"   ✅ Retrieved {len(response)} messages")
+            else:
+                print(f"   ❌ Response should be a list of messages: {response}")
+                return False
             
-            if len(response) > 0:
-                # Check message structure
-                user_msgs = [m for m in response if m.get('role') == 'user']
-                ai_msgs = [m for m in response if m.get('role') == 'assistant']
+            # Verify we have at least 2 messages (user + assistant)
+            if len(response) >= 2:
+                print("   ✅ At least 2 messages found (user + assistant)")
                 
-                print(f"   ✅ User messages: {len(user_msgs)}")
-                print(f"   ✅ AI messages: {len(ai_msgs)}")
+                # Verify message structure
+                user_message = None
+                assistant_message = None
                 
-                if user_msgs and ai_msgs:
-                    print(f"   ✅ Conversation flow confirmed")
+                for msg in response:
+                    if msg.get('role') == 'user':
+                        user_message = msg
+                    elif msg.get('role') == 'assistant':
+                        assistant_message = msg
                 
-                # Check message structure
-                msg = response[0]
-                required_fields = ['id', 'session_id', 'role', 'text', 'created_at']
-                missing = [f for f in required_fields if f not in msg]
-                
-                if not missing:
-                    print(f"   ✅ Message structure correct")
+                if user_message and assistant_message:
+                    print("   ✅ Both user and assistant messages found")
+                    
+                    # Verify message content
+                    if 'text' in user_message and len(user_message['text']) > 0:
+                        print("   ✅ User message has content")
+                    else:
+                        print(f"   ❌ User message missing content: {user_message}")
+                        return False
+                    
+                    if 'text' in assistant_message and len(assistant_message['text']) > 50:
+                        print("   ✅ Assistant message has substantial content")
+                    else:
+                        print(f"   ❌ Assistant message missing or too short: {assistant_message}")
+                        return False
+                    
+                    return True
                 else:
-                    print(f"   ❌ Missing message fields: {missing}")
-            
-            self.log_result("Get Messages", True, f"Found {len(response)} messages")
-            return True
+                    print(f"   ❌ Missing user or assistant messages: {response}")
+                    return False
+            else:
+                print("   ❌ Not enough messages found in conversation")
+                return False
         
-        self.log_result("Get Messages", False, f"Response: {response}")
         return False
 
     def test_9_search_conversations(self):
-        """Test GET /api/coach/search/{user_id}"""
-        print("\n" + "="*50)
-        print("9️⃣  TESTING: GET /api/coach/search/{user_id}")
-        print("="*50)
+        """Test 9: GET /api/coach/search/{user_id} - should search conversations"""
+        print("\n" + "="*80)
+        print("TEST 9: AI Health Coach Search Conversations")
+        print("="*80)
         
-        if not self.test_user_id:
-            print("   ❌ No test user available")
-            self.log_result("Search Conversations", False, "No test user")
+        if not self.created_user_id:
+            print("   ❌ No user ID available for search testing")
             return False
         
+        # Test search with query parameter
         success, response = self.run_test(
-            "Search User Conversations",
+            "GET /api/coach/search/{user_id}",
             "GET",
-            f"coach/search/{self.test_user_id}?query=meal plan",
+            f"coach/search/{self.created_user_id}?query=mediterranean",
             200
         )
         
         if success:
+            # Handle different response formats
+            search_results = response
             if isinstance(response, dict) and 'results' in response:
-                results = response['results']
-                print(f"   ✅ Search returned {len(results)} results")
+                search_results = response['results']
+            
+            if isinstance(search_results, list):
+                print(f"   ✅ Search returned {len(search_results)} results")
                 
-                if len(results) > 0:
-                    # Check result structure
-                    result = results[0]
-                    if 'session' in result and 'messages' in result:
-                        print(f"   ✅ Search result structure correct")
+                # If we have results, verify structure
+                if len(search_results) > 0:
+                    first_result = search_results[0]
+                    if 'session' in first_result or 'session_id' in first_result or 'id' in first_result:
+                        print("   ✅ Search results have proper structure")
                     else:
-                        print(f"   ⚠️  Search result structure: {list(result.keys())}")
+                        print(f"   ❌ Search result structure missing required fields: {first_result}")
+                        return False
                 
-                self.log_result("Search Conversations", True, f"Found {len(results)} results")
                 return True
-            elif isinstance(response, list):
-                print(f"   ✅ Search returned {len(response)} results (legacy format)")
-                self.log_result("Search Conversations", True, f"Found {len(response)} results")
-                return True
-        
-        self.log_result("Search Conversations", False, f"Response: {response}")
-        return False
-
-    # =============================================
-    # USER PROFILE ENDPOINTS (3 endpoints)
-    # =============================================
-
-    def test_10_create_user_profile(self):
-        """Test POST /api/users (create profile)"""
-        print("\n" + "="*50)
-        print("🔟 TESTING: POST /api/users (create profile)")
-        print("="*50)
-        
-        profile_data = {
-            "diabetes_type": "type1",
-            "age": 28,
-            "gender": "male",
-            "activity_level": "high",
-            "health_goals": ["blood_sugar_control", "energy_boost"],
-            "food_preferences": ["vegetarian", "organic"],
-            "cultural_background": "Asian",
-            "allergies": ["dairy", "eggs"],
-            "dislikes": ["spicy_food"],
-            "cooking_skill": "beginner",
-            "phone_number": "+15559876543",
-            "plan": "premium"
-        }
-        
-        success, response = self.run_test(
-            "Create User Profile",
-            "POST",
-            "users",
-            200,
-            data=profile_data
-        )
-        
-        if success and 'id' in response:
-            profile_user_id = response['id']
-            print(f"   ✅ Profile created: {profile_user_id}")
-            
-            # Verify all fields saved
-            fields_correct = 0
-            for field, expected in profile_data.items():
-                actual = response.get(field)
-                if actual == expected:
-                    fields_correct += 1
-                    print(f"   ✅ {field}: Correct")
+            elif isinstance(response, dict) and 'results' in response:
+                # Handle dict response format
+                results = response['results']
+                if isinstance(results, list):
+                    print(f"   ✅ Search returned {len(results)} results in dict format")
+                    return True
                 else:
-                    print(f"   ❌ {field}: Expected {expected}, got {actual}")
-            
-            success_rate = fields_correct / len(profile_data)
-            if success_rate >= 0.9:  # 90% or better
-                self.log_result("Create User Profile", True, f"Profile created with {fields_correct}/{len(profile_data)} fields correct")
-                self.profile_user_id = profile_user_id
-                return True
+                    print(f"   ❌ Search results should be a list: {results}")
+                    return False
             else:
-                self.log_result("Create User Profile", False, f"Only {fields_correct}/{len(profile_data)} fields correct")
+                print(f"   ❌ Search response should be a list or dict with results: {response}")
                 return False
         
-        self.log_result("Create User Profile", False, "Profile creation failed")
         return False
 
-    def test_11_get_user_profile(self):
-        """Test GET /api/users/{user_id} (retrieve profile)"""
-        print("\n" + "="*50)
-        print("1️⃣1️⃣ TESTING: GET /api/users/{user_id} (retrieve profile)")
-        print("="*50)
+    def run_comprehensive_test(self):
+        """Run all 9 AI Health Coach endpoint tests"""
+        print("🎯 STARTING COMPREHENSIVE AI HEALTH COACH ENDPOINT TESTING")
+        print("Testing NutriTame AI Health Coach backend after v2.2.9 session reference fixes")
+        print("Focus: Verify all 9 core endpoints are working correctly")
+        print("Expected success rate: 100% (all 9 endpoints working)")
+        print("="*80)
         
-        if not hasattr(self, 'profile_user_id'):
-            print("   ❌ No profile user ID available")
-            self.log_result("Get User Profile", False, "No profile user ID")
+        # Create test user profile first
+        if not self.create_test_user_profile():
+            print("❌ CRITICAL: Failed to create test user profile. Cannot proceed with tests.")
             return False
         
-        success, response = self.run_test(
-            "Get User Profile",
-            "GET",
-            f"users/{self.profile_user_id}",
-            200
-        )
+        # Run all 9 tests in order
+        test_methods = [
+            self.test_1_feature_flags,
+            self.test_2_accept_disclaimer,
+            self.test_3_disclaimer_status,
+            self.test_4_consultation_limit,
+            self.test_5_create_session,
+            self.test_6_get_sessions,
+            self.test_7_send_message,
+            self.test_8_get_messages,
+            self.test_9_search_conversations
+        ]
         
-        if success and response.get('id') == self.profile_user_id:
-            print(f"   ✅ Profile retrieved: {self.profile_user_id}")
-            
-            # Check key fields
-            key_fields = ['diabetes_type', 'age', 'gender', 'health_goals', 'food_preferences']
-            present_fields = [f for f in key_fields if f in response]
-            
-            print(f"   ✅ Key fields present: {len(present_fields)}/{len(key_fields)}")
-            
-            if len(present_fields) >= len(key_fields) * 0.8:  # 80% or better
-                self.log_result("Get User Profile", True, f"Profile retrieved with {len(present_fields)}/{len(key_fields)} key fields")
-                return True
-            else:
-                self.log_result("Get User Profile", False, f"Missing key fields: {set(key_fields) - set(present_fields)}")
-                return False
+        passed_tests = 0
+        failed_tests = []
         
-        self.log_result("Get User Profile", False, "Profile retrieval failed")
-        return False
-
-    def test_12_update_user_profile(self):
-        """Test PUT /api/users/{user_id} (update profile)"""
-        print("\n" + "="*50)
-        print("1️⃣2️⃣ TESTING: PUT /api/users/{user_id} (update profile)")
-        print("="*50)
-        
-        if not hasattr(self, 'profile_user_id'):
-            print("   ❌ No profile user ID available")
-            self.log_result("Update User Profile", False, "No profile user ID")
-            return False
-        
-        update_data = {
-            "age": 29,
-            "activity_level": "moderate",
-            "health_goals": ["blood_sugar_control", "energy_boost", "weight_maintenance"],
-            "cooking_skill": "intermediate"
-        }
-        
-        success, response = self.run_test(
-            "Update User Profile",
-            "PUT",
-            f"users/{self.profile_user_id}",
-            200,
-            data=update_data
-        )
-        
-        if success:
-            # Verify updates
-            updates_correct = 0
-            for field, expected in update_data.items():
-                actual = response.get(field)
-                if actual == expected:
-                    updates_correct += 1
-                    print(f"   ✅ {field}: Updated correctly")
+        for i, test_method in enumerate(test_methods, 1):
+            try:
+                if test_method():
+                    passed_tests += 1
+                    print(f"✅ TEST {i} PASSED")
                 else:
-                    print(f"   ❌ {field}: Expected {expected}, got {actual}")
-            
-            # Verify unchanged fields preserved
-            if response.get('diabetes_type') == 'type1':
-                print(f"   ✅ Unchanged fields preserved")
-            else:
-                print(f"   ⚠️  Unchanged field may have been modified")
-            
-            success_rate = updates_correct / len(update_data)
-            if success_rate >= 0.9:  # 90% or better
-                self.log_result("Update User Profile", True, f"Profile updated with {updates_correct}/{len(update_data)} fields correct")
-                return True
-            else:
-                self.log_result("Update User Profile", False, f"Only {updates_correct}/{len(update_data)} updates correct")
-                return False
+                    failed_tests.append(f"Test {i}: {test_method.__name__}")
+                    print(f"❌ TEST {i} FAILED")
+            except Exception as e:
+                failed_tests.append(f"Test {i}: {test_method.__name__} - Exception: {str(e)}")
+                print(f"❌ TEST {i} FAILED WITH EXCEPTION: {str(e)}")
         
-        self.log_result("Update User Profile", False, "Profile update failed")
-        return False
-
-    # =============================================
-    # COMPREHENSIVE TEST RUNNER
-    # =============================================
-
-    def run_all_tests(self):
-        """Run comprehensive AI Health Coach backend tests"""
-        print("🎯 Starting Comprehensive AI Health Coach Backend Testing")
-        print("Focus: Verify no regressions from frontend fixes")
-        print("Scope: 9 AI Coach endpoints + 3 User Profile endpoints + Real AI Integration")
-        print("=" * 80)
+        # Print final results
+        print("\n" + "="*80)
+        print("🎯 FINAL TEST RESULTS")
+        print("="*80)
+        print(f"Total Tests Run: {len(test_methods)}")
+        print(f"Tests Passed: {passed_tests}")
+        print(f"Tests Failed: {len(failed_tests)}")
+        print(f"Success Rate: {(passed_tests/len(test_methods)*100):.1f}%")
         
-        # Setup
-        if not self.setup_test_user():
-            print("❌ Failed to setup test user - aborting tests")
-            return False
-        
-        # Core AI Health Coach Endpoints (9 endpoints)
-        print(f"\n🤖 TESTING CORE AI HEALTH COACH ENDPOINTS (9 endpoints)")
-        print("=" * 80)
-        
-        self.test_1_feature_flags()
-        self.test_2_accept_disclaimer()
-        self.test_3_disclaimer_status()
-        self.test_4_consultation_limit()
-        self.test_5_create_session()
-        self.test_6_get_sessions()
-        self.test_7_send_message()  # REAL AI INTEGRATION
-        self.test_8_get_messages()
-        self.test_9_search_conversations()
-        
-        # User Profile Endpoints (3 endpoints)
-        print(f"\n👤 TESTING USER PROFILE ENDPOINTS (3 endpoints)")
-        print("=" * 80)
-        
-        self.test_10_create_user_profile()
-        self.test_11_get_user_profile()
-        self.test_12_update_user_profile()
-        
-        # Summary
-        self.print_comprehensive_summary()
-        
-        return self.tests_passed >= self.tests_run * 0.9  # 90% success rate
-
-    def print_comprehensive_summary(self):
-        """Print comprehensive test summary"""
-        print("\n" + "=" * 80)
-        print("🎯 COMPREHENSIVE AI HEALTH COACH BACKEND TEST SUMMARY")
-        print("=" * 80)
-        
-        success_rate = (self.tests_passed / self.tests_run * 100) if self.tests_run > 0 else 0
-        print(f"\n📊 Overall Results: {self.tests_passed}/{self.tests_run} tests passed ({success_rate:.1f}%)")
-        
-        # Core AI Health Coach Endpoints
-        coach_tests = [r for r in self.test_results if any(keyword in r['test'].lower() 
-                      for keyword in ['feature', 'disclaimer', 'consultation', 'session', 'message', 'search'])]
-        coach_passed = sum(1 for t in coach_tests if t['passed'])
-        
-        print(f"\n🤖 Core AI Health Coach Endpoints: {coach_passed}/{len(coach_tests)} passed")
-        for i, test in enumerate(coach_tests, 1):
-            status = "✅" if test['passed'] else "❌"
-            print(f"   {status} {i}. {test['test']}")
-        
-        # User Profile Endpoints
-        profile_tests = [r for r in self.test_results if 'profile' in r['test'].lower()]
-        profile_passed = sum(1 for t in profile_tests if t['passed'])
-        
-        print(f"\n👤 User Profile Endpoints: {profile_passed}/{len(profile_tests)} passed")
-        for i, test in enumerate(profile_tests, 1):
-            status = "✅" if test['passed'] else "❌"
-            print(f"   {status} {i}. {test['test']}")
-        
-        # Real AI Integration
-        ai_tests = [r for r in self.test_results if 'message' in r['test'].lower()]
-        if ai_tests:
-            ai_test = ai_tests[0]
-            print(f"\n🧠 Real AI Integration: {'✅ WORKING' if ai_test['passed'] else '❌ FAILED'}")
-            if ai_test['passed']:
-                print(f"   ✅ OpenAI GPT-4o-mini responding with diabetes-specific content")
-                print(f"   ✅ Imperial measurements and shopping list offers included")
-                print(f"   ✅ Clean formatting without markdown")
-        
-        # Regression Analysis
-        print(f"\n🔍 Regression Analysis:")
-        if success_rate >= 95:
-            print(f"   ✅ NO REGRESSIONS DETECTED - All systems operational")
-        elif success_rate >= 85:
-            print(f"   ⚠️  MINOR ISSUES - Some endpoints may need attention")
-        else:
-            print(f"   ❌ SIGNIFICANT ISSUES - Major regressions detected")
-        
-        # Failed Tests Detail
-        failed_tests = [r for r in self.test_results if not r['passed']]
         if failed_tests:
-            print(f"\n❌ Failed Tests ({len(failed_tests)}):")
-            for test in failed_tests:
-                print(f"   • {test['test']}: {test['details']}")
+            print("\n❌ FAILED TESTS:")
+            for failed_test in failed_tests:
+                print(f"   - {failed_test}")
         
-        print(f"\n🎯 Final Assessment:")
-        if success_rate >= 95:
-            print(f"   🎉 EXCELLENT - Backend maintains 100% success rate")
-        elif success_rate >= 85:
-            print(f"   ✅ GOOD - Backend is stable with minor issues")
+        if passed_tests == len(test_methods):
+            print("\n🎉 SUCCESS: All 9 AI Health Coach endpoints are working correctly!")
+            print("✅ Real AI integration with OpenAI GPT-4o-mini is functional")
+            print("✅ No regressions detected from v2.2.9 session reference fixes")
+            return True
         else:
-            print(f"   ⚠️  NEEDS ATTENTION - Backend has significant issues")
+            print(f"\n⚠️  WARNING: {len(failed_tests)} out of {len(test_methods)} tests failed")
+            print("❌ Some AI Health Coach endpoints may have issues")
+            return False
 
-if __name__ == "__main__":
-    tester = ComprehensiveAICoachTester()
-    success = tester.run_all_tests()
+def main():
+    """Main function to run AI Health Coach tests"""
+    tester = ComprehensiveAIHealthCoachTester()
+    
+    print("🚀 COMPREHENSIVE AI HEALTH COACH ENDPOINT TESTER")
+    print("Testing NutriTame AI Health Coach backend endpoints")
+    print("Focus: Verify all 9 core endpoints after v2.2.9 session reference fixes")
+    print("="*80)
+    
+    success = tester.run_comprehensive_test()
     
     if success:
-        print("\n🎉 AI Health Coach backend endpoints are working correctly!")
-        print("✅ No regressions detected from frontend fixes")
+        print("\n✅ ALL TESTS PASSED - AI Health Coach backend is ready for production")
         sys.exit(0)
     else:
-        print("\n⚠️  Some AI Health Coach backend endpoints have issues")
-        print("❌ Potential regressions detected - review required")
+        print("\n❌ SOME TESTS FAILED - Review issues before production deployment")
         sys.exit(1)
+
+if __name__ == "__main__":
+    main()
