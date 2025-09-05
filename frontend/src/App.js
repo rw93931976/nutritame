@@ -3259,10 +3259,9 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     pushUserBubble(pendingText);
     console.error('[UX] user bubble echoed (resume)');
 
-    // 3) Show one-shot green toast for ~5s (only on resume path)
+    // 3) Show the green toast (one-shot)
     setShowConsentResumeToast(true);
     console.error('[UX] resume toast shown');
-    setTimeout(() => setShowConsentResumeToast(false), 5000);
 
     // 4) Focus input + scroll to bottom
     inputRef?.current?.focus?.();
