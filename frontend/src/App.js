@@ -2218,9 +2218,8 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
       console.error('[GATED: ack=false — no API call, no clearing]');
       localStorage.setItem('nt_coach_pending_question', messageText.trim());
       console.error(`[PENDING] stored question="${messageText.trim()}"`);
-      console.error('[DISCLAIMER OPEN] type=global');
-      setShowAiCoachDisclaimer(true);
-      return; // IMPORTANT: nothing else runs
+      console.error('[NO MORE DISCLAIMER GATING] proceeding directly');
+      // No more disclaimer modal - proceed with message send
     }
     
     console.error('[PROCEEDING] ack=true — calling backend');
