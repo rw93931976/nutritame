@@ -3397,84 +3397,29 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
 
   // REMOVED: handleDisclaimerAcceptWithUX - replaced by onCoachConsentAccept
 
-  // NEW UNIFIED SEND MESSAGE FUNCTION
+  // UPDATED SEND MESSAGE FUNCTION - delegates to unified sender
   const sendMessage = async (messageText) => {
     const text = (messageText || inputText || '').trim();
     if (!text) return;
     
-    // Guard: ensure token and user_id are available
-    if (!api.defaults.headers.common.Authorization) {
-      console.error('[SEND ATTEMPT] No auth token available');
-      toast.error('Authentication required. Please refresh and try again.');
-      return;
-    }
-    
-    const userId = effectiveUser?.id || localStorage.getItem('nt_coach_user_id');
-    if (!userId) {
-      console.error('[SEND ATTEMPT] No user_id available');
-      toast.error('User profile required. Please complete your profile.');
-      return;
-    }
-
     console.error('[SEND ATTEMPT] body="' + text + '"');
     
-    // UX: echo the user's message immediately with sending status
-    const userMessage = { 
-      id: 'u-' + Date.now(), 
-      role: 'user', 
-      message: text, 
-      isUser: true,
-      status: 'sending'
-    };
-    setMessages(prev => [...prev, userMessage]);
-    
-    // Clear input since message is echoed
+    // Clear input and localStorage first
     setInputText('');
     localStorage.removeItem('nt_coach_pending_question');
     setPendingQuestion('');
     
-    setIsLoading(true);
-    
-    try {
-      // Use new API client to send message
-      const response = await sendCoachMessage(text);
-      
-      // Update user message status to sent
-      setMessages(prev => prev.map(msg => 
-        msg.id === userMessage.id ? { ...msg, status: 'sent' } : msg
-      ));
-      
-      // Add AI response
-      const aiText = response?.reply || response?.response || response?.text || response?.ai_response?.text;
-      if (aiText) {
-        const aiResponse = {
-          id: 'ai-' + Date.now(),
-          message: '',
-          response: aiText,
-          isUser: false,
-          status: 'sent'
-        };
-        setMessages(prev => [...prev, aiResponse]);
+    // Delegate to global unified sender to ensure single path
+    if (typeof window.unifiedCoachSend === 'function') {
+      try {
+        await window.unifiedCoachSend(text);
+      } catch (error) {
+        console.error('[SEND ATTEMPT] unified sender failed:', error);
+        toast.error("Failed to send message. Please try again.");
       }
-      
-      scrollToBottomSoon();
-      inputRef.current?.focus();
-      
-    } catch (error) {
-      console.error('[SEND ATTEMPT] Error:', error);
-      
-      // Update user message status to failed
-      setMessages(prev => prev.map(msg => 
-        msg.id === userMessage.id ? { 
-          ...msg, 
-          status: 'failed',
-          error: 'Send failed — tap to retry'
-        } : msg
-      ));
-      
-      toast.error("Failed to send message. Please try again.");
-    } finally {
-      setIsLoading(false);
+    } else {
+      console.error('[SEND ATTEMPT] No unified sender available');
+      toast.error("Message system not ready. Please refresh and try again.");
     }
   };
 
