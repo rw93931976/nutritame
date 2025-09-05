@@ -114,7 +114,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Fix AI Coach disclaimer gating flow where input text disappears after acceptance and send fails due to component re-mounting and ack state transition problems. Implement unified accept handler with exact logging format, defensive gating on send, and input draft persistence."
+user_problem_statement: "Fix AI Coach 'already thinking' lock + session reference crash (currentAiSession undefined) + localStorage-only consent gating + direct auto-resume after disclaimer acceptance. Implement surgical fixes for session management, unified sender path, and exact logging format as specified in v2.2.9-fix-session-gate-resume."
 
 frontend:
   - task: "AI Health Coach ACK Gate Fix (v2.2.5)"
