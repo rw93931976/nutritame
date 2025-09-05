@@ -1886,6 +1886,15 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     }
   }, [userProfile]);
 
+  // Generate consent UI hash for tracking consent UI version
+  const generateConsentUIHash = async () => {
+    // Simple hash based on current timestamp and UI version
+    // In production, this could be a hash of the actual UI elements
+    const uiVersion = "v1.0-2025-09-05";
+    const timestamp = Date.now();
+    return `${uiVersion}-${timestamp}`;
+  };
+
   // GLOBAL DISCLAIMER CONSENT HANDLER 
   const onCoachConsentAccept = async () => {
     console.log('[CONSENT] Global disclaimer accepted - calling backend to record consent');
