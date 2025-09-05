@@ -3218,7 +3218,7 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
       delete window.sendPendingWithUX;
       delete window.coachInputRef;
     };
-  }, [ack, sendPendingWithUX]);
+  }, [ack]); // Remove sendPendingWithUX from dependencies to prevent initialization error
   console.log('🎯 CoachInterface component mounted with pendingQuestion:', pendingQuestion, 'currentUser:', currentUser, 'ack:', ack);
   
   // Basic AI Health Coach state
