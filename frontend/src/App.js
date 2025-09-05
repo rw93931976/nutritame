@@ -3388,7 +3388,7 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     e?.preventDefault?.();
     
     // HOTFIX: No more disclaimer gating - proceed directly
-    const body = messageText || inputText.trim();
+    const body = inputText.trim();
     if (!body) return;
     
     console.log('[SEND] Enter key pressed, sending message...');
