@@ -3596,6 +3596,9 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
                       </div>
                     </div>
                   )}
+                  
+                  {/* Messages end anchor for scrolling */}
+                  <div ref={messagesEndRef} />
                 </div>
               </CardContent>
               
