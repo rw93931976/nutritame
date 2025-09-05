@@ -3781,6 +3781,9 @@ function App() {
         setCoachAuthToken(response.data.access_token);         // <-- 1A
         console.log("[AUTH] token set");                       // Required log
         
+        // SURGICAL CHANGE 1: Demo flag propagation
+        localStorage.setItem('nt_is_demo', 'false');  // Non-demo path
+        
         setUser(response.data.user);
         setAppMode('app');
         
