@@ -3220,11 +3220,13 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     // Expose functions globally for Dashboard consent handler
     window.sendPendingWithUX = sendPendingWithUX;
     window.coachInputRef = inputRef;
+    window.coachSetAck = setAck; // Expose setAck so global handler can close CoachInterface modal
     
     return () => {
       // Clean up global references
       delete window.sendPendingWithUX;
       delete window.coachInputRef;
+      delete window.coachSetAck;
     };
   }, [ack]); // Remove sendPendingWithUX from dependencies to prevent initialization error
   console.log('🎯 CoachInterface component mounted with pendingQuestion:', pendingQuestion, 'currentUser:', currentUser, 'ack:', ack);
