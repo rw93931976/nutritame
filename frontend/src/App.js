@@ -4,7 +4,7 @@ import axios from "axios";
 import "./App.css";
 
 // VERSION BANNER - Wire consent Accept to sendPendingWithUX
-console.error('[VERSION] v2.2.12-accept-wired-to-ux-resume | commit=<will_update>');
+console.error('[VERSION] v2.2.12-accept-wired-to-ux-resume | commit=<pending>');
 
 // Performance logging - ensuring no long setTimeout violations
 console.error('[Perf] post-load tasks scheduled (no long setTimeout)');
