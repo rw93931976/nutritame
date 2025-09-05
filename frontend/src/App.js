@@ -1907,7 +1907,7 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
         user_id: userId,
         disclaimer_version: "v1.0-2025-09-05",
         consent_source: "global_screen",
-        consent_ui_hash: await generateConsentUIHash() // To be implemented
+        consent_ui_hash: await generateConsentUIHash()
       };
       
       await api.post('/coach/accept-disclaimer', consentData);
@@ -1916,7 +1916,11 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
       // Handle pending question if any
       const pending = localStorage.getItem('nt_coach_pending_question');
       if (pending) {
-        sendPendingWithUX(pending);
+        // Use the global unified sender if available
+        if (typeof window.unifiedCoachSend === 'function') {
+          console.log('[CONSENT] Sending pending question via unified sender');
+          await window.unifiedCoachSend(pending);
+        }
         localStorage.removeItem('nt_coach_pending_question');
       }
       
