@@ -3542,6 +3542,15 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     }
   };
 
+  // Simple retry function for failed messages
+  const retrySend = async (params) => {
+    const { messageId } = params;
+    const failedMessage = messages.find(msg => msg.id === messageId);
+    if (failedMessage) {
+      await sendMessage(failedMessage.message);
+    }
+  };
+
   const handleSendMessage = async (e) => {
     e?.preventDefault?.();
     
