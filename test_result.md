@@ -162,6 +162,17 @@ frontend:
         comment: "ROOT CAUSE IDENTIFIED: Demo users created via /api/demo/access exist only for JWT tokens but not in users database collection. Frontend logic incorrectly determined profile update (PUT) instead of creation (POST) because demo users have ID and diabetes_type from handleDemoAccess. FIXED: Updated UserProfileSetup logic to detect demo users and route to POST /api/users (create) instead of PUT /api/users/{id} (update). Added consistent user ID management to update nt_coach_user_id localStorage with new database user ID after successful profile creation."
 
 backend:
+  - task: "CORS Configuration Fix for Frontend Access"
+    implemented: true
+    working: true
+    file: "backend/server.py, backend/.env"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "🎯 CRITICAL CORS CONFIGURATION FIX COMPLETED: Updated CORS configuration to precisely match user requirements for frontend access from https://coach-consent.preview.emergentagent.com. ✅ CORS ORIGINS UPDATED: Changed from incorrect 'ai-coach-bridge' duplicates to correct origins: 'coach-consent.preview.emergentagent.com' and 'localhost:3000' for local dev. ✅ CORS SETTINGS CONFIGURED: allow_methods=['GET','POST','OPTIONS'], allow_headers=['Content-Type','Authorization'], allow_credentials=False, max_age=86400 as requested. ✅ PREFLIGHT TESTING SUCCESSFUL: Both OPTIONS preflight requests return 200 OK with correct headers: Access-Control-Allow-Origin, Access-Control-Allow-Methods, Access-Control-Allow-Headers, Access-Control-Max-Age, Vary: Origin. ✅ API CONTRACT CONFIRMED: POST /api/coach/accept-disclaimer with {user_id: uuid} returns 200 OK with {message, accepted: true}. POST /api/coach/sessions with {user_id: uuid} returns 200 OK with complete session object. ✅ PRODUCTION READY: CORS configuration now supports frontend at coach-consent.preview.emergentagent.com with no preflight errors. All curl tests pass with correct headers and response bodies."
   - task: "AI Health Coach Real AI Integration"
     implemented: true
     working: true
