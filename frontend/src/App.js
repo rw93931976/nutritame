@@ -4,7 +4,7 @@ import axios from "axios";
 import "./App.css";
 
 // Import new API client helper
-import { api, setCoachAuthToken, getOrCreateSessionId, sendCoachMessage } from "./apiClient";
+import { api, setCoachAuthToken, getOrCreateSessionId, sendCoachMessage, writeConsentDual, resetSessionCache } from "./apiClient";
 
 // VERSION BANNER - Kill legacy resume path; hard-return after sendPendingWithUX
 console.error('[VERSION] v2.2.13-kill-legacy-resume-hardreturn | commit=6fe794b');
