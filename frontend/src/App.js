@@ -2504,7 +2504,8 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
                     </div>
                     <div className="flex gap-3">
                       <Button 
-                        onClick={handleAiCoachDisclaimerAccept}
+                        type="button"
+                        onClick={onCoachConsentAccept}
                         className="flex-1 bg-emerald-600 hover:bg-emerald-700"
                       >
                         Accept & Continue
