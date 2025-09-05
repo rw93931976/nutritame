@@ -114,7 +114,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Fix AI Coach 'already thinking' lock + session reference crash (currentAiSession undefined) + localStorage-only consent gating + direct auto-resume after disclaimer acceptance. Implement surgical fixes for session management, unified sender path, and exact logging format as specified in v2.2.9-fix-session-gate-resume."
+user_problem_statement: "v2.2.12 — Wire consent 'Accept' to sendPendingWithUX (fix missing clear/echo/toast) + small chat height tweak. Auto-resume is working but UX polish is not firing after consent in incognito: no input clear, no immediate user bubble, no green toast, text box still shows original text. Root cause: The consent 'Accept' path is still resuming via old route (window.currentSendHandler / indirect fallback), bypassing the new sendPendingWithUX() flow. Force the With-UX resume path on consent acceptance with direct calls to sendPendingWithUX(pending). Remove legacy fallbacks, ensure UX logging sequence, fix refs and toast visibility, increase chat height."
 
 frontend:
   - task: "AI Health Coach Session Gate Resume Fix (v2.2.9)"
