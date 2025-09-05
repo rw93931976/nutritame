@@ -3759,6 +3759,27 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
                         data-role={msg.isUser ? 'user-message' : 'ai-message'}
                       >
                         <p className="text-sm">{msg.isUser ? msg.message : (msg.response || msg.message)}</p>
+                        
+                        {/* Status indicators for user messages (Choice 3B) */}
+                        {msg.role === "user" && msg.status === "sending" && (
+                          <div className="text-xs opacity-70 mt-1">Sending…</div>
+                        )}
+                        {msg.role === "user" && msg.status === "failed" && (
+                          <div className="text-xs text-red-200 mt-1">
+                            Failed. <button 
+                              onClick={() => retrySend({ 
+                                messageId: msg.id, 
+                                userId: effectiveUser.id, 
+                                messages, 
+                                addMessage: window.coachAddMessage, 
+                                updateMessage: window.coachUpdateMessage 
+                              })} 
+                              className="underline hover:text-red-100"
+                            >
+                              Retry
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
