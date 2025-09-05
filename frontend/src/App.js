@@ -1904,17 +1904,56 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     }
   }, [userProfile]);
 
-  // REMOVED: handleUnifiedDisclaimerAccept and handleAiCoachDisclaimerAccept
-  // All consent acceptance now goes through onCoachConsentAccept in CoachInterface
-  
-  // Simple wrapper to trigger CoachInterface consent acceptance
-  const handleAiCoachDisclaimerAccept = async () => {
-    console.error('[DISCLAIMER OPEN] type=global');
-    // This will trigger the disclaimer modal in CoachInterface
-    // The actual acceptance is handled by onCoachConsentAccept in CoachInterface
-    setShowAiCoachDisclaimer(false);
+  // NEW SINGLE CONSENT HANDLER - Hotfix for consent loop
+  const onCoachConsentAccept = async () => {
+    console.log('[WIRE] Accept -> onCoachConsentAccept');
+    
+    try {
+      // (1) Use acceptHandledRef guard to prevent double-fires
+      if (acceptHandledRef.current) {
+        console.log('[WIRE] Double-fire prevented by acceptHandledRef guard');
+        return;
+      }
+      acceptHandledRef.current = true;
+
+      // (2) Set localStorage COACH_ACK_KEY = 'true'
+      localStorage.setItem(COACH_ACK_KEY, 'true');
+      
+      // (3) Immediately close the modal
+      setShowAiCoachDisclaimer(false);
+      
+      // (4) Read pending question and handle it
+      const pending = localStorage.getItem('nt_coach_pending_question')?.trim();
+      if (pending) {
+        // Try sendPendingWithUX first, fallback to window.sendMessageInternal
+        if (typeof window.sendPendingWithUX === 'function') {
+          await window.sendPendingWithUX(pending);
+        } else if (typeof window.sendMessageInternal === 'function') {
+          await window.sendMessageInternal(pending);
+        } else {
+          console.error('[WIRE] No sendPendingWithUX or sendMessageInternal available');
+        }
+        
+        // Remove the pending key
+        localStorage.removeItem('nt_coach_pending_question');
+      } else {
+        // No pending - try to focus inputRef if available
+        if (window.coachInputRef?.current) {
+          window.coachInputRef.current.focus();
+        }
+      }
+      
+      // Reset guard after a short delay
+      setTimeout(() => {
+        acceptHandledRef.current = false;
+      }, 1000);
+      
+    } catch (error) {
+      console.error('[WIRE] Error in onCoachConsentAccept:', error);
+      acceptHandledRef.current = false;
+    }
   };
-  
+
   // Create new AI Coach session
   const createAiCoachSession = async (title = "New Conversation") => {
     try {
