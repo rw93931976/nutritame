@@ -13,7 +13,7 @@ console.error('[VERSION] v2.2.13-kill-legacy-resume-hardreturn | commit=6fe794b'
 console.error('[Perf] post-load tasks scheduled (no long setTimeout)');
 
 // CONSTANTS (no more coach ACK gating)
-const COACH_ACK_KEY = 'nt_coach_ack';
+// HOTFIX: Use NT_COACH_ACK consistently
 const PENDING_KEY = 'nt_coach_pending_question';
 
 // HOTFIX: Unified sender defined only in index.js - no duplicates
