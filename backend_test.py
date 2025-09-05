@@ -3454,6 +3454,51 @@ class GlucoPlannerAPITester:
         
         print("\n" + "=" * 80)
         
+        # Step 4: Test with disclaimer acceptance (since Attempt B showed correct format)
+        if "B (user_id)" in [attempt[0] for attempt in failed_attempts]:
+            # Check if the error was about disclaimer acceptance
+            b_error = next((error for attempt, error in failed_attempts if attempt == "B (user_id)"), None)
+            if isinstance(b_error, dict) and "disclaimer" in str(b_error.get('detail', '')).lower():
+                print("\n📋 STEP 4: Test with Disclaimer Acceptance (Attempt B showed correct format)")
+                
+                # Accept disclaimer first
+                disclaimer_data = {"user_id": user_id}
+                try:
+                    url = f"{self.api_url}/coach/accept-disclaimer"
+                    disclaimer_response = requests.post(url, json=disclaimer_data, headers=headers, timeout=30)
+                    disclaimer_status = disclaimer_response.status_code
+                    
+                    print(f"   Disclaimer acceptance status: {disclaimer_status}")
+                    if disclaimer_status == 200:
+                        print("   ✅ Disclaimer accepted successfully")
+                        
+                        # Now retry Attempt B with disclaimer accepted
+                        print("\n🔍 RETRY ATTEMPT B: POST /coach/sessions with { \"user_id\": userId } (after disclaimer)")
+                        
+                        retry_b_data = {"user_id": user_id}
+                        url = f"{self.api_url}/coach/sessions"
+                        retry_response = requests.post(url, json=retry_b_data, headers=headers, timeout=30)
+                        retry_status = retry_response.status_code
+                        
+                        print(f"   Request Body: {json.dumps(retry_b_data)}")
+                        print(f"   Response Status: {retry_status}")
+                        try:
+                            retry_response_data = retry_response.json()
+                            print(f"   Response Body: {json.dumps(retry_response_data, indent=2)}")
+                        except:
+                            retry_response_data = retry_response.text
+                            print(f"   Response Body: {retry_response_data}")
+                        
+                        if retry_status == 200:
+                            print("   ✅ RETRY ATTEMPT B SUCCESS - Session created after disclaimer acceptance!")
+                            successful_attempts.append("B (user_id) - after disclaimer")
+                        else:
+                            print("   ❌ RETRY ATTEMPT B FAILED - Even after disclaimer acceptance")
+                    else:
+                        print("   ❌ Failed to accept disclaimer")
+                except Exception as e:
+                    print(f"   ❌ Error during disclaimer acceptance: {e}")
+        
         # Return True if at least one attempt succeeded
         return len(successful_attempts) > 0
 
