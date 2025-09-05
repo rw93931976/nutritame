@@ -1856,6 +1856,38 @@ class GlucoPlannerAPITester:
         print("   ✅ Error handling tests completed")
         return True
 
+    def run_ai_coach_messaging_refactor_tests(self):
+        """Run AI Coach Messaging System Refactor Tests (Focus on 1A + 2A + 3B)"""
+        print("🎯 AI COACH MESSAGING SYSTEM REFACTOR TEST SUITE")
+        print("=" * 80)
+        print("Testing: New API Client (1A) + Unified Session Management (2A) + Enhanced Message Handling (3B)")
+        print("=" * 80)
+        
+        # Run the comprehensive messaging system refactor test
+        success = self.test_ai_coach_messaging_system_refactor()
+        
+        # Print final results
+        print("\n" + "=" * 80)
+        print("📊 AI COACH MESSAGING REFACTOR TEST RESULTS")
+        print("=" * 80)
+        print(f"Total Tests Run: {self.tests_run}")
+        print(f"Tests Passed: {self.tests_passed}")
+        print(f"Tests Failed: {self.tests_run - self.tests_passed}")
+        print(f"Success Rate: {(self.tests_passed/self.tests_run)*100:.1f}%")
+        
+        if success:
+            print("🎉 AI COACH MESSAGING SYSTEM REFACTOR: ALL TESTS PASSED!")
+            print("✅ Expected Results Achieved:")
+            print("   • Bearer token authentication working")
+            print("   • Session creation and caching functional")
+            print("   • Message sending with proper AI responses")
+            print("   • Error handling working correctly")
+        else:
+            print("❌ AI COACH MESSAGING SYSTEM REFACTOR: SOME TESTS FAILED!")
+            print("⚠️  Check the detailed output above for specific issues.")
+        
+        return success
+
     # =============================================
     # AI HEALTH COACH ENDPOINTS TESTS - v2.2.5-ack-gate-fix Regression Testing
     # =============================================
