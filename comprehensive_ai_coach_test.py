@@ -416,10 +416,12 @@ class ComprehensiveAIHealthCoachTester:
             # Check different possible response structures
             if 'ai_message' in response and 'text' in response['ai_message']:
                 ai_response = response['ai_message']['text']
+            elif 'ai_response' in response and isinstance(response['ai_response'], dict) and 'text' in response['ai_response']:
+                ai_response = response['ai_response']['text']
+            elif 'ai_response' in response and isinstance(response['ai_response'], str):
+                ai_response = response['ai_response']
             elif 'response' in response:
                 ai_response = response['response']
-            elif 'ai_response' in response:
-                ai_response = response['ai_response']
             elif 'message' in response and isinstance(response['message'], str):
                 ai_response = response['message']
             
