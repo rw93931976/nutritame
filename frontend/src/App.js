@@ -3606,6 +3606,7 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
               <div className="flex-shrink-0 p-4 border-t">
                 <form onSubmit={handleSendMessage} className="flex gap-2">
                   <Input
+                    ref={inputRef}
                     value={inputText}
                     onChange={(e) => {
                       touched.current = true;
