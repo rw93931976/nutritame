@@ -3353,6 +3353,34 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     }
   };
   
+  // UNIFIED CONSENT ACCEPT HANDLER - Single source of truth
+  const onCoachConsentAccept = async () => {
+    if (acceptHandledRef.current) return;              // guard double-fire
+    acceptHandledRef.current = true;
+
+    // 1) Flip consent locally + persist
+    try {
+      setAck(true);                                     // CoachInterface state
+      localStorage.setItem(COACH_ACK_KEY, 'true');
+      console.error(`[ACK TRACE] AFTER - stateAck=true lsAck=true`);
+    } catch (e) {
+      console.error('[ACK ERROR] failed to store coach consent', e);
+    }
+
+    // 2) Resume pending with full UX polish
+    const pending = localStorage.getItem('nt_coach_pending_question');
+    if (pending) {
+      console.error(`[RESUME] auto-sending pending question="${pending}"`);
+      console.error('[UX] accept handler: with-ux resume path engaged');
+      localStorage.removeItem('nt_coach_pending_question');
+      await sendPendingWithUX(pending);                // clears input, echoes bubble, toast, focus+scroll, then send
+      return;                                          // <<< HARD STOP: do not fall through to any legacy path
+    }
+
+    // 3) No pending: simply close the disclaimer UI if needed
+    // The disclaimer should close automatically when setAck(true) is called
+  };
+  
   // Single source of truth for pending text until a successful send
   const k = 'nt_coach_pending_question';
   
