@@ -58,24 +58,44 @@ const MedicalDisclaimer = ({ onAccept, onDecline }) => {
     try {
       const userId = localStorage.getItem('nt_coach_user_id') || `demo-${Date.now()}`;
       
-      // Generate consent UI hash
-      const disclaimerText = document.querySelector('[data-disclaimer-scroll]')?.textContent || 
-                           "IMPORTANT MEDICAL DISCLAIMER - NutriTame provides educational guidance...";
+      // SURGICAL CHANGE 2: Compute real consent_ui_hash
+      const disclaimerText = `
+        IMPORTANT MEDICAL DISCLAIMER
+        This application provides meal planning guidance and nutritional information for educational purposes only. This is NOT medical advice and should never be used as a substitute for professional medical care, diagnosis, or treatment. NutriTame does not diagnose, treat, cure, or prevent any medical conditions or diseases.
+        CRITICAL SAFETY INFORMATION:
+        Medical Professional Consultation Required
+        Always consult your healthcare provider before making dietary changes
+        Never stop or modify medications based on app recommendations
+        Seek immediate medical attention for concerning symptoms
+        Regular medical monitoring is essential for diabetes management
+        Nutritional Information Limitations
+        Nutritional data may not be 100% accurate
+        Individual dietary needs vary significantly
+        Food allergies and intolerances are serious - verify all ingredients
+        Portion sizes should be confirmed with healthcare providers
+      `.replace(/\s+/g, ' ').trim();
+      
+      // Generate SHA-256 hash
       const encoder = new TextEncoder();
-      const data = encoder.encode(disclaimerText + "v1.0-2025-09-05");
+      const data = encoder.encode(disclaimerText);
       const hashBuffer = await crypto.subtle.digest('SHA-256', data);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       const consent_ui_hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
       
+      // SURGICAL CHANGE 1: Use proper demo flag
+      const isDemo = localStorage.getItem('nt_is_demo') === 'true';
+      
       const consentData = {
         user_id: userId,
         disclaimer_version: "v1.0-2025-09-05",
-        consent_source: "global_screen",
+        consent_source: isDemo ? "demo_auto" : "global_screen",
+        is_demo: isDemo,
         consent_ui_hash: consent_ui_hash,
         locale: navigator.language,
         user_agent: navigator.userAgent
       };
       
+      console.log('[CONSENT] Sending consent with hash:', consent_ui_hash.substring(0, 16) + '...', 'is_demo:', isDemo);
       await api.post('/coach/accept-disclaimer', consentData);
       console.log('[GLOBAL DISCLAIMER] Consent recorded in backend ledger');
       
