@@ -51,8 +51,39 @@ const MedicalDisclaimer = ({ onAccept, onDecline }) => {
     retryCheck();
   }, [onAccept]);
 
-  const handleAccept = () => {
+  const handleAccept = async () => {
     sessionStorage.setItem('medical_disclaimer_accepted', 'true');
+    
+    // Record consent in backend ledger
+    try {
+      const userId = localStorage.getItem('nt_coach_user_id') || `demo-${Date.now()}`;
+      
+      // Generate consent UI hash
+      const disclaimerText = document.querySelector('[data-disclaimer-scroll]')?.textContent || 
+                           "IMPORTANT MEDICAL DISCLAIMER - NutriTame provides educational guidance...";
+      const encoder = new TextEncoder();
+      const data = encoder.encode(disclaimerText + "v1.0-2025-09-05");
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const consent_ui_hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      
+      const consentData = {
+        user_id: userId,
+        disclaimer_version: "v1.0-2025-09-05",
+        consent_source: "global_screen",
+        consent_ui_hash: consent_ui_hash,
+        locale: navigator.language,
+        user_agent: navigator.userAgent
+      };
+      
+      await api.post('/coach/accept-disclaimer', consentData);
+      console.log('[GLOBAL DISCLAIMER] Consent recorded in backend ledger');
+      
+    } catch (error) {
+      console.error('[GLOBAL DISCLAIMER] Failed to record consent:', error);
+      // Continue anyway - don't block user flow for consent recording failure
+    }
+    
     onAccept();
   };
 
