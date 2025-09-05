@@ -1864,6 +1864,9 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
         const flags = await aiCoachService.getFeatureFlags();
         setAiCoachFeatureFlags(flags);
 
+        // Handle demo auto-accept
+        await handleDemoAutoAccept();
+
         // Check if user has accepted disclaimer
         if (userProfile?.id) {
           const disclaimerStatus = await aiCoachService.getDisclaimerStatus(userProfile.id);
