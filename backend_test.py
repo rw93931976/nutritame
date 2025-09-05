@@ -1695,6 +1695,23 @@ class GlucoPlannerAPITester:
             'Authorization': f'Bearer {self.auth_token}'
         }
         
+        # First accept disclaimer (required for session creation)
+        disclaimer_data = {"user_id": self.auth_user_id}
+        success_disclaimer, disclaimer_response = self.run_test(
+            "Accept Disclaimer for Session Test",
+            "POST",
+            "coach/accept-disclaimer",
+            200,
+            headers=headers,
+            data=disclaimer_data
+        )
+        
+        if not success_disclaimer:
+            print("   ❌ Failed to accept disclaimer for session test")
+            return False
+            
+        print("   ✅ Disclaimer accepted for session creation")
+        
         # Test session creation with the new unified approach
         success, response = self.run_test(
             "Create Session - Unified Approach",
