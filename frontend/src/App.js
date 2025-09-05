@@ -3249,19 +3249,9 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     }
     console.error(`[ACK INIT] stateAck=${ack === true} lsAck=${lsAckBool}`);
     
-    // Listen for unified auto-send pending questions
-    const handleAutoSend = (event) => {
-      const { message } = event.detail;
-      if (message) {
-        sendMessageInternal(message);
-      }
-    };
+    // REMOVED: CustomEvent listener for unifiedAutoResume (legacy fallback removed)
+    // Auto-resume should be handled directly by handleDisclaimerAcceptWithUX
     
-    window.addEventListener('unifiedAutoResume', handleAutoSend);
-    
-    return () => {
-      window.removeEventListener('unifiedAutoResume', handleAutoSend);
-    };
   }, [setAck, ack]);
   console.log('🎯 CoachInterface component mounted with pendingQuestion:', pendingQuestion, 'currentUser:', currentUser, 'ack:', ack);
   
