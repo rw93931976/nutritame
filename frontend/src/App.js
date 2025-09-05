@@ -3247,44 +3247,29 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     scrollToBottomSoon?.();
     console.error('[UX] scrolled to bottom');
 
-    // 5) Get effective user and session for the unified sender
-    const effectiveUser = currentUser || { id: localStorage.getItem('nt_coach_user_id') || `demo-${Date.now()}` };
+    // 5) Send message using unified sender
+    const userId = currentUser?.id || localStorage.getItem('nt_coach_user_id') || `demo-${Date.now()}`;
     
     try {
-      const sessionId = await getOrCreateSessionId(currentSessionId, setCurrentSessionId, effectiveUser);
+      // Send message directly via unified sender
+      const response = await window.unifiedCoachSend(pendingText);
       
-      // Call the unified sender
-      await window.sendMessageInternal(
-        pendingText,
-        sessionId,
-        effectiveUser,
-        (response, messages) => {
-          // Success callback - same as regular send
-          const aiResponseText = response.ai_response?.text || response.response || response.message;
-          if (aiResponseText) {
-            const aiResponse = {
-              id: Date.now() + 1,
-              message: '',
-              response: aiResponseText,
-              isUser: false
-            };
-            setMessages(prev => [...prev, aiResponse]);
-          }
-          
-          localStorage.removeItem('nt_coach_pending_question');
-          setPendingQuestion('');
-          scrollToBottomSoon();
-          inputRef.current?.focus();
-        },
-        (error) => {
-          // Error callback
-          console.error('❌ Error sending pending message:', error);
-          setMessages(prev => prev.slice(0, -1)); // Remove failed message
-          toast.error("Failed to get AI response. Please try again.");
-          scrollToBottomSoon();
-          inputRef.current?.focus();
-        }
-      );
+      // Success - process AI response
+      const aiResponseText = response.ai_response?.text || response.response || response.message;
+      if (aiResponseText) {
+        const aiResponse = {
+          id: Date.now() + 1,
+          message: '',
+          response: aiResponseText,
+          isUser: false
+        };
+        setMessages(prev => [...prev, aiResponse]);
+      }
+      
+      localStorage.removeItem('nt_coach_pending_question');
+      setPendingQuestion('');
+      scrollToBottomSoon();
+      inputRef.current?.focus();
     } catch (error) {
       console.error("Resume send error:", error);
       toast.error("Failed to send message. Please try again.");
