@@ -14,26 +14,131 @@ console.error('[Perf] post-load tasks scheduled (no long setTimeout)');
 
 // CANONICAL ACCEPTANCE HELPERS
 const COACH_ACK_KEY = 'nt_coach_disclaimer_ack';
+const PENDING_KEY = 'nt_coach_pending_question';
 const setCoachAckTrue = () => localStorage.setItem(COACH_ACK_KEY, 'true');
 const getCoachAck = () => localStorage.getItem(COACH_ACK_KEY) === 'true';
 
-// Helper to get or create session ID for unified sender
-const getOrCreateSessionId = async (currentSessionId, setCurrentSessionId, effectiveUser) => {
-  if (currentSessionId) {
-    return currentSessionId;
-  }
-  
-  try {
-    const session = await aiCoachService.createSession(effectiveUser.id, "AI Coach Session");
-    setCurrentSessionId(session.id);
-    return session.id;
-  } catch (error) {
-    console.error('❌ Session creation helper failed:', error);
-    throw error;
-  }
-};
+// --- Session cache (memory) ---
+let inFlightSessionPromise = null;
+let cachedSessionId = null;
 
-// SINGLE SEND FUNCTION - Used by all UI elements
+// ALWAYS go through here before sending a message (Choice 2A)
+async function getOrCreateSessionId(userId) {
+  if (cachedSessionId) return cachedSessionId;
+  if (inFlightSessionPromise) return inFlightSessionPromise;
+
+  inFlightSessionPromise = (async () => {
+    // REQUIRE: auth header already set (choice 1A)
+    try {
+      // Use whatever your API expects; logs show you used query param.
+      // If your server prefers JSON body, switch to: api.post("/coach/sessions", { user_id: userId })
+      const res = await api.post(`/coach/sessions?user_id=${encodeURIComponent(userId)}`);
+      const sid = res?.data?.session_id || res?.data?.id || res?.data;
+      if (!sid) throw new Error("No session_id in response");
+      cachedSessionId = sid;
+      return sid;
+    } catch (err) {
+      console.error("❌ Session create failed", err);
+      // If auth was missing you would have seen 401/403 — that's why we set the token first
+      throw err;
+    } finally {
+      inFlightSessionPromise = null;
+    }
+  })();
+
+  return inFlightSessionPromise;
+}
+
+// Minimal in-memory message list; adapt if you already have one in state
+// Expected shape: { id, role: "user"|"assistant", text, status: "sending"|"sent"|"failed" }
+function echoUserBubble(addMessage, text) {
+  const id = `user_${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
+  addMessage({ id, role: "user", text, status: "sending" });
+  return id;
+}
+
+function markBubble(updateMessage, id, patch) {
+  updateMessage(id, patch); // you implement: finds by id and merges patch
+}
+
+// Unified send (gates + session + retry-able) (Choice 3B)
+async function sendMessageUnified({
+  userId,
+  text,
+  addMessage,      // fn to append to UI
+  updateMessage,   // fn to patch a message by id
+  setInputValue,   // optional: clear input after echo if you like
+  openDisclaimer,  // fn: opens the consent modal
+}) {
+  // 1) Gate: Consent
+  const ack = localStorage.getItem(COACH_ACK_KEY) === "true";
+  if (!ack) {
+    localStorage.setItem(PENDING_KEY, text);
+    openDisclaimer?.(); // show modal
+    console.log("[GATED] consent required — stored pending question");
+    return;
+  }
+
+  // 2) Echo bubble as "sending…" (3B)
+  const bubbleId = echoUserBubble(addMessage, text);
+  setInputValue?.(""); // optional: clear box since bubble shows the text
+
+  // 3) Ensure session (2A)
+  let sessionId;
+  try {
+    sessionId = await getOrCreateSessionId(userId);
+  } catch (err) {
+    markBubble(updateMessage, bubbleId, { status: "failed", error: "Could not start session" });
+    return;
+  }
+
+  // 4) POST the message with required fields
+  try {
+    const payload = { message: text, session_id: sessionId, user_id: userId };
+    const res = await api.post("/coach/message", payload);
+
+    // mark success
+    markBubble(updateMessage, bubbleId, { status: "sent" });
+
+    // render assistant reply (adapt to your UI)
+    const aiText = res?.data?.reply || res?.data?.text || res?.data;
+    addMessage({ id: `ai_${Date.now()}`, role: "assistant", text: aiText, status: "sent" });
+  } catch (err) {
+    console.error("[COACH ERR] send failed", err);
+    markBubble(updateMessage, bubbleId, { status: "failed", error: "Send failed — tap to retry" });
+  }
+}
+
+// Optional: a retry that reuses the same user bubble text
+async function retrySend({
+  messageId,
+  userId,
+  messages,
+  addMessage,
+  updateMessage,
+}) {
+  const msg = messages.find(m => m.id === messageId);
+  if (!msg) return;
+  if (msg.status !== "failed") return;
+
+  // flip to sending
+  updateMessage(messageId, { status: "sending", error: undefined });
+
+  try {
+    const sessionId = await getOrCreateSessionId(userId);
+    const payload = { message: msg.text, session_id: sessionId, user_id: userId };
+    const res = await api.post("/coach/message", payload);
+
+    updateMessage(messageId, { status: "sent" });
+    const aiText = res?.data?.reply || res?.data?.text || res?.data;
+    addMessage({ id: `ai_${Date.now()}`, role: "assistant", text: aiText, status: "sent" });
+  } catch (err) {
+    console.error("[COACH ERR] retry failed", err);
+    updateMessage(messageId, { status: "failed", error: "Still failing — try again" });
+  }
+}
+
+// Legacy SINGLE SEND FUNCTION - Kept for compatibility
 window.sendMessageInternal = async (body, sessionId, effectiveUser, onSuccess, onError) => {
   const reqId = Math.random().toString(36).slice(2);
   console.error(`[COACH REQ] id=${reqId} start body="${body}"`);
