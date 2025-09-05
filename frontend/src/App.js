@@ -408,54 +408,15 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
       localStorage.setItem('nt_coach_user_id', user_id);
       
       // Reset session cache to force fresh session with correct user_id
-      window.__coachSessionId = null;
-      if (window.sessionStorage) {
-        window.sessionStorage.removeItem('coach_session_id');
-      }
+      resetSessionCache(); // from apiClient.js
       
-      // Ensure consent is recorded with final user_id
-      if (!localStorage.getItem('NT_COACH_ACK')) {
-        try {
-          console.log('[CONSENT] Writing consent with final user_id:', user_id);
-          
-          // SURGICAL CHANGE 1 & 2: Use proper demo flag and real hash
-          const isDemo = localStorage.getItem('nt_is_demo') === 'true';
-          
-          // Generate consistent hash
-          const disclaimerText = `
-            IMPORTANT MEDICAL DISCLAIMER
-            This application provides meal planning guidance and nutritional information for educational purposes only. This is NOT medical advice and should never be used as a substitute for professional medical care, diagnosis, or treatment. NutriTame does not diagnose, treat, cure, or prevent any medical conditions or diseases.
-            CRITICAL SAFETY INFORMATION:
-            Medical Professional Consultation Required
-            Always consult your healthcare provider before making dietary changes
-            Never stop or modify medications based on app recommendations
-            Seek immediate medical attention for concerning symptoms
-            Regular medical monitoring is essential for diabetes management
-            Nutritional Information Limitations
-            Nutritional data may not be 100% accurate
-            Individual dietary needs vary significantly
-            Food allergies and intolerances are serious - verify all ingredients
-            Portion sizes should be confirmed with healthcare providers
-          `.replace(/\s+/g, ' ').trim();
-          
-          const encoder = new TextEncoder();
-          const data = encoder.encode(disclaimerText);
-          const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-          const hashArray = Array.from(new Uint8Array(hashBuffer));
-          const consent_ui_hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-          
-          await api.post('/coach/accept-disclaimer', {
-            user_id: user_id,
-            disclaimer_version: "v1.0-2025-09-05",
-            consent_source: isDemo ? "demo_auto" : "global_screen",
-            is_demo: isDemo,
-            consent_ui_hash: consent_ui_hash
-          });
-          localStorage.setItem('NT_COACH_ACK', 'true');
-          console.log('[CONSENT] Consent recorded successfully, is_demo:', isDemo);
-        } catch (error) {
-          console.error('[CONSENT] Failed to record consent:', error);
-        }
+      // HOTFIX: DUAL CONSENT WRITE - ensure consent exists for both hash variants
+      try {
+        console.log('[CONSENT] Calling dual-write for final user_id:', user_id);
+        await writeConsentDual(user_id);
+      } catch (error) {
+        console.error('[CONSENT] Dual-write failed:', error);
+        // Continue anyway - don't block profile completion
       }
       
       const isUpdate = existingProfile?.id && existingProfile?.diabetes_type;
