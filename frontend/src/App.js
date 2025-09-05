@@ -2462,42 +2462,12 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
               />
             )}
 
-            {/* AI Health Coach Disclaimer Modal */}
-            {showAiCoachDisclaimer && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <Card className="w-full max-w-md mx-4">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <ChefHat className="h-5 w-5 text-emerald-600" />
-                      AI Health Coach Disclaimer
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                      <p className="text-sm text-gray-700">
-                        <strong>Not a medical device.</strong> The AI Health Coach provides general nutrition guidance only and is not a substitute for professional medical advice. Always consult your healthcare provider.
-                      </p>
-                    </div>
-                    <div className="flex gap-3">
-                      <Button 
-                        type="button"
-                        onClick={onCoachConsentAccept}
-                        className="flex-1 bg-emerald-600 hover:bg-emerald-700"
-                      >
-                        Accept & Continue
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        onClick={() => setShowAiCoachDisclaimer(false)}
-                        className="flex-1"
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
+            {/* Optional informational banner (non-blocking) */}
+            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>💡 Educational Guidance:</strong> NutriTame provides educational guidance, not medical advice. Always consult your healthcare provider.
+              </p>
+            </div>
 
             {/* Consultation Limit Badge & Upgrade Modal */}
             {consultationLimit && (
