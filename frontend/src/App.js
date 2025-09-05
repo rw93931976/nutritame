@@ -16,36 +16,7 @@ console.error('[Perf] post-load tasks scheduled (no long setTimeout)');
 const COACH_ACK_KEY = 'nt_coach_ack';
 const PENDING_KEY = 'nt_coach_pending_question';
 
-// UNIFIED SENDER - Direct API integration (no disclaimer gating)
-window.unifiedCoachSend = async (messageText) => {
-  console.error(`[UNIFIED] unifiedCoachSend called with: "${messageText}"`);
-  
-  try {
-    // Get user ID
-    const userId = localStorage.getItem('nt_coach_user_id') || `demo-${Date.now()}`;
-    
-    // STEP 1: Get or create session (with breadcrumb)
-    const sessionUrl = `${api.defaults.baseURL}/coach/sessions`;
-    console.error(`[SESSION] POST ${sessionUrl}`);
-    const sessionId = await getOrCreateSessionId(userId);
-    console.error(`[SESSION] Session created/retrieved: ${sessionId}`);
-    
-    // STEP 2: Send message (with breadcrumb)
-    const messageUrl = `${api.defaults.baseURL}/coach/message`;
-    console.error(`[MESSAGE] POST ${messageUrl}`);
-    const response = await sendCoachMessage({ 
-      sessionId, 
-      message: messageText 
-    });
-    
-    console.error(`[MESSAGE] Message sent successfully, AI response:`, response.ai_response?.text?.substring(0, 100));
-    return response;
-    
-  } catch (error) {
-    console.error(`[UNIFIED] Send failed:`, error);
-    throw error;
-  }
-};
+// HOTFIX: Unified sender defined only in index.js - no duplicates
 
 // CRITICAL DEBUG: This should appear in console immediately
 console.log('🏗️ App.js file loaded - module executing');
