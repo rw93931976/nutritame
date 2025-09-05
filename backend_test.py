@@ -3325,5 +3325,22 @@ def main():
     
     return 0 if success_rate >= 70 else 1
 
+def main_messaging_refactor():
+    """Main function to run AI Coach Messaging System Refactor Tests"""
+    print("🎯 AI COACH MESSAGING SYSTEM REFACTOR TEST SUITE")
+    print("Testing: New API Client (1A) + Unified Session Management (2A) + Enhanced Message Handling (3B)")
+    print("=" * 80)
+    
+    tester = GlucoPlannerAPITester()
+    
+    # Run the messaging system refactor tests
+    success = tester.run_ai_coach_messaging_refactor_tests()
+    
+    return 0 if success else 1
+
 if __name__ == "__main__":
-    sys.exit(main())
+    # Check if we should run messaging refactor tests specifically
+    if len(sys.argv) > 1 and sys.argv[1] == "messaging-refactor":
+        sys.exit(main_messaging_refactor())
+    else:
+        sys.exit(main())
