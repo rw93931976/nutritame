@@ -435,6 +435,7 @@ const UserProfileSetup = ({ onProfileComplete, existingProfile }) => {
       // HOTFIX: User ID continuity - write consent after final user_id
       const user_id = response.data.id;
       localStorage.setItem('nt_coach_user_id', user_id);
+      setUserId(user_id);  // Update React state
       
       // Reset session cache to force fresh session with correct user_id
       window.__coachSessionId = null;
