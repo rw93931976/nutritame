@@ -1972,42 +1972,10 @@ async def send_coach_message(message_request: CoachMessageCreate):
         
         user_id = session["user_id"]
         
-        # Check disclaimer acceptance with demo auto-consent
+        # Check disclaimer acceptance
         disclaimer_accepted = await check_disclaimer_acceptance(user_id)
         
-        # Demo server path: auto-create consent for demo users if missing
-        if not disclaimer_accepted and (user_id.startswith('demo-') or 'demo' in user_id.lower()):
-            try:
-                logging.info(f"Auto-creating demo consent for message user: {user_id}")
-                consented_at_utc = datetime.now(timezone.utc)
-                consent_id = str(uuid.uuid4())
-                
-                signature = generate_consent_signature(
-                    user_id, CURRENT_DISCLAIMER_VERSION, "demo_auto", True,
-                    consented_at_utc, f"demo-{consent_id[:8]}"
-                )
-                
-                demo_consent_record = {
-                    "id": consent_id,
-                    "user_id": user_id,
-                    "disclaimer_version": CURRENT_DISCLAIMER_VERSION,
-                    "consent_source": "demo_auto",
-                    "is_demo": True,
-                    "consented_at_utc": consented_at_utc,
-                    "consent_ui_hash": f"demo-{consent_id[:8]}",
-                    "signature": signature,
-                    "country": None,
-                    "locale": None,
-                    "user_agent": None
-                }
-                
-                await db.consent_ledger.insert_one(demo_consent_record)
-                disclaimer_accepted = True
-                logging.info(f"Demo consent auto-created for message user: {user_id}")
-                
-            except Exception as e:
-                logging.error(f"Failed to auto-create demo consent for message: {e}")
-        
+        # SURGICAL CHANGE 1: Removed user_id.includes('demo') logic - handled in frontend
         if not disclaimer_accepted:
             raise HTTPException(status_code=403, detail="Disclaimer required")
         
