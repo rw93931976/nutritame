@@ -254,7 +254,8 @@ class SessionCreationTester:
             # Check if we got an AI response
             if 'response' in response or 'ai_response' in response:
                 ai_response = response.get('response') or response.get('ai_response', '')
-                self.log(f"✅ AI Response received: {ai_response[:100]}...")
+                ai_preview = str(ai_response)[:100] if ai_response else "No response"
+                self.log(f"✅ AI Response received: {ai_preview}...")
                 
                 # Verify message was saved
                 self.log("📚 Verifying message history")
