@@ -3317,55 +3317,7 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     }
   };
   
-  // UNIFIED CONSENT ACCEPT HANDLER - Single source of truth
-  const onCoachConsentAccept = async () => {
-    if (acceptHandledRef.current) return;              // guard double-fire
-    acceptHandledRef.current = true;
-
-    const beforeState = ack === true;
-    const beforeLs = localStorage.getItem(COACH_ACK_KEY);
-    console.error(`[DISCLAIMER ACCEPT] type=coach`);
-    console.error(`[ACK TRACE] BEFORE - stateAck=${beforeState} lsAck=${beforeLs===null?null:beforeLs==='true'}`);
-
-    // 1) Backend API call + local state update
-    try {
-      // STABILITY FIX: Use consistent user ID - get from localStorage or create ONCE
-      let storedUserId = localStorage.getItem('nt_coach_user_id');
-      
-      // Only create new ID if none exists (prevents remount issues)
-      if (!storedUserId) {
-        storedUserId = currentUser?.id || `demo-${Date.now()}`;
-        localStorage.setItem('nt_coach_user_id', storedUserId);
-      }
-      
-      await aiCoachService.acceptDisclaimer(storedUserId);
-      
-      // Set consent state
-      setAck(true);                                     // CoachInterface state
-      localStorage.setItem(COACH_ACK_KEY, 'true');
-      console.error(`[ACK TRACE] AFTER - stateAck=true lsAck=true`);
-    } catch (e) {
-      console.error('[ACK ERROR] failed to store coach consent', e);
-      // Still proceed with frontend state update for offline functionality
-      setAck(true);
-      localStorage.setItem(COACH_ACK_KEY, 'true');
-    }
-
-    // 2) Resume pending with full UX polish
-    const pending = localStorage.getItem('nt_coach_pending_question');
-    if (pending) {
-      console.error(`[RESUME] auto-sending pending question="${pending}"`);
-      console.error('[UX] accept handler: with-ux resume path engaged');
-      localStorage.removeItem('nt_coach_pending_question');
-      await sendPendingWithUX(pending);                // clears input, echoes bubble, toast, focus+scroll, then send
-      return;                                          // <<< HARD STOP: do not fall through to any legacy path
-    }
-
-    // 3) No pending: show encouragement toast and close disclaimer
-    setTimeout(() => {
-      toast.success("Thanks for confirming — remember, this is guidance only, and your healthcare provider is your best resource.");
-    }, 500);
-  };
+  // REMOVED: Legacy onCoachConsentAccept handler - replaced by global handler in Dashboard
   
   // Single source of truth for pending text until a successful send
   const k = 'nt_coach_pending_question';
