@@ -3604,6 +3604,13 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
               
               {/* Input Area */}
               <div className="flex-shrink-0 p-4 border-t">
+                {/* One-shot resume toast */}
+                {showConsentResumeToast && (
+                  <div className="mb-2 text-sm rounded border px-3 py-2 bg-emerald-50 border-emerald-200 text-emerald-700">
+                    ✅ Your question was sent after you accepted the consent. See the reply below.
+                  </div>
+                )}
+                
                 <form onSubmit={handleSendMessage} className="flex gap-2">
                   <Input
                     ref={inputRef}
