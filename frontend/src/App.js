@@ -2244,10 +2244,21 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     // HOTFIX: Strict await with unified sender only
     try {
       console.log('[SEND] Calling unified sender...');
-      const response = await window.unifiedCoachSend(messageText);
-      
-      // Success - process AI response
-      const aiResponseText = response.ai_response?.text || "I apologize, but I couldn't generate a response. Please try again.";
+      const res = await window.unifiedCoachSend(messageText);
+      console.log('[SEND] Normalized result', res);
+
+      const aiText =
+        res?.ai_response?.text ??
+        res?.raw?.ai_response?.text ??
+        res?.raw?.message?.text ??
+        res?.raw?.text ??
+        '';
+
+      if (!aiText) {
+        console.warn('[SEND] No ai_text found in response; showing fallback');
+      }
+
+      const aiResponseText = aiText || 'I generated a response, but no text field was present.';
       
       // Clean up AI response - remove markdown formatting
       const cleanedResponse = aiResponseText
