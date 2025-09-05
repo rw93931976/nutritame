@@ -1954,6 +1954,14 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     }
   };
 
+  // Expose globally so both Dashboard and CoachInterface can use it
+  React.useEffect(() => {
+    window.onCoachConsentAccept = onCoachConsentAccept;
+    return () => {
+      delete window.onCoachConsentAccept;
+    };
+  }, [onCoachConsentAccept]);
+
   // Create new AI Coach session
   const createAiCoachSession = async (title = "New Conversation") => {
     try {
