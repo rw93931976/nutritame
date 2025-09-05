@@ -39,41 +39,18 @@ export async function createSession(explicitUserId) {
   // Already cached?
   if (_sessionId) return _sessionId;
 
-  // Attempt A: no body (token-derived user)
+  // Use the CORRECT format identified by testing: { user_id } in request body
   try {
-    console.debug("[WIRE] createSession → POST /coach/sessions (no body)");
-    const { data } = await api.post("/coach/sessions");
+    console.debug("[WIRE] createSession → POST /coach/sessions (body.user_id)");
+    const { data } = await api.post("/coach/sessions", { user_id });
     const sid = pickSessionId(data);
     if (!sid) throw new Error("No session_id in response");
     _sessionId = sid;
+    console.debug("[WIRE] session created successfully:", sid);
     return _sessionId;
-  } catch (errA) {
-    logApiError("[WIRE] createSession attempt A (no body) failed", errA);
-
-    // Attempt B: body with user_id
-    try {
-      console.debug("[WIRE] createSession → POST /coach/sessions (body.user_id)");
-      const { data } = await api.post("/coach/sessions", { user_id });
-      const sid = pickSessionId(data);
-      if (!sid) throw new Error("No session_id in response");
-      _sessionId = sid;
-      return _sessionId;
-    } catch (errB) {
-      logApiError("[WIRE] createSession attempt B (user_id) failed", errB);
-
-      // Attempt C: body with userId (camelCase)
-      try {
-        console.debug("[WIRE] createSession → POST /coach/sessions (body.userId)");
-        const { data } = await api.post("/coach/sessions", { userId: user_id });
-        const sid = pickSessionId(data);
-        if (!sid) throw new Error("No session_id in response");
-        _sessionId = sid;
-        return _sessionId;
-      } catch (errC) {
-        logApiError("[WIRE] createSession attempt C (userId) failed", errC);
-        throw errC; // surface final error with server body
-      }
-    }
+  } catch (error) {
+    logApiError("[WIRE] createSession failed", error);
+    throw error;
   }
 }
 
