@@ -1966,29 +1966,26 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     }
   };
 
-  // Demo auto-accept logic (client-side guard)
-  const handleDemoAutoAccept = async () => {
+  // Demo auto-accept logic (depends on userId React state)
+  const handleDemoAutoAccept = async (currentUserId) => {
     const isDemoMode = window.location.hostname.includes('demo') || localStorage.getItem('demo_mode') === 'true';
-    if (!isDemoMode) return;
+    if (!isDemoMode || !currentUserId) return;
     
-    const userId = localStorage.getItem('nt_coach_user_id') || `demo-${Date.now()}`;
-    const consentKey = `demo_consent_${userId}_v1.0-2025-09-05`;
-    
-    // Check if already auto-accepted for this demo user and version
-    if (localStorage.getItem(consentKey) === 'true') return;
+    // Check if already have consent for this user
+    if (localStorage.getItem('NT_COACH_ACK') === 'true') return;
     
     try {
-      console.log('[DEMO] Auto-accepting disclaimer for demo mode');
+      console.log('[DEMO] Auto-accepting disclaimer for demo mode, userId:', currentUserId);
       const consentData = {
-        user_id: userId,
+        user_id: currentUserId,
         disclaimer_version: "v1.0-2025-09-05", 
         consent_source: "demo_auto",
         is_demo: true,
-        consent_ui_hash: await generateConsentUIHash()
+        consent_ui_hash: "global"
       };
       
       await api.post('/coach/accept-disclaimer', consentData);
-      localStorage.setItem(consentKey, 'true');
+      localStorage.setItem('NT_COACH_ACK', 'true');
       console.log('[DEMO] Demo consent recorded successfully');
     } catch (error) {
       console.error('[DEMO] Failed to record demo consent:', error);
