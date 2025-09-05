@@ -3214,38 +3214,16 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     }
     console.error(`[ACK INIT] stateAck=${ack === true} lsAck=${lsAckBool}`);
     
-    // Expose functions globally for Dashboard consent handler and unified messaging
+    // Expose functions globally for Dashboard consent handler
     window.sendPendingWithUX = sendPendingWithUX;
     window.coachInputRef = inputRef;
     window.coachSetAck = setAck; // Expose setAck so global handler can close CoachInterface modal
-    
-    // Expose unified message handling functions (Choice 3B)
-    window.sendMessageUnified = async (params) => {
-      return await sendMessage(params);
-    };
-    window.coachAddMessage = (message) => {
-      setMessages(prev => [...prev, message]);
-    };
-    window.coachUpdateMessage = (id, patch) => {
-      setMessages(prev => prev.map(m => (m.id === id ? { ...m, ...patch } : m)));
-    };
-    window.coachSetInputValue = (value) => {
-      setInputText(value);
-    };
-    window.coachInputFocus = () => {
-      inputRef?.current?.focus?.();
-    };
     
     return () => {
       // Clean up global references
       delete window.sendPendingWithUX;
       delete window.coachInputRef;
       delete window.coachSetAck;
-      delete window.sendMessageUnified;
-      delete window.coachAddMessage;
-      delete window.coachUpdateMessage;
-      delete window.coachSetInputValue;
-      delete window.coachInputFocus;
     };
   }, [ack]); // Remove sendPendingWithUX from dependencies to prevent initialization error
   console.log('🎯 CoachInterface component mounted with pendingQuestion:', pendingQuestion, 'currentUser:', currentUser, 'ack:', ack);
