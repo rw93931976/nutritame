@@ -2217,7 +2217,7 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     if (!messageText.trim() || loading) return;
     
     // Register this as the current send handler for auto-resume
-    window.currentSendHandler = sendMessage;
+    // REMOVED: window.currentSendHandler = sendMessage; (legacy fallback removed)
     
     // TOP of sendMessage: Single source of truth = localStorage only
     const accepted = localStorage.getItem(COACH_ACK_KEY) === 'true';
