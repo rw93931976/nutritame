@@ -1904,6 +1904,14 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
   // REMOVED: handleUnifiedDisclaimerAccept and handleAiCoachDisclaimerAccept
   // All consent acceptance now goes through onCoachConsentAccept in CoachInterface
   
+  // Simple wrapper to trigger CoachInterface consent acceptance
+  const handleAiCoachDisclaimerAccept = async () => {
+    console.error('[DISCLAIMER OPEN] type=global');
+    // This will trigger the disclaimer modal in CoachInterface
+    // The actual acceptance is handled by onCoachConsentAccept in CoachInterface
+    setShowAiCoachDisclaimer(false);
+  };
+  
   // Create new AI Coach session
   const createAiCoachSession = async (title = "New Conversation") => {
     try {
