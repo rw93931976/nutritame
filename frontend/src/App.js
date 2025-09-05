@@ -18,37 +18,23 @@ const PENDING_KEY = 'nt_coach_pending_question';
 const setCoachAckTrue = () => localStorage.setItem(COACH_ACK_KEY, 'true');
 const getCoachAck = () => localStorage.getItem(COACH_ACK_KEY) === 'true';
 
-// Legacy SINGLE SEND FUNCTION - Kept for compatibility
+// LEGACY SEND FUNCTION - DISABLED to prevent wrong endpoint calls
 window.sendMessageInternal = async (body, sessionId, effectiveUser, onSuccess, onError) => {
-  const reqId = Math.random().toString(36).slice(2);
-  console.error(`[COACH REQ] id=${reqId} start body="${body}"`);
+  console.error(`[WIRE] LEGACY sendMessageInternal called - redirecting to unified sender`);
+  console.error(`[WIRE] This should not happen - check for remaining legacy calls`);
   
-  try {
-    const messagePayload = {
-      session_id: sessionId,
-      message: body,
-      user_id: effectiveUser?.id || localStorage.getItem('nt_coach_user_id')
-    };
-    
-    const res = await aiCoachService.sendMessage(messagePayload);
-    const status = res?.status ?? res?.data?.status ?? 200;
-    console.error(`[COACH RES] id=${reqId} status=${status}`);
-    
-    const messages = res?.data?.messages ?? res?.messages ?? [res];
-    console.error(`[COACH RENDER] id=${reqId} count=${messages.length}`);
-    console.error(`AI response found: ${messages.length}`);
-    
-    if (onSuccess) {
-      onSuccess(res, messages);
+  // Redirect to unified sender with warning
+  if (typeof window.unifiedCoachSend === 'function') {
+    console.error(`[WIRE] Redirecting to unified sender`);
+    try {
+      await window.unifiedCoachSend(body);
+      if (onSuccess) onSuccess({ ai_response: { text: 'Legacy call redirected successfully' } });
+    } catch (error) {
+      if (onError) onError(error);
     }
-    
-  } catch (e) {
-    console.error(`[COACH ERR] id=${reqId} name=${e?.name} message=${e?.message} status=${e?.response?.status}`);
-    console.error(`[COACH ERR BODY] ${JSON.stringify(e?.response?.data) || '<none>'}`);
-    
-    if (onError) {
-      onError(e);
-    }
+  } else {
+    console.error(`[WIRE] No unified sender available for legacy redirect`);
+    if (onError) onError(new Error('Legacy sender disabled, unified sender not available'));
   }
 };
 
