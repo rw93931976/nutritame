@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { Toaster } from "./components/ui/sonner";
-import { getOrCreateSessionId, sendCoachMessage } from "./apiClient";
+import { api, getOrCreateSessionId, sendCoachMessage } from "./apiClient";
 
 // Install global unified sender BEFORE rendering - eliminates race conditions
 if (typeof window !== "undefined") {
@@ -22,6 +22,16 @@ if (typeof window !== "undefined") {
 
       try {
         console.log("[WIRE] unifiedCoachSend start:", body);
+        
+        // Ensure disclaimer is accepted first - this fixes the 403 error
+        try {
+          await api.post("/coach/accept-disclaimer", { user_id: userId });
+          console.log("[WIRE] disclaimer acceptance ensured");
+        } catch (disclaimerErr) {
+          // It's ok if disclaimer is already accepted (409 or similar)
+          console.log("[WIRE] disclaimer already accepted or error:", disclaimerErr.response?.status);
+        }
+        
         const sessionId = await getOrCreateSessionId(userId);
         console.log("[WIRE] session acquired:", sessionId);
         const result = await sendCoachMessage({ sessionId, message: body });
