@@ -3,8 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-route
 import axios from "axios";
 import "./App.css";
 
-// VERSION BANNER - UX Resume Clarity Polish
-console.error('[VERSION] v2.2.10-ux-resume-clarity | commit=7a16721');
+// VERSION BANNER - Force Resume UX Polish
+console.error('[VERSION] v2.2.11-ux-resume-clarity | commit=' + Math.random().toString(36).slice(2));
 
 // Performance logging - ensuring no long setTimeout violations
 console.error('[Perf] post-load tasks scheduled (no long setTimeout)');
