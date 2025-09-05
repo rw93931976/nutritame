@@ -614,11 +614,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "AI Health Coach Question Persistence Fix"
-  stuck_tasks:
-    - "AI Health Coach Question Persistence Fix"
+    - "AI Coach Messaging System Refactor (1A + 2A + 3B)"
+  stuck_tasks: []
   test_all: false
-  test_priority: "stuck_first"
+  test_priority: "high_first"
   completed_focus: []
 
   - task: "Demo User Profile Submission Bug Fix"
