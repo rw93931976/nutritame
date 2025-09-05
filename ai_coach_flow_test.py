@@ -300,23 +300,23 @@ class AICoachFlowTester:
             'Authorization': f'Bearer {self.access_token}'
         }
         
-        # Test session creation again to ensure no 422 due to null user_id
+        # Test session creation with query param (current working method)
         session_data = {
-            "user_id": self.user_id,
             "title": "422 Error Test Session"
         }
         
         success, response = self.run_test(
-            "Session Creation - No 422 Error Test",
+            "Session Creation - No 422 Error Test (with query param)",
             "POST",
             "coach/sessions",
             200,  # Should be 200, not 422
             data=session_data,
-            headers=headers
+            headers=headers,
+            params={"user_id": self.user_id}
         )
         
         if success:
-            self.log("✅ Session creation returns 200 (not 422)")
+            self.log("✅ Session creation returns 200 (not 422) with query param")
             return True
         else:
             self.log("❌ Session creation failed or returned 422")
