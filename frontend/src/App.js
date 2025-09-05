@@ -4,7 +4,7 @@ import axios from "axios";
 import "./App.css";
 
 // VERSION BANNER - Session Gate Resume Fix
-console.error('[VERSION] v2.2.9-fix-session-gate-resume | commit=' + Math.random().toString(36).slice(2));
+console.error('[VERSION] v2.2.9-fix-session-gate-resume | commit=7369675');
 
 // Performance logging - ensuring no long setTimeout violations
 console.error('[Perf] post-load tasks scheduled (no long setTimeout)');
