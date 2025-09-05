@@ -3277,6 +3277,13 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
   // Double-send guard state
   const [resumeInProgress, setResumeInProgress] = useState(false);
   
+  // Log when toast is mounted
+  useEffect(() => {
+    if (showConsentResumeToast) {
+      console.error('[UX] toast mounted');
+    }
+  }, [showConsentResumeToast]);
+  
   // Helper: handles *resume* UX and then sends
   const sendPendingWithUX = async (pendingText) => {
     // Guard against double-send
