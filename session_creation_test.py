@@ -127,6 +127,21 @@ class SessionCreationTester:
             'Authorization': f'Bearer {self.access_token}'
         }
         
+        # First accept disclaimer (required for session creation)
+        self.log("📋 Step 2a: Accepting disclaimer (required for session creation)")
+        disclaimer_success, _ = self.run_test(
+            "Accept Disclaimer",
+            "POST",
+            "coach/accept-disclaimer",
+            200,
+            data={"user_id": self.demo_user_id},
+            headers=headers
+        )
+        
+        if not disclaimer_success:
+            self.log("❌ Failed to accept disclaimer", "ERROR")
+            return False
+        
         # THE CRITICAL TEST: user_id in request body, NOT query parameter
         session_data = {
             "user_id": self.demo_user_id,
