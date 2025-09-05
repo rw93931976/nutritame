@@ -3622,7 +3622,7 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
           
           {/* Chat Interface - Main Column */}
           <div className="md:col-span-3">
-            <Card className="h-[680px] flex flex-col">{/* Increased from 600px to 680px for roomier transcript */}
+            <Card className="h-[720px] flex flex-col">{/* Increased from 680px to 720px for better readability */}
               <CardHeader className="flex-shrink-0">
                 <CardTitle className="flex items-center gap-2">
                   <MessageCircle className="h-5 w-5 text-emerald-600" />
