@@ -3,8 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-route
 import axios from "axios";
 import "./App.css";
 
-// VERSION BANNER - Wire consent Accept to sendPendingWithUX
-console.error('[VERSION] v2.2.12-accept-wired-to-ux-resume | commit=5f6d9e5');
+// VERSION BANNER - Kill legacy resume path; hard-return after sendPendingWithUX
+console.error('[VERSION] v2.2.13-kill-legacy-resume-hardreturn | commit=<pending>');
 
 // Performance logging - ensuring no long setTimeout violations
 console.error('[Perf] post-load tasks scheduled (no long setTimeout)');
