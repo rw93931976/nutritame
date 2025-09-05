@@ -1919,8 +1919,11 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
       // (2) Set localStorage COACH_ACK_KEY = 'true'
       localStorage.setItem(COACH_ACK_KEY, 'true');
       
-      // (3) Immediately close the modal
-      setShowAiCoachDisclaimer(false);
+      // (3) Immediately close all modals
+      setShowAiCoachDisclaimer(false); // Dashboard modal
+      if (typeof window.coachSetAck === 'function') {
+        window.coachSetAck(true); // CoachInterface modal
+      }
       
       // (4) Read pending question and handle it
       const pending = localStorage.getItem('nt_coach_pending_question')?.trim();
