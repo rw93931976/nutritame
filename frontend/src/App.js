@@ -4021,6 +4021,12 @@ function App() {
       if (response.data.access_token) {
         localStorage.setItem('authToken', response.data.access_token);
         setAuthToken(response.data.access_token);
+        
+        // Wire token once (choice 1A) - Set auth token immediately after normal auth
+        window.COACH_TOKEN = response.data.access_token;       // optional global
+        setCoachAuthToken(response.data.access_token);         // <-- 1A
+        console.log("[AUTH] token set");                       // Required log
+        
         setUser(response.data.user);
         setAppMode('app');
         
