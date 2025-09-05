@@ -114,7 +114,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "v2.2.12 — Wire consent 'Accept' to sendPendingWithUX (fix missing clear/echo/toast) + small chat height tweak. Auto-resume is working but UX polish is not firing after consent in incognito: no input clear, no immediate user bubble, no green toast, text box still shows original text. Root cause: The consent 'Accept' path is still resuming via old route (window.currentSendHandler / indirect fallback), bypassing the new sendPendingWithUX() flow. Force the With-UX resume path on consent acceptance with direct calls to sendPendingWithUX(pending). Remove legacy fallbacks, ensure UX logging sequence, fix refs and toast visibility, increase chat height."
+user_problem_statement: "v2.2.13 — Kill legacy resume path; hard-return after sendPendingWithUX. Fix the post-consent 'resume' UX so it always clears the input, echoes the user bubble, shows the green toast, focuses input, scrolls, and then sends—without any legacy path interfering. Create unified Accept handler (onCoachConsentAccept) as single source of truth. Remove all legacy fallback mechanisms (window.currentSendHandler, CustomEvent dispatching). Add once-only Accept guard. Implement hard return after sendPendingWithUX to prevent fallthrough to legacy paths."
 
 frontend:
   - task: "v2.2.12 Wire Consent Accept to sendPendingWithUX"
