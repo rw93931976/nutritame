@@ -3079,58 +3079,8 @@ const CoachRoute = React.memo(({ currentUser }) => {
     checkFeatureFlags();
   }, []);
 
-  const handleCoachDisclaimerAccept = async () => {
-    const beforeState = ack === true;
-    const beforeLs = localStorage.getItem(COACH_ACK_KEY);
-    console.error(`[DISCLAIMER ACCEPT] type=coach`);
-    console.error(`[ACK TRACE] BEFORE - stateAck=${beforeState} lsAck=${beforeLs===null?null:beforeLs==='true'}`);
-    
-    try {
-      // STABILITY FIX: Use consistent user ID - get from localStorage or create ONCE
-      let storedUserId = localStorage.getItem('nt_coach_user_id');
-      
-      // Only create new ID if none exists (prevents remount issues)
-      if (!storedUserId) {
-        storedUserId = currentUser?.id || `demo-${Date.now()}`;
-        localStorage.setItem('nt_coach_user_id', storedUserId);
-      }
-      
-      await aiCoachService.acceptDisclaimer(storedUserId);
-      
-      // Use canonical acceptance helpers
-      setCoachAckTrue();
-      setAck(true);
-      
-      console.error(`[ACK TRACE] AFTER  - stateAck=true lsAck=true`);
-      
-      // re-check pending question and auto-send exactly once
-      const pending = localStorage.getItem('nt_coach_pending_question');
-      if (pending) {
-        localStorage.removeItem('nt_coach_pending_question');
-        setPendingQuestion(null);
-        console.error(`[RESUME] auto-sending pending question="${pending}"`);
-        console.error('[UX] accept handler: with-ux resume path engaged');
-        
-        // REMOVED: Legacy window.currentSendHandler and CustomEvent fallbacks
-        // The accept flow should be handled by handleDisclaimerAcceptWithUX instead
-        console.error('❌ Legacy currentSendHandler resume path - should use handleDisclaimerAcceptWithUX');
-      }
-      
-      // Show encouragement toast after disclaimer acceptance
-      setTimeout(() => {
-        toast.success("Thanks for confirming — remember, this is guidance only, and your healthcare provider is your best resource.");
-      }, 500);
-      
-    } catch (error) {
-      console.error('❌ Failed to record disclaimer acceptance:', error);
-      // Still proceed with frontend state update for offline functionality
-      setAck(true);
-      localStorage.setItem('nt_coach_disclaimer_ack', 'true');
-      
-      toast.error('Disclaimer recorded locally. If connection issues persist, please refresh the page.');
-    }
-  };
-
+  // REMOVED: handleCoachDisclaimerAccept - replaced by onCoachConsentAccept in CoachInterface
+  
   const handleCoachDisclaimerDecline = () => {
     console.log('❌ Coach disclaimer declined - redirecting to home');
     // Redirect back to home page
