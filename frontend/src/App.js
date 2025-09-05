@@ -3221,7 +3221,7 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     
     // Expose unified message handling functions (Choice 3B)
     window.sendMessageUnified = async (params) => {
-      return await sendMessageUnified(params);
+      return await sendMessage(params);
     };
     window.coachAddMessage = (message) => {
       setMessages(prev => [...prev, message]);
