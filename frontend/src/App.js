@@ -3387,15 +3387,6 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
   const handleSendMessage = async (e) => {
     e?.preventDefault?.();
     
-    const body = inputText.trim();
-    if (!body) return;
-    
-    // Guard against double-send during resume period
-    if (resumeInProgress) {
-      console.error('[UX] ignoring Enter during resume period');
-      return;
-    }
-    
     // HOTFIX: No more disclaimer gating - proceed directly
     const body = messageText || inputText.trim();
     if (!body) return;
