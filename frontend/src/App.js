@@ -14,6 +14,22 @@ const COACH_ACK_KEY = 'nt_coach_disclaimer_ack';
 const setCoachAckTrue = () => localStorage.setItem(COACH_ACK_KEY, 'true');
 const getCoachAck = () => localStorage.getItem(COACH_ACK_KEY) === 'true';
 
+// Helper to get or create session ID for unified sender
+const getOrCreateSessionId = async (currentSessionId, setCurrentSessionId, effectiveUser) => {
+  if (currentSessionId) {
+    return currentSessionId;
+  }
+  
+  try {
+    const session = await aiCoachService.createSession(effectiveUser.id, "AI Coach Session");
+    setCurrentSessionId(session.id);
+    return session.id;
+  } catch (error) {
+    console.error('❌ Session creation helper failed:', error);
+    throw error;
+  }
+};
+
 // SINGLE SEND FUNCTION - Used by all UI elements
 window.sendMessageInternal = async (body, sessionId, effectiveUser, onSuccess, onError) => {
   const reqId = Math.random().toString(36).slice(2);
