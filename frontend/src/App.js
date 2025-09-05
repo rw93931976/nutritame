@@ -3276,6 +3276,22 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
   // Basic AI Health Coach state
   const [messages, setMessages] = useState([]);
   
+  // UX polish: refs and state for auto-scroll, focus, and resume toast
+  const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
+  const [showConsentResumeToast, setShowConsentResumeToast] = useState(false);
+  
+  // UX helper functions
+  const scrollToBottomSoon = () => {
+    setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 0);
+  };
+  
+  const pushUserBubble = (text) => {
+    setMessages((prev) => [...prev, { id: 'u-' + Date.now(), role: 'user', message: text, isUser: true }]);
+    console.error('[UX] user bubble echoed');
+    scrollToBottomSoon();
+  };
+  
   // Single source of truth for pending text until a successful send
   const k = 'nt_coach_pending_question';
   
