@@ -2012,7 +2012,7 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     }
   }, [userProfile]);
 
-  // NEW SINGLE CONSENT HANDLER - Hotfix for consent loop
+  // NEW SINGLE CONSENT HANDLER - Updated to use unified sender
   const onCoachConsentAccept = async () => {
     console.log('[WIRE] Accept -> onCoachConsentAccept');
     
@@ -2026,30 +2026,39 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
 
       // (2) Set localStorage COACH_ACK_KEY = 'true'
       localStorage.setItem(COACH_ACK_KEY, 'true');
-      
-      // (3) Immediately close all modals
-      setShowAiCoachDisclaimer(false); // Dashboard modal
-      if (typeof window.coachSetAck === 'function') {
-        window.coachSetAck(true); // CoachInterface modal
-      }
-      
-      // (4) Read pending question and handle it
-      const pending = localStorage.getItem('nt_coach_pending_question')?.trim();
+
+      // (3) Close both modals if they exist
+      setShowAiCoachDisclaimer?.(false);
+      if (window.coachSetAck) window.coachSetAck(true);
+
+      // (4) Handle pending question using unified sender
+      const pending = localStorage.getItem(PENDING_KEY);
       if (pending) {
-        // Try sendPendingWithUX first, fallback to window.sendMessageInternal
-        if (typeof window.sendPendingWithUX === 'function') {
-          await window.sendPendingWithUX(pending);
-        } else if (typeof window.sendMessageInternal === 'function') {
-          await window.sendMessageInternal(pending);
+        localStorage.removeItem(PENDING_KEY);
+
+        // Use the unified sender with proper handlers
+        if (typeof window.sendMessageUnified === 'function') {
+          await window.sendMessageUnified({
+            userId: window.nt_coach_user_id || localStorage.getItem('nt_coach_user_id'),
+            text: pending,
+            addMessage: window.coachAddMessage,
+            updateMessage: window.coachUpdateMessage,
+            setInputValue: window.coachSetInputValue,
+            openDisclaimer: () => setShowAiCoachDisclaimer(true),
+          });
         } else {
-          console.error('[WIRE] No sendPendingWithUX or sendMessageInternal available');
+          // Fallback to sendPendingWithUX if available
+          if (typeof window.sendPendingWithUX === 'function') {
+            await window.sendPendingWithUX(pending);
+          } else {
+            console.error('[WIRE] No unified sender available');
+          }
         }
-        
-        // Remove the pending key
-        localStorage.removeItem('nt_coach_pending_question');
       } else {
-        // No pending - try to focus inputRef if available
-        if (window.coachInputRef?.current) {
+        // No pending → just focus input
+        if (window.coachInputFocus) {
+          window.coachInputFocus();
+        } else if (window.coachInputRef?.current) {
           window.coachInputRef.current.focus();
         }
       }
@@ -2058,6 +2067,9 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
       setTimeout(() => {
         acceptHandledRef.current = false;
       }, 1000);
+      
+      // Hard return to prevent fallthrough
+      return;
       
     } catch (error) {
       console.error('[WIRE] Error in onCoachConsentAccept:', error);
