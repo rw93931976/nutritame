@@ -1659,7 +1659,6 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
   // AI Health Coach State
   const [aiCoachFeatureFlags, setAiCoachFeatureFlags] = useState(null);
   const [aiCoachDisclaimerAccepted, setAiCoachDisclaimerAccepted] = useState(false);
-  const [showAiCoachDisclaimer, setShowAiCoachDisclaimer] = useState(false);
   const [consultationLimit, setConsultationLimit] = useState(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [aiCoachSessions, setAiCoachSessions] = useState([]);
