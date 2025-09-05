@@ -1893,59 +1893,30 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     }
   }, [userProfile]);
 
-  // NEW SINGLE CONSENT HANDLER - Updated for unified flow
+  // SINGLE CONSENT HANDLER - Only uses unified sender
   const onCoachConsentAccept = async () => {
     console.log('[WIRE] Accept -> onCoachConsentAccept');
     
     try {
-      // (1) Use acceptHandledRef guard to prevent double-fires
-      if (acceptHandledRef.current) {
-        console.log('[WIRE] Double-fire prevented by acceptHandledRef guard');
-        return;
-      }
-      acceptHandledRef.current = true;
-
-      // (2) Set localStorage COACH_ACK_KEY = 'true'
       localStorage.setItem(COACH_ACK_KEY, 'true');
-
-      // (3) Close both modals if they exist
       setShowAiCoachDisclaimer?.(false);
       if (window.coachSetAck) window.coachSetAck(true);
 
-      // (4) Read and clear pending question
       const pending = localStorage.getItem(PENDING_KEY);
-      if (pending) {
-        localStorage.removeItem(PENDING_KEY);
+      if (pending) localStorage.removeItem(PENDING_KEY);
 
-        // Use unified sender if available
-        if (typeof window.unifiedCoachSend === 'function') {
-          await window.unifiedCoachSend(pending);
-        } else if (typeof window.sendMessageInternal === 'function') {
-          await window.sendMessageInternal(pending);
-          console.log('[WIRE] Fallback sender used');
-        } else {
-          console.error('[WIRE] no sender available; pending lost:', pending);
-        }
-      } else {
-        // No pending → just focus input
-        if (window.coachInputFocus) {
-          window.coachInputFocus();
-        } else if (window.coachInputRef?.current) {
-          window.coachInputRef.current.focus();
-        }
+      if (!pending?.trim()) return;
+
+      if (typeof window.unifiedCoachSend === 'function') {
+        console.log('[WIRE] using unified sender');
+        return window.unifiedCoachSend(pending);
       }
-      
-      // Reset guard after a short delay
-      setTimeout(() => {
-        acceptHandledRef.current = false;
-      }, 1000);
-      
-      // Hard return to prevent fallthrough
-      return;
+
+      console.error('[WIRE] unified sender missing unexpectedly; re-queuing pending');
+      localStorage.setItem(PENDING_KEY, pending);
       
     } catch (error) {
-      console.error('[WIRE] Error in onCoachConsentAccept:', error);
-      acceptHandledRef.current = false;
+      console.error('[WIRE] onCoachConsentAccept error', error);
     }
   };
 
