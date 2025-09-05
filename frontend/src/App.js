@@ -3569,7 +3569,7 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     }
     
     console.error('[PROCEEDING] ack=true — calling backend');
-    await sendMessageInternal(body);
+    await sendMessage(body);
   };
 
   return (
