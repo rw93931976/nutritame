@@ -1781,11 +1781,12 @@ async def get_consultation_limit(user_id: str):
         raise HTTPException(status_code=500, detail=f"Error checking consultation limit: {str(e)}")
 
 @api_router.post("/coach/sessions")
-async def create_coach_session(session_request: CoachSessionCreate, user_id: str = None):
-    """Create a new AI Health Coach session"""
+async def create_coach_session(session_request: CoachSessionCreate):
+    """Create a new AI Health Coach session with user_id in request body"""
     try:
+        user_id = session_request.user_id
         if not user_id:
-            raise HTTPException(status_code=400, detail="User ID required")
+            raise HTTPException(status_code=400, detail="User ID required in request body")
         
         # Check disclaimer acceptance
         disclaimer_accepted = await check_disclaimer_acceptance(user_id)
