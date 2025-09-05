@@ -3481,8 +3481,9 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
       // Remove from localStorage since we're handling it directly
       localStorage.removeItem('nt_coach_pending_question');
       console.error(`[RESUME] auto-sending pending question="${pending}"`);
+      console.error('[UX] accept handler: with-ux resume path engaged');
       
-      // Force the resume UX immediately
+      // Force the resume UX immediately - single source of truth for resume UX + send
       await sendPendingWithUX(pending);
     }
   };
