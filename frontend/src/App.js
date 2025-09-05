@@ -2273,10 +2273,8 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
       }]);
 
       toast.success("Response received!");
-          setMessages(prev => prev.slice(0, -1)); // Remove failed message
-        }
-      );
     } catch (error) {
+      // Error handling
       console.error("Dashboard send error:", error);
       toast.error("Failed to send message. Please try again.");
       setMessages(prev => prev.slice(0, -1)); // Remove failed message
