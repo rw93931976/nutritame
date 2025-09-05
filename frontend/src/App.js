@@ -3490,8 +3490,7 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
   };
 
   const sendMessageInternal = async (messageBody) => {
-    // Register this as the current send handler for auto-resume
-    window.currentSendHandler = sendMessageInternal;
+    // REMOVED: window.currentSendHandler = sendMessageInternal; (legacy fallback removed)
     
     // Always prefer the argument; ignore current input state for echo
     const body = (messageBody ?? '').trim();
