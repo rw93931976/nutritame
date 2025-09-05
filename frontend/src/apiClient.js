@@ -116,21 +116,38 @@ export async function sendCoachMessage(messageText) {
   if (!messageText?.trim()) throw new Error("Empty message");
   
   const user_id = getUserId();
-  const sessionId = await getOrCreateSessionId();
-  
-  console.log('[MESSAGE] POST /coach/message with sessionId:', sessionId);
   
   try {
-    const { data } = await api.post("/coach/message", {
-      session_id: sessionId,
-      message: messageText.trim(),
-      user_id: user_id
+    const sessionId = await getOrCreateSessionId();
+    const response = await api.post('/coach/message', { 
+      session_id: sessionId, 
+      message: messageText.trim(), 
+      user_id: user_id 
     });
-    
-    console.log('[MESSAGE] Message sent successfully');
-    return data;
+
+    // Breadcrumb: log raw payload from backend
+    const raw = response?.data ?? response;
+    console.log('[MESSAGE] Raw response', raw);
+
+    // Normalize to a stable shape
+    const aiText =
+      raw?.ai_response?.text ??
+      raw?.response?.ai_response?.text ??
+      raw?.message?.text ??
+      raw?.text ??
+      (typeof raw === 'string' ? raw : null);
+
+    // Return normalized contract to the UI
+    const normalized = {
+      ai_response: { text: aiText ?? '' },
+      session_id: sessionId,
+      raw
+    };
+
+    console.log('[MESSAGE] Message sent successfully (normalized)');
+    return normalized;
   } catch (error) {
-    console.error('[MESSAGE] Failed to send message:', error?.response?.data || error);
+    console.error('[WIRE] sendCoachMessage failed', error.response?.data || error.message);
     throw error;
   }
 }
