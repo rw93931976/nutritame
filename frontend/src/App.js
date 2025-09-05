@@ -3461,73 +3461,83 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
 
   // REMOVED: handleDisclaimerAcceptWithUX - replaced by onCoachConsentAccept
 
-  const sendMessageInternal = async (messageBody) => {
-    // REMOVED: window.currentSendHandler = sendMessageInternal; (legacy fallback removed)
+  // NEW UNIFIED SEND MESSAGE FUNCTION
+  const sendMessage = async (messageText) => {
+    const text = (messageText || inputText || '').trim();
+    if (!text) return;
     
-    // Always prefer the argument; ignore current input state for echo
-    const body = (messageBody ?? '').trim();
-    if (!body) return;
+    // Guard: ensure token and user_id are available
+    if (!api.defaults.headers.common.Authorization) {
+      console.error('[SEND ATTEMPT] No auth token available');
+      toast.error('Authentication required. Please refresh and try again.');
+      return;
+    }
+    
+    const userId = effectiveUser?.id || localStorage.getItem('nt_coach_user_id');
+    if (!userId) {
+      console.error('[SEND ATTEMPT] No user_id available');
+      toast.error('User profile required. Please complete your profile.');
+      return;
+    }
 
-    // UX: echo the user's message immediately
-    pushUserBubble(body);
-
-    // UX: clear the input NOW for both manual and auto-resume paths
-    if (typeof setInputText === 'function') setInputText('');
-    inputRef.current?.focus();
+    console.error('[SEND ATTEMPT] body="' + text + '"');
+    
+    // UX: echo the user's message immediately with sending status
+    const userMessage = { 
+      id: 'u-' + Date.now(), 
+      role: 'user', 
+      message: text, 
+      isUser: true,
+      status: 'sending'
+    };
+    setMessages(prev => [...prev, userMessage]);
+    
+    // Clear input since message is echoed
+    setInputText('');
+    localStorage.removeItem('nt_coach_pending_question');
+    setPendingQuestion('');
     
     setIsLoading(true);
     
-    // Get effective user for API calls
-    const effectiveUser = currentUser || { id: localStorage.getItem('nt_coach_user_id') || `demo-${Date.now()}` };
-    
-    // Use try/catch/finally to ensure UI flags are always cleared
     try {
-      const sessionId = await getOrCreateSessionId(currentSessionId, setCurrentSessionId, effectiveUser);
-
-      // Use unified send function
-      await window.sendMessageInternal(
-        body, 
-        sessionId, 
-        effectiveUser,
-        (response, messages) => {
-          // Success callback
-          const aiResponseText = response.ai_response?.text || response.response || response.message;
-          if (aiResponseText) {
-            const aiResponse = {
-              id: Date.now() + 1,
-              message: '',
-              response: aiResponseText,
-              isUser: false
-            };
-            setMessages(prev => [...prev, aiResponse]);
-          }
-          
-          // Clear localStorage after successful send
-          localStorage.removeItem('nt_coach_pending_question');
-          setPendingQuestion('');
-          touched.current = false;
-          
-          // UX: scroll and refocus after success
-          scrollToBottomSoon();
-          inputRef.current?.focus();
-        },
-        (error) => {
-          // Error callback
-          console.error('❌ Error sending message to AI:', error);
-          setMessages(prev => prev.slice(0, -1)); // Remove failed message
-          toast.error("Failed to get AI response. Please try again.");
-          
-          // UX: scroll and refocus after error
-          scrollToBottomSoon();
-          inputRef.current?.focus();
-        }
-      );
+      // Use new API client to send message
+      const response = await sendCoachMessage(text);
+      
+      // Update user message status to sent
+      setMessages(prev => prev.map(msg => 
+        msg.id === userMessage.id ? { ...msg, status: 'sent' } : msg
+      ));
+      
+      // Add AI response
+      const aiText = response?.reply || response?.response || response?.text || response?.ai_response?.text;
+      if (aiText) {
+        const aiResponse = {
+          id: 'ai-' + Date.now(),
+          message: '',
+          response: aiText,
+          isUser: false,
+          status: 'sent'
+        };
+        setMessages(prev => [...prev, aiResponse]);
+      }
+      
+      scrollToBottomSoon();
+      inputRef.current?.focus();
+      
     } catch (error) {
-      console.error("Coach send error:", error);
+      console.error('[SEND ATTEMPT] Error:', error);
+      
+      // Update user message status to failed
+      setMessages(prev => prev.map(msg => 
+        msg.id === userMessage.id ? { 
+          ...msg, 
+          status: 'failed',
+          error: 'Send failed — tap to retry'
+        } : msg
+      ));
+      
       toast.error("Failed to send message. Please try again.");
-      setMessages(prev => prev.slice(0, -1)); // Remove failed message
     } finally {
-      // Always clear UI flags
       setIsLoading(false);
     }
   };
