@@ -3123,6 +3123,10 @@ const CoachRoute = React.memo(({ currentUser }) => {
   }, []);
 
   // REMOVED: All legacy accept handlers - replaced by onCoachConsentAccept in Dashboard
+  // Dummy for prop compatibility
+  const handleCoachDisclaimerAccept = () => {
+    console.log('[LEGACY] handleCoachDisclaimerAccept prop called - using new onCoachConsentAccept instead');
+  };
   
   const handleCoachDisclaimerDecline = () => {
     console.log('❌ Coach disclaimer declined - redirecting to home');
