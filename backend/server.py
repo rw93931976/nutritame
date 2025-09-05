@@ -234,6 +234,7 @@ class CoachMessageCreate(BaseModel):
     message: str
 
 class CoachSessionCreate(BaseModel):
+    user_id: str
     title: Optional[str] = "New Conversation"
 
 class ConsultationLimit(BaseModel):
