@@ -1695,6 +1695,9 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState(null);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  
+  // HOTFIX: Track userId state for demo auto-consent
+  const [userId, setUserId] = useState(null);
 
   // Consent acceptance guard
   const acceptHandledRef = useRef(false);
