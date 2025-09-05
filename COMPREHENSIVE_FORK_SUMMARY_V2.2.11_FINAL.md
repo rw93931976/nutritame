@@ -368,7 +368,7 @@ sudo supervisorctl status
 ### **Environment Variables (Critical)**
 ```bash
 # Frontend (.env)
-REACT_APP_BACKEND_URL=https://nutritame-fix.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://meal-plan-assist.preview.emergentagent.com
 
 # Backend (.env)
 MONGO_URL=mongodb://localhost:27017/nutritame
