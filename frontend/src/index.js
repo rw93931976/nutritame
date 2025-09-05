@@ -21,7 +21,7 @@ if (typeof window !== "undefined") {
       const { sendCoachMessage } = await import("./apiClient");
       
       // Simple direct call - all logic centralized in apiClient
-      await sendCoachMessage(text);
+      return await sendCoachMessage(text); // <- must return
     };
     console.log("[WIRE] Global unified sender installed at bootstrap");
   } else {
