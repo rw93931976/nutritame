@@ -1892,7 +1892,7 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     }
   }, [userProfile]);
 
-  // NEW SINGLE CONSENT HANDLER - Updated to use unified sender
+  // NEW SINGLE CONSENT HANDLER - Updated for unified flow
   const onCoachConsentAccept = async () => {
     console.log('[WIRE] Accept -> onCoachConsentAccept');
     
@@ -1911,28 +1911,19 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
       setShowAiCoachDisclaimer?.(false);
       if (window.coachSetAck) window.coachSetAck(true);
 
-      // (4) Handle pending question using unified sender
+      // (4) Read and clear pending question
       const pending = localStorage.getItem(PENDING_KEY);
       if (pending) {
         localStorage.removeItem(PENDING_KEY);
 
-        // Use the unified sender with proper handlers
-        if (typeof window.sendMessageUnified === 'function') {
-          await window.sendMessageUnified({
-            userId: window.nt_coach_user_id || localStorage.getItem('nt_coach_user_id'),
-            text: pending,
-            addMessage: window.coachAddMessage,
-            updateMessage: window.coachUpdateMessage,
-            setInputValue: window.coachSetInputValue,
-            openDisclaimer: () => setShowAiCoachDisclaimer(true),
-          });
+        // Use unified sender if available
+        if (typeof window.unifiedCoachSend === 'function') {
+          await window.unifiedCoachSend(pending);
+        } else if (typeof window.sendMessageInternal === 'function') {
+          await window.sendMessageInternal(pending);
+          console.log('[WIRE] Fallback sender used');
         } else {
-          // Fallback to sendPendingWithUX if available
-          if (typeof window.sendPendingWithUX === 'function') {
-            await window.sendPendingWithUX(pending);
-          } else {
-            console.error('[WIRE] No unified sender available');
-          }
+          console.error('[WIRE] no sender available; pending lost:', pending);
         }
       } else {
         // No pending → just focus input
