@@ -4,7 +4,7 @@ import axios from "axios";
 import "./App.css";
 
 // VERSION BANNER - Force Resume UX Polish
-console.error('[VERSION] v2.2.11-ux-resume-clarity | commit=' + Math.random().toString(36).slice(2));
+console.error('[VERSION] v2.2.11-ux-resume-clarity | commit=e1c88a1');
 
 // Performance logging - ensuring no long setTimeout violations
 console.error('[Perf] post-load tasks scheduled (no long setTimeout)');
