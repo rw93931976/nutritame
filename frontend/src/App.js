@@ -3647,13 +3647,7 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
                         {msg.role === "user" && msg.status === "failed" && (
                           <div className="text-xs text-red-200 mt-1">
                             Failed. <button 
-                              onClick={() => retrySend({ 
-                                messageId: msg.id, 
-                                userId: effectiveUser.id, 
-                                messages, 
-                                addMessage: window.coachAddMessage, 
-                                updateMessage: window.coachUpdateMessage 
-                              })} 
+                              onClick={() => retrySend({ messageId: msg.id })} 
                               className="underline hover:text-red-100"
                             >
                               Retry
