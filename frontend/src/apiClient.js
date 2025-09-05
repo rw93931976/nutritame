@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "https://meal-plan-assist.preview.emergentagent.com/api",
+  baseURL: "https://ai-coach-bridge.preview.emergentagent.com/api",
   headers: { "Content-Type": "application/json" },
 });
 
