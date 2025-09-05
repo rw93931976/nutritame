@@ -1901,50 +1901,9 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     }
   }, [userProfile]);
 
-  // UNIFIED COMMON ACCEPT HANDLER
-  const handleUnifiedDisclaimerAccept = async (disclaimerType = 'global') => {
-    const beforeState = false; // Global context doesn't have ack state
-    const beforeLs = localStorage.getItem(COACH_ACK_KEY);
-    console.error(`[DISCLAIMER ACCEPT] type=${disclaimerType}`);
-    console.error(`[ACK TRACE] BEFORE - stateAck=${beforeState} lsAck=${beforeLs===null?null:beforeLs==='true'}`);
-    
-    try {
-      const userId = userProfile?.id || localStorage.getItem('nt_coach_user_id') || `demo-${Date.now()}`;
-      
-      await aiCoachService.acceptDisclaimer(userId);
-      
-      // Set canonical acceptance
-      setCoachAckTrue();
-      setAiCoachDisclaimerAccepted(true);
-      setShowAiCoachDisclaimer(false);
-      
-      console.error(`[ACK TRACE] AFTER  - stateAck=true lsAck=true`);
-      
-      // Trigger auto-resume for pending questions
-      const pending = localStorage.getItem('nt_coach_pending_question');
-      if (pending) {
-        localStorage.removeItem('nt_coach_pending_question');
-        console.error(`[RESUME] auto-sending pending question="${pending}"`);
-        console.error('[UX] accept handler: with-ux resume path engaged');
-        
-        // REMOVED: All legacy fallback mechanisms (window.currentSendHandler, CustomEvent)
-        // Resume should be handled by handleDisclaimerAcceptWithUX in the CoachInterface instead
-        console.error('❌ Legacy unified resume path - should use handleDisclaimerAcceptWithUX in CoachInterface');
-      }
-      
-      toast.success("AI Health Coach disclaimer accepted");
-    } catch (error) {
-      console.error('Error accepting AI Coach disclaimer:', error);
-      toast.error("Failed to accept disclaimer");
-    }
-  };
-
-  // Handle AI Health Coach disclaimer acceptance (legacy - now calls unified)
-  const handleAiCoachDisclaimerAccept = async () => {
-    console.error('[DISCLAIMER OPEN] type=global');
-    await handleUnifiedDisclaimerAccept('global');
-  };
-
+  // REMOVED: handleUnifiedDisclaimerAccept and handleAiCoachDisclaimerAccept
+  // All consent acceptance now goes through onCoachConsentAccept in CoachInterface
+  
   // Create new AI Coach session
   const createAiCoachSession = async (title = "New Conversation") => {
     try {
