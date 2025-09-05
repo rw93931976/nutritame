@@ -275,7 +275,7 @@ class AICoachFlowTester:
             # Check if we got an AI response
             if 'response' in response or 'ai_response' in response:
                 ai_response = response.get('response') or response.get('ai_response', '')
-                self.log(f"✅ AI response received: {ai_response[:100]}...")
+                self.log(f"✅ AI response received: {str(ai_response)[:100]}...")
                 
                 # Verify no session_id missing errors
                 self.log("✅ No '422 session_id missing' errors")
