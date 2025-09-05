@@ -3277,6 +3277,186 @@ class GlucoPlannerAPITester:
         
         return True
 
+    def test_instrumented_session_creation_debug(self):
+        """Test instrumented session creation with multiple request formats to debug 400 errors"""
+        print("\n🎯 TESTING INSTRUMENTED SESSION CREATION - DEBUG 400 ERROR")
+        print("=" * 80)
+        
+        # Step 1: Create demo user and get Bearer token
+        print("\n📋 STEP 1: Create Demo User and Get Bearer Token")
+        demo_data = {"email": "session.debug@example.com"}
+        success, response = self.run_test(
+            "Create Demo User for Session Debug",
+            "POST",
+            "demo/access",
+            200,
+            data=demo_data
+        )
+        
+        if not success:
+            print("   ❌ Failed to create demo user for session debug test")
+            return False
+            
+        access_token = response.get('access_token')
+        user_id = response.get('user', {}).get('id')
+        
+        if not access_token or not user_id:
+            print("   ❌ Missing access token or user ID from demo user creation")
+            return False
+            
+        print(f"   ✅ Demo user created - ID: {user_id}")
+        print(f"   ✅ Bearer token obtained: {access_token[:20]}...")
+        
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {access_token}'
+        }
+        
+        # Step 2: Call instrumented session creation with all 3 attempts
+        print("\n📋 STEP 2: Call Instrumented Session Creation with 3 Attempts")
+        
+        # ATTEMPT A: POST /coach/sessions (no body - token-derived user)
+        print("\n🔍 ATTEMPT A: POST /coach/sessions (no body - token-derived user)")
+        print("   [WIRE] createSession → POST /coach/sessions (no body)")
+        
+        try:
+            url = f"{self.api_url}/coach/sessions"
+            response_a = requests.post(url, headers=headers, timeout=30)
+            status_a = response_a.status_code
+            
+            print(f"   Response Status: {status_a}")
+            try:
+                response_a_data = response_a.json()
+                print(f"   Response Body: {json.dumps(response_a_data, indent=2)}")
+            except:
+                response_a_data = response_a.text
+                print(f"   Response Body: {response_a_data}")
+                
+            success_a = status_a == 200
+            if success_a:
+                print("   ✅ ATTEMPT A SUCCESS")
+            else:
+                print("   ❌ ATTEMPT A FAILED")
+        except Exception as e:
+            print(f"   ❌ ATTEMPT A ERROR: {e}")
+            success_a = False
+            response_a_data = str(e)
+        
+        # ATTEMPT B: POST /coach/sessions with { "user_id": userId }
+        print("\n🔍 ATTEMPT B: POST /coach/sessions with { \"user_id\": userId }")
+        print("   [WIRE] createSession → POST /coach/sessions (body.user_id)")
+        
+        attempt_b_data = {"user_id": user_id}
+        try:
+            url = f"{self.api_url}/coach/sessions"
+            response_b = requests.post(url, json=attempt_b_data, headers=headers, timeout=30)
+            status_b = response_b.status_code
+            
+            print(f"   Request Body: {json.dumps(attempt_b_data)}")
+            print(f"   Response Status: {status_b}")
+            try:
+                response_b_data = response_b.json()
+                print(f"   Response Body: {json.dumps(response_b_data, indent=2)}")
+            except:
+                response_b_data = response_b.text
+                print(f"   Response Body: {response_b_data}")
+                
+            success_b = status_b == 200
+            if success_b:
+                print("   ✅ ATTEMPT B SUCCESS")
+            else:
+                print("   ❌ ATTEMPT B FAILED")
+        except Exception as e:
+            print(f"   ❌ ATTEMPT B ERROR: {e}")
+            success_b = False
+            response_b_data = str(e)
+        
+        # ATTEMPT C: POST /coach/sessions with { "userId": userId } (camelCase)
+        print("\n🔍 ATTEMPT C: POST /coach/sessions with { \"userId\": userId } (camelCase)")
+        print("   [WIRE] createSession → POST /coach/sessions (body.userId)")
+        
+        attempt_c_data = {"userId": user_id}  # camelCase
+        try:
+            url = f"{self.api_url}/coach/sessions"
+            response_c = requests.post(url, json=attempt_c_data, headers=headers, timeout=30)
+            status_c = response_c.status_code
+            
+            print(f"   Request Body: {json.dumps(attempt_c_data)}")
+            print(f"   Response Status: {status_c}")
+            try:
+                response_c_data = response_c.json()
+                print(f"   Response Body: {json.dumps(response_c_data, indent=2)}")
+            except:
+                response_c_data = response_c.text
+                print(f"   Response Body: {response_c_data}")
+                
+            success_c = status_c == 200
+            if success_c:
+                print("   ✅ ATTEMPT C SUCCESS")
+            else:
+                print("   ❌ ATTEMPT C FAILED")
+        except Exception as e:
+            print(f"   ❌ ATTEMPT C ERROR: {e}")
+            success_c = False
+            response_c_data = str(e)
+        
+        # Step 3: Analyze results and identify the correct contract
+        print("\n📋 STEP 3: Analysis of Results")
+        print("=" * 50)
+        
+        successful_attempts = []
+        failed_attempts = []
+        
+        if success_a:
+            successful_attempts.append("A (no body)")
+        else:
+            failed_attempts.append(("A (no body)", response_a_data))
+            
+        if success_b:
+            successful_attempts.append("B (user_id)")
+        else:
+            failed_attempts.append(("B (user_id)", response_b_data))
+            
+        if success_c:
+            successful_attempts.append("C (userId camelCase)")
+        else:
+            failed_attempts.append(("C (userId camelCase)", response_c_data))
+        
+        print(f"✅ SUCCESSFUL ATTEMPTS: {successful_attempts if successful_attempts else 'None'}")
+        print(f"❌ FAILED ATTEMPTS: {[attempt[0] for attempt in failed_attempts] if failed_attempts else 'None'}")
+        
+        # Print detailed error analysis
+        if failed_attempts:
+            print("\n🔍 DETAILED ERROR ANALYSIS:")
+            for attempt_name, error_response in failed_attempts:
+                print(f"\n   {attempt_name}:")
+                if isinstance(error_response, dict):
+                    if 'detail' in error_response:
+                        print(f"      Error Detail: {error_response['detail']}")
+                    if 'validation_error' in error_response:
+                        print(f"      Validation Error: {error_response['validation_error']}")
+                    print(f"      Full Response: {json.dumps(error_response, indent=6)}")
+                else:
+                    print(f"      Response: {error_response}")
+        
+        # Determine the correct API contract
+        if successful_attempts:
+            print(f"\n🎯 CONCLUSION: The backend accepts the following formats: {', '.join(successful_attempts)}")
+            if "B (user_id)" in successful_attempts:
+                print("   ✅ RECOMMENDED: Use 'user_id' in request body (snake_case)")
+            elif "C (userId camelCase)" in successful_attempts:
+                print("   ✅ RECOMMENDED: Use 'userId' in request body (camelCase)")
+            elif "A (no body)" in successful_attempts:
+                print("   ✅ RECOMMENDED: Use no body, token-derived user")
+        else:
+            print("\n❌ CRITICAL ISSUE: None of the 3 attempts succeeded!")
+            print("   This indicates a fundamental issue with the session creation endpoint.")
+        
+        print("\n" + "=" * 80)
+        
+        # Return True if at least one attempt succeeded
+        return len(successful_attempts) > 0
+
 def main():
     print("🧪 AI Health Coach Backend Regression Testing (v2.2.5-ack-gate-fix)")
     print("🎯 FOCUS: Testing all 9 AI Health Coach endpoints after frontend disclaimer gating fix")
