@@ -2302,22 +2302,8 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
+      // HOTFIX: No more disclaimer gating - proceed directly
       e.preventDefault();
-      
-      // Use localStorage-only gating
-      const accepted = localStorage.getItem(COACH_ACK_KEY) === 'true';
-      console.error(`[SEND ATTEMPT] stateAck=N/A lsAck=${localStorage.getItem(COACH_ACK_KEY)} accepted=${accepted}`);
-      
-      if (!accepted) {
-        console.error('[GATED: ack=false — no API call, no clearing]');
-        localStorage.setItem('nt_coach_pending_question', currentMessage.trim());
-        console.error(`[PENDING] stored question="${currentMessage.trim()}"`);
-        console.error('[NO MORE DISCLAIMER GATING] proceeding directly');
-        // No more disclaimer modal - proceed with message send
-      }
-      
-      console.error('[PROCEEDING] ack=true — calling backend');
-      
       sendMessage();
     }
   };
