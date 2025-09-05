@@ -12,11 +12,7 @@ console.error('[VERSION] v2.2.13-kill-legacy-resume-hardreturn | commit=6fe794b'
 // Performance logging - ensuring no long setTimeout violations
 console.error('[Perf] post-load tasks scheduled (no long setTimeout)');
 
-// CANONICAL ACCEPTANCE HELPERS
-const COACH_ACK_KEY = 'nt_coach_disclaimer_ack';
-const PENDING_KEY = 'nt_coach_pending_question';
-const setCoachAckTrue = () => localStorage.setItem(COACH_ACK_KEY, 'true');
-const getCoachAck = () => localStorage.getItem(COACH_ACK_KEY) === 'true';
+// CONSTANTS (no more coach ACK gating)
 
 // UNIFIED SENDER - Direct API integration (no disclaimer gating)
 window.unifiedCoachSend = async (messageText) => {
