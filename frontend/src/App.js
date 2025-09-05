@@ -3476,17 +3476,17 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     // Check if there's a pending question before acceptance
     const pending = localStorage.getItem('nt_coach_pending_question');
     
-    // Call the original disclaimer handler
+    // Call the original disclaimer handler (this sets ack state and calls backend)
     await onDisclaimerAccept();
     
-    // If there was a pending question, handle UX polish for resume
+    // If there was a pending question, use the forced UX helper
     if (pending) {
-      // Clear input and show toast for resume case
-      setInputText('');
-      setShowConsentResumeToast(true);
-      setTimeout(() => setShowConsentResumeToast(false), 5000);
-      inputRef.current?.focus();
-      console.error('[UX] resume toast shown');
+      // Remove from localStorage since we're handling it directly
+      localStorage.removeItem('nt_coach_pending_question');
+      console.error(`[RESUME] auto-sending pending question="${pending}"`);
+      
+      // Force the resume UX immediately
+      await sendPendingWithUX(pending);
     }
   };
 
