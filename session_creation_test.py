@@ -231,23 +231,8 @@ class SessionCreationTester:
             'Authorization': f'Bearer {self.access_token}'
         }
         
-        # First, accept disclaimer
-        self.log("📋 Step 4a: Accepting disclaimer")
-        disclaimer_success, _ = self.run_test(
-            "Accept Disclaimer",
-            "POST",
-            "coach/accept-disclaimer",
-            200,
-            data={"user_id": self.demo_user_id},
-            headers=headers
-        )
-        
-        if not disclaimer_success:
-            self.log("❌ Failed to accept disclaimer", "ERROR")
-            return False
-        
-        # Send a message to the session
-        self.log("💬 Step 4b: Sending message to session")
+        # Send a message to the session (disclaimer already accepted in step 2)
+        self.log("💬 Sending message to session")
         message_data = {
             "session_id": self.session_id,
             "message": "Create a simple meal plan for Type 2 diabetes",
@@ -272,7 +257,7 @@ class SessionCreationTester:
                 self.log(f"✅ AI Response received: {ai_response[:100]}...")
                 
                 # Verify message was saved
-                self.log("📚 Step 4c: Verifying message history")
+                self.log("📚 Verifying message history")
                 history_success, history_response = self.run_test(
                     "Get Message History",
                     "GET",
