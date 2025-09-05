@@ -3209,10 +3209,16 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     }
     console.error(`[ACK INIT] stateAck=${ack === true} lsAck=${lsAckBool}`);
     
-    // REMOVED: CustomEvent listener for unifiedAutoResume (legacy fallback removed)
-    // Auto-resume should be handled directly by handleDisclaimerAcceptWithUX
+    // Expose functions globally for Dashboard consent handler
+    window.sendPendingWithUX = sendPendingWithUX;
+    window.coachInputRef = inputRef;
     
-  }, [setAck, ack]);
+    return () => {
+      // Clean up global references
+      delete window.sendPendingWithUX;
+      delete window.coachInputRef;
+    };
+  }, [ack, sendPendingWithUX]);
   console.log('🎯 CoachInterface component mounted with pendingQuestion:', pendingQuestion, 'currentUser:', currentUser, 'ack:', ack);
   
   // Basic AI Health Coach state
