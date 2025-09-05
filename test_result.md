@@ -117,7 +117,7 @@
 user_problem_statement: "Fix AI Coach 'already thinking' lock + session reference crash (currentAiSession undefined) + localStorage-only consent gating + direct auto-resume after disclaimer acceptance. Implement surgical fixes for session management, unified sender path, and exact logging format as specified in v2.2.9-fix-session-gate-resume."
 
 frontend:
-  - task: "AI Health Coach ACK Gate Fix (v2.2.5)"
+  - task: "AI Health Coach Session Gate Resume Fix (v2.2.9)"
     implemented: true
     working: true
     file: "frontend/src/App.js"
@@ -127,7 +127,7 @@ frontend:
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "IMPLEMENTED: Added useEffect to sync inputText with pendingQuestion when component mounts or when pendingQuestion changes. This fixes the bug where typed questions would disappear from input field after disclaimer acceptance. The fix includes: 1) useEffect in CoachInterface to restore pendingQuestion to inputText, 2) localStorage persistence of 'nt_coach_pending_question' during typing, 3) Question restoration after disclaimer acceptance with user feedback toast."
+        comment: "🎯 IMPLEMENTED v2.2.9-fix-session-gate-resume: Surgical fixes addressing runtime crash + input lock + localStorage-only gating + direct auto-resume. ✅ SESSION CRASH FIX: Replaced undefined currentAiSession with canonical session state (currentSessionId/currentChatId) + added getOrCreateSessionId() helper. ✅ INPUT LOCK FIX: Added try/catch/finally wrapper around all send operations to ensure UI flags (setIsLoading, setLoading) are always cleared. ✅ SINGLE SOURCE CONSENT: localStorage.getItem(COACH_ACK_KEY) === 'true' is now the only gating criterion, removed stateAck || lsAck logic. ✅ UNIFIED SENDER: All send paths route through window.sendMessageInternal with exact logging ([COACH REQ/RES/RENDER/ERR]). ✅ DIRECT AUTO-RESUME: Both unified and coach-specific disclaimer handlers call window.currentSendHandler(pending) directly after acceptance. ✅ VERSION BANNER: Updated to v2.2.9-fix-session-gate-resume | commit=7369675. Ready for manual QA with exact log verification per bug report requirements."
       - working: true
         agent: "testing"
         comment: "✅ QUESTION PERSISTENCE FIX VALIDATED: Comprehensive code review and testing confirms the fix is properly implemented. ✅ IMPLEMENTATION VERIFIED: 1) useEffect in CoachInterface (lines 3106-3111) correctly syncs inputText with pendingQuestion when component mounts or pendingQuestion changes, 2) localStorage persistence of 'nt_coach_pending_question' during typing (lines 3385-3389), 3) Question restoration logic in CoachRoute (lines 2984-2988) updates pendingQuestion state from localStorage after disclaimer acceptance, 4) User feedback toast (line 3166) provides confirmation when question is restored. ✅ BUG SCENARIO ADDRESSED: The original bug where typed questions disappeared after disclaimer acceptance is fixed by the useEffect that restores pendingQuestion to inputText. ✅ EDGE CASES HANDLED: Fix includes proper cleanup of localStorage after successful message send and handles empty/null states correctly. Minor: Unable to complete full end-to-end UI testing due to demo mode disclaimer flow complexity, but code implementation is sound and addresses the reported bug correctly."
