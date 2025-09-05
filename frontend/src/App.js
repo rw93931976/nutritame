@@ -2290,10 +2290,23 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
 
       toast.success("Response received!");
     } catch (error) {
-      // Error handling
+      // Error handling - defensive against TypeError and other errors
       console.error("Dashboard send error:", error);
-      toast.error("Failed to send message. Please try again.");
-      setMessages(prev => prev.slice(0, -1)); // Remove failed message
+      
+      // Show friendly fallback message instead of crashing
+      if (error instanceof TypeError) {
+        console.warn('[SEND] TypeError caught - showing fallback message');
+        setMessages(prev => [...prev.slice(0, -1), {
+          id: `ai-${Date.now()}`,
+          message: messageText,
+          response: 'I apologize, but there was an issue displaying the response. Please try again.',
+          isUser: false
+        }]);
+        toast.error("Response formatting issue - please try again.");
+      } else {
+        toast.error("Failed to send message. Please try again.");
+        setMessages(prev => prev.slice(0, -1)); // Remove failed message
+      }
     } finally {
       // Always clear UI flags
       setLoading(false);
