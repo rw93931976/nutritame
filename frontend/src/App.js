@@ -3430,25 +3430,7 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     setMessages([welcomeMsg]);
   }, []); // STABILITY FIX: Only run once on mount, not on every prop change
 
-  // UX wrapper for disclaimer acceptance to handle resume polish
-  const handleDisclaimerAcceptWithUX = async () => {
-    // Check if there's a pending question before acceptance
-    const pending = localStorage.getItem('nt_coach_pending_question');
-    
-    // Call the original disclaimer handler (this sets ack state and calls backend)
-    await onDisclaimerAccept();
-    
-    // If there was a pending question, use the forced UX helper
-    if (pending) {
-      // Remove from localStorage since we're handling it directly
-      localStorage.removeItem('nt_coach_pending_question');
-      console.error(`[RESUME] auto-sending pending question="${pending}"`);
-      console.error('[UX] accept handler: with-ux resume path engaged');
-      
-      // Force the resume UX immediately - single source of truth for resume UX + send
-      await sendPendingWithUX(pending);
-    }
-  };
+  // REMOVED: handleDisclaimerAcceptWithUX - replaced by onCoachConsentAccept
 
   const sendMessageInternal = async (messageBody) => {
     // REMOVED: window.currentSendHandler = sendMessageInternal; (legacy fallback removed)
