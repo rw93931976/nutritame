@@ -1927,11 +1927,12 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
         console.error(`[RESUME] auto-sending pending question="${pending}"`);
         console.error('[UX] accept handler: with-ux resume path engaged');
         
-        // Direct call to sendPendingWithUX - single source of truth for resume UX + send
-        if (typeof sendPendingWithUX === 'function') {
-          await sendPendingWithUX(pending);
+        // Direct call to sendPendingWithUX - Note: this calls whatever handler is registered
+        // The CoachInterface should handle this via handleDisclaimerAcceptWithUX instead
+        if (window.currentSendHandler) {
+          await window.currentSendHandler(pending);
         } else {
-          console.error('❌ sendPendingWithUX not available in unified handler');
+          console.error('❌ No currentSendHandler available for unified resume');
         }
       }
       
