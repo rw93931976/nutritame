@@ -1925,16 +1925,13 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
       if (pending) {
         localStorage.removeItem('nt_coach_pending_question');
         console.error(`[RESUME] auto-sending pending question="${pending}"`);
+        console.error('[UX] accept handler: with-ux resume path engaged');
         
-        // Direct call - no timers/events
-        if (window.currentSendHandler) {
-          await window.currentSendHandler(pending);
+        // Direct call to sendPendingWithUX - single source of truth for resume UX + send
+        if (typeof sendPendingWithUX === 'function') {
+          await sendPendingWithUX(pending);
         } else {
-          // Fallback: dispatch event if no direct handler available
-          setTimeout(() => {
-            const event = new CustomEvent('unifiedAutoResume', { detail: { message: pending } });
-            window.dispatchEvent(event);
-          }, 100);
+          console.error('❌ sendPendingWithUX not available in unified handler');
         }
       }
       
