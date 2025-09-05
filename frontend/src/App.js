@@ -3149,12 +3149,6 @@ const CoachRoute = React.memo(({ currentUser }) => {
         setPendingQuestion(null);
         console.error(`[RESUME] auto-sending pending question="${pending}"`);
         
-        // UX: clear input and show one-shot toast for resume case
-        if (typeof setInputText === 'function') setInputText('');
-        setShowConsentResumeToast(true);
-        setTimeout(() => setShowConsentResumeToast(false), 5000);
-        inputRef.current?.focus();
-        
         // Direct call - no timers/events
         if (window.currentSendHandler) {
           await window.currentSendHandler(pending);
