@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manual QA - v2.2.10 UX Resume Clarity Polish</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .test-case { border: 1px solid #ddd; margin: 10px 0; padding: 15px; }
+        .step { margin: 10px 0; padding: 10px; background: #f5f5f5; }
+        .expected { background: #e8f5e8; }
+        .pass { color: green; font-weight: bold; }
+        .fail { color: red; font-weight: bold; }
+        pre { background: #f0f0f0; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Manual QA Test - v2.2.10 UX Resume Clarity Polish</h1>
+    
+    <p><strong>Version:</strong> v2.2.10-ux-resume-clarity | commit=7a16721</p>
+    <p><strong>Rollback Target:</strong> v2.2.9-fix-session-gate-resume</p>
+    <p><strong>Goal:</strong> Verify UX polish makes auto-resume visually obvious</p>
+
+    <div class="test-case">
+        <h2>Test Case 1: Pre-Consent Path (The confusing case that needed fixing)</h2>
+        
+        <div class="step">
+            <strong>Step 1:</strong> Clear localStorage and navigate
+            <pre>localStorage.clear()</pre>
+            Navigate to <code>http://localhost:3000/coach</code>
+        </div>
+        
+        <div class="step">
+            <strong>Step 2:</strong> Type message before consent
+            Type: <code>create a 3 day meal plan</code>
+        </div>
+        
+        <div class="step">
+            <strong>Step 3:</strong> Press Enter to trigger send attempt
+            Expected console logs (in order):
+            <pre class="expected">[SEND ATTEMPT] stateAck=false lsAck=false accepted=false
+[GATED: ack=false — no API call, no clearing]
+[PENDING] stored question="create a 3 day meal plan"
+[DISCLAIMER OPEN] type=coach</pre>
+        </div>
+        
+        <div class="step">
+            <strong>Step 4:</strong> Click "Accept & Continue" on disclaimer modal
+            Expected console logs:
+            <pre class="expected">[ACK TRACE] BEFORE - stateAck=false lsAck=false
+[ACK TRACE] AFTER - stateAck=true lsAck=true
+[RESUME] auto-sending pending question="create a 3 day meal plan"
+[UX] user bubble echoed
+[UX] resume toast shown
+[COACH REQ] id=xyz start body="create a 3 day meal plan"</pre>
+        </div>
+        
+        <div class="step">
+            <strong>Step 5:</strong> Verify UX improvements immediately after accept
+            <div class="expected">
+                <strong>Expected UI changes:</strong>
+                <ul>
+                    <li>✅ Input field clears immediately</li>
+                    <li>✅ User message bubble appears in transcript with text "create a 3 day meal plan"</li>
+                    <li>✅ Green toast shows: "✅ Your question was sent after you accepted the consent. See the reply below."</li>
+                    <li>✅ Chat auto-scrolls to show new user bubble</li>
+                    <li>✅ Input field is focused and ready for next question</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="step">
+            <strong>Step 6:</strong> Wait for AI response
+            Expected console logs:
+            <pre class="expected">[COACH RES] id=xyz status=200
+[COACH RENDER] id=xyz count=1
+AI response found: 1</pre>
+            <div class="expected">
+                <strong>Expected UI:</strong>
+                <ul>
+                    <li>✅ AI response appears in transcript</li>
+                    <li>✅ Auto-scroll to show AI response</li>
+                    <li>✅ Input refocused for next question</li>
+                    <li>✅ Toast auto-dismisses after ~5 seconds</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-case">
+        <h2>Test Case 2: Post-Consent Path (Normal flow)</h2>
+        
+        <div class="step">
+            <strong>Step 1:</strong> Type another message (consent already accepted)
+            Type: <code>what should I eat for breakfast</code>
+        </div>
+        
+        <div class="step">
+            <strong>Step 2:</strong> Press Enter
+            Expected console logs:
+            <pre class="expected">[SEND ATTEMPT] stateAck=true lsAck=true accepted=true
+[UX] user bubble echoed
+[COACH REQ] id=xyz start body="what should I eat for breakfast"</pre>
+        </div>
+        
+        <div class="step">
+            <strong>Step 3:</strong> Verify immediate UX feedback
+            <div class="expected">
+                <strong>Expected UI changes:</strong>
+                <ul>
+                    <li>✅ Input clears immediately</li>
+                    <li>✅ User message bubble appears immediately</li>
+                    <li>✅ NO toast appears (only for resume case)</li>
+                    <li>✅ Auto-scroll to new message</li>
+                    <li>✅ Input focused and ready</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-case">
+        <h2>Test Case 3: No Duplicate Messages</h2>
+        
+        <div class="step">
+            <strong>Verify:</strong> Throughout both test cases
+            <div class="expected">
+                <strong>Critical Requirements:</strong>
+                <ul>
+                    <li>✅ No duplicate user bubbles appear</li>
+                    <li>✅ Each typed message appears exactly once in transcript</li>
+                    <li>✅ Auto-resume creates only one user bubble</li>
+                    <li>✅ Manual send creates only one user bubble</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-case">
+        <h2>Test Case 4: Error Handling</h2>
+        
+        <div class="step">
+            <strong>Scenario:</strong> Simulate network error during send
+            <div class="expected">
+                <strong>Expected behavior:</strong>
+                <ul>
+                    <li>✅ User bubble still appears immediately</li>
+                    <li>✅ Error message shows</li>
+                    <li>✅ Auto-scroll to error</li>
+                    <li>✅ Input refocused</li>
+                    <li>✅ User can retry immediately</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <h2>Invariants Verification Checklist</h2>
+    <div class="test-case">
+        <ul>
+            <li>✅ Single sender: <code>window.sendMessageInternal</code> with exact logging format preserved</li>
+            <li>✅ Consent source of truth: <code>localStorage.getItem(COACH_ACK_KEY) === 'true'</code></li>
+            <li>✅ Pending question key: <code>nt_coach_pending_question</code> unchanged</li>
+            <li>✅ Unified accept handler calls current send handler</li>
+            <li>✅ Existing logging formats ([COACH REQ/RES/RENDER/ERR]) unchanged</li>
+            <li>✅ All core gating behavior preserved</li>
+        </ul>
+    </div>
+
+    <h2>Results Summary</h2>
+    <div class="test-case">
+        <p><strong>Test Status:</strong> <span id="overall-status">PENDING MANUAL EXECUTION</span></p>
+        <p><strong>Key Improvements:</strong></p>
+        <ul>
+            <li>Input clears immediately on any send (manual or auto-resume)</li>
+            <li>User message appears instantly before API call</li>
+            <li>Auto-scroll keeps conversation visible</li>
+            <li>Resume toast provides clear feedback for consent flow</li>
+            <li>Input stays focused for continuous conversation</li>
+        </ul>
+        
+        <p><strong>User Experience:</strong> No more confusion about whether message was sent after consent acceptance. Clear visual feedback throughout the entire flow.</p>
+    </div>
+</body>
+</html>
