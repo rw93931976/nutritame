@@ -3,13 +3,17 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { Toaster } from "./components/ui/sonner";
-import { api, getOrCreateSessionId, sendCoachMessage } from "./apiClient";
 
 // Install global unified sender BEFORE rendering - eliminates race conditions
 if (typeof window !== "undefined") {
   // Idempotent install
   if (typeof window.unifiedCoachSend !== "function") {
     window.unifiedCoachSend = async function unifiedCoachSend(text) {
+      console.log("[WIRE] Bootstrap unified sender called with:", text);
+      
+      // Import API functions dynamically to avoid issues
+      const { api, getOrCreateSessionId, sendCoachMessage } = await import("./apiClient");
+      
       const body = (text || "").trim();
       if (!body) return;
 
