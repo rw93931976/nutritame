@@ -630,12 +630,13 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "AI Coach Messaging System Refactor (1A + 2A + 3B)"
-  stuck_tasks: []
+  current_focus: []
+  stuck_tasks:
+    - "AI Coach Flow Fixes - Final Validation"
   test_all: false
   test_priority: "high_first"
-  completed_focus: []
+  completed_focus:
+    - "AI Coach Messaging System Refactor (1A + 2A + 3B)"
 
   - task: "Demo User Profile Submission Bug Fix"
     implemented: true
