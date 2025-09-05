@@ -188,7 +188,7 @@ DEMO_MODE=true
 LAUNCH_DATE=2025-10-01
 
 # Frontend (.env)  
-REACT_APP_BACKEND_URL=https://meal-plan-assist.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://coach-consent.preview.emergentagent.com
 ```
 
 ### **Service Management Commands**

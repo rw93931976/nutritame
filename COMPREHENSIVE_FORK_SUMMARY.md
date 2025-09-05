@@ -377,7 +377,7 @@ git checkout 51fcb911a5bc307f15a1ee7ed44c420e65a256dc
 sudo supervisorctl restart all
 
 # Verify rollback successful
-curl https://meal-plan-assist.preview.emergentagent.com/api/coach/feature-flags
+curl https://coach-consent.preview.emergentagent.com/api/coach/feature-flags
 ```
 
 ### **Database Recovery**
