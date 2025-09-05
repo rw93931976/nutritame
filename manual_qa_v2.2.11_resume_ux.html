@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manual QA - v2.2.11 Force Resume UX</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; }
+        .test-case { border: 1px solid #ddd; margin: 15px 0; padding: 20px; border-radius: 5px; }
+        .step { margin: 15px 0; padding: 15px; background: #f8f9fa; border-radius: 3px; }
+        .expected { background: #e8f5e8; border-left: 4px solid #28a745; }
+        .critical { background: #fff3cd; border-left: 4px solid #ffc107; }
+        .pass { color: #28a745; font-weight: bold; }
+        .fail { color: #dc3545; font-weight: bold; }
+        pre { background: #f1f3f4; padding: 12px; overflow-x: auto; border-radius: 3px; font-size: 13px; }
+        .log-sequence { background: #e3f2fd; padding: 15px; border-radius: 5px; }
+        ul { margin: 10px 0; }
+        li { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <h1>Manual QA Test - v2.2.11 Force Resume UX</h1>
+    
+    <div class="critical">
+        <p><strong>Version:</strong> v2.2.11-ux-resume-clarity | commit=e1c88a1</p>
+        <p><strong>Rollback Target:</strong> v2.2.10-ux-resume-clarity</p>
+        <p><strong>Critical Fix:</strong> Force resume UX to fire reliably (clear input, show user bubble, show toast)</p>
+        <p><strong>UI Improvement:</strong> Chat panel increased from 600px to 680px height</p>
+    </div>
+
+    <div class="test-case">
+        <h2>🎯 PRIMARY TEST: Incognito / Fresh localStorage Resume Flow</h2>
+        
+        <div class="step">
+            <strong>Setup:</strong> Open <strong>Incognito window</strong> to ensure fresh localStorage
+            <br>Navigate to: <code>http://localhost:3000/coach</code>
+        </div>
+        
+        <div class="step">
+            <strong>Step 1:</strong> Type message before consent
+            <br>Type: <code>create a 3 day meal plan</code>
+            <br>Press <strong>Enter</strong>
+        </div>
+        
+        <div class="step">
+            <strong>Expected Console Logs (Step 1):</strong>
+            <div class="log-sequence">
+                <pre>[SEND ATTEMPT] stateAck=false lsAck=false accepted=false
+[GATED: ack=false — no API call, no clearing]
+[PENDING] stored question="create a 3 day meal plan"
+[DISCLAIMER OPEN] type=coach</pre>
+            </div>
+        </div>
+        
+        <div class="step">
+            <strong>Step 2:</strong> Click <strong>"Accept & Continue"</strong> on disclaimer modal
+        </div>
+        
+        <div class="step critical">
+            <strong>Expected Console Logs (Step 2) - EXACT ORDER CRITICAL:</strong>
+            <div class="log-sequence">
+                <pre>[DISCLAIMER ACCEPT] type=coach
+[ACK TRACE] BEFORE - stateAck=false lsAck=false
+[ACK TRACE] AFTER - stateAck=true lsAck=true
+[RESUME] auto-sending pending question="create a 3 day meal plan"
+[UX] input cleared (resume)
+[UX] user bubble echoed (resume)
+[UX] resume toast shown
+[COACH REQ] id=xyz start body="create a 3 day meal plan"
+[COACH RES] id=xyz status=200
+[COACH RENDER] id=xyz count=1</pre>
+            </div>
+        </div>
+        
+        <div class="step expected">
+            <strong>Expected UI Changes (Immediate at Accept moment):</strong>
+            <ul>
+                <li>✅ <strong>Text box clears immediately</strong> (no residual text)</li>
+                <li>✅ <strong>User bubble appears</strong> with "create a 3 day meal plan" before AI reply</li>
+                <li>✅ <strong>Green toast shows:</strong> "✅ Your question was sent after you accepted the consent. See the reply below."</li>
+                <li>✅ <strong>Input stays focused</strong> and ready for next question</li>
+                <li>✅ <strong>Auto-scroll</strong> to show new user bubble</li>
+                <li>✅ <strong>Toast auto-dismisses</strong> after ~5 seconds</li>
+            </ul>
+        </div>
+        
+        <div class="step">
+            <strong>Step 3:</strong> Wait for AI response to complete
+            <div class="expected">
+                <strong>Expected:</strong>
+                <ul>
+                    <li>✅ AI response appears in transcript</li>
+                    <li>✅ Auto-scroll to show AI response</li>
+                    <li>✅ Input remains focused</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-case">
+        <h2>🚫 DOUBLE-SEND GUARD TEST</h2>
+        
+        <div class="step">
+            <strong>Test:</strong> Immediately after clicking Accept, try pressing Enter again within ~300ms
+        </div>
+        
+        <div class="step expected">
+            <strong>Expected Behavior:</strong>
+            <ul>
+                <li>✅ Console shows: <code>[UX] ignoring Enter during resume period</code></li>
+                <li>✅ <strong>No duplicate user bubbles</strong></li>
+                <li>✅ <strong>No duplicate API calls</strong></li>
+                <li>✅ Normal Enter functionality resumes after 300ms</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-case">
+        <h2>📏 UI IMPROVEMENT TEST</h2>
+        
+        <div class="step">
+            <strong>Visual Check:</strong> Chat Panel Height
+        </div>
+        
+        <div class="step expected">
+            <strong>Expected:</strong>
+            <ul>
+                <li>✅ <strong>Chat panel looks roomier</strong> than before (increased from 600px to 680px)</li>
+                <li>✅ <strong>No layout breakage</strong> on desktop or mobile view</li>
+                <li>✅ <strong>Transcript area has more space</strong> for conversation</li>
+                <li>✅ <strong>Input area remains accessible</strong> at bottom</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-case">
+        <h2>✅ POST-CONSENT NORMAL FLOW</h2>
+        
+        <div class="step">
+            <strong>Test:</strong> After consent is accepted, normal message sending
+            <br>Type: <code>what should I eat for breakfast</code>
+            <br>Press <strong>Enter</strong>
+        </div>
+        
+        <div class="step expected">
+            <strong>Expected Console Logs:</strong>
+            <div class="log-sequence">
+                <pre>[SEND ATTEMPT] stateAck=true lsAck=true accepted=true
+[UX] user bubble echoed
+[COACH REQ] id=xyz start body="what should I eat for breakfast"</pre>
+            </div>
+            
+            <strong>Expected UI:</strong>
+            <ul>
+                <li>✅ Input clears immediately</li>
+                <li>✅ User message appears instantly</li>
+                <li>✅ <strong>NO green toast</strong> (only for resume case)</li>
+                <li>✅ Auto-scroll and focus work normally</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-case">
+        <h2>🔒 INVARIANTS VERIFICATION</h2>
+        
+        <div class="step expected">
+            <strong>Must remain unchanged:</strong>
+            <ul>
+                <li>✅ <strong>Unified sender:</strong> <code>window.sendMessageInternal</code> with [COACH REQ/RES/RENDER/ERR] logs</li>
+                <li>✅ <strong>Consent gating:</strong> <code>localStorage.getItem(COACH_ACK_KEY) === 'true'</code></li>
+                <li>✅ <strong>Pending key:</strong> <code>nt_coach_pending_question</code></li>
+                <li>✅ <strong>No currentAiSession references</strong></li>
+                <li>✅ <strong>No legacy "Sending message..." logs</strong></li>
+                <li>✅ <strong>Request payloads unchanged</strong></li>
+                <li>✅ <strong>Backend calls identical</strong></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-case">
+        <h2>🎯 SUCCESS CRITERIA SUMMARY</h2>
+        
+        <div class="step critical">
+            <strong>PASS if ALL of these work:</strong>
+            <ol>
+                <li><strong>Fresh incognito test:</strong> Type → Enter → Accept → See all 3 UX changes immediately</li>
+                <li><strong>No double-send:</strong> Rapid Enter presses don't create duplicates</li>
+                <li><strong>Console logs:</strong> Exact sequence matches expected format</li>
+                <li><strong>Post-consent normal:</strong> Regular sends work without toast</li>
+                <li><strong>Chat panel:</strong> Visibly taller and roomier</li>
+                <li><strong>No regressions:</strong> All invariants preserved</li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <strong>If any UX element fails to fire:</strong>
+            <ul>
+                <li>Check console for errors</li>
+                <li>Verify <code>sendPendingWithUX</code> is called in logs</li>
+                <li>Test in multiple browsers if needed</li>
+                <li>Rollback to v2.2.10 if critical issues</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>📋 Test Results Log</h2>
+    <div class="test-case">
+        <p><strong>Test Status:</strong> <span id="test-status">PENDING EXECUTION</span></p>
+        <p><strong>Tester:</strong> _________________</p>
+        <p><strong>Date:</strong> _________________</p>
+        <p><strong>Browser:</strong> _________________</p>
+        
+        <div class="step">
+            <strong>Notes / Issues Found:</strong>
+            <textarea style="width: 100%; height: 100px; margin-top: 10px;" placeholder="Document any issues or observations here..."></textarea>
+        </div>
+    </div>
+</body>
+</html>
