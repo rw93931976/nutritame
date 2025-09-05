@@ -3568,6 +3568,12 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     const body = inputText.trim();
     if (!body) return;
     
+    // Guard against double-send during resume period
+    if (resumeInProgress) {
+      console.error('[UX] ignoring Enter during resume period');
+      return;
+    }
+    
     // TOP of handleSendMessage: Single source of truth = localStorage only
     const accepted = localStorage.getItem(COACH_ACK_KEY) === 'true';
     console.error(`[SEND ATTEMPT] stateAck=${ack} lsAck=${localStorage.getItem(COACH_ACK_KEY)} accepted=${accepted}`);
