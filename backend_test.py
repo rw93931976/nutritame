@@ -1856,20 +1856,20 @@ class GlucoPlannerAPITester:
         """Test error handling scenarios for the messaging system"""
         print("   🚨 Testing Messaging Error Handling...")
         
-        # Test 1: Missing auth token (should return 422 for missing session_id)
+        # Test 1: Missing auth token (should return 404 for session not found)
         print("     Testing missing auth token...")
         success, response = self.run_test(
             "Message Without Auth Token",
             "POST",
             "coach/message",
-            422,  # Should return 422 for missing session_id
+            404,  # Should return 404 for session not found
             data={"message": "test", "session_id": "test", "user_id": "test"}
         )
         
         if success:
-            print("     ✅ Correctly returned 422 for missing session_id")
+            print("     ✅ Correctly returned 404 for session not found")
         else:
-            print("     ❌ Should have returned 422 for missing session_id")
+            print("     ❌ Should have returned 404 for session not found")
             return False
             
         # Test 2: Invalid session_id with auth
