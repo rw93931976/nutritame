@@ -135,11 +135,7 @@ const MedicalDisclaimer = ({ onAccept, onDecline }) => {
             </div>
             
             <p className="text-base">
-              <strong>This application provides meal planning guidance and nutritional information for educational purposes only. This is NOT medical advice</strong>
-            </p>
-            
-            <p className="text-base">
-              <strong>and should never be used as a substitute for professional medical care, diagnosis, or treatment. NutriTame does not diagnose, treat, cure, or prevent any medical conditions or diseases.</strong>
+              <strong>This application provides meal planning guidance and nutritional information for educational purposes only. This is NOT medical advice and should never be used as a substitute for professional medical care, diagnosis, or treatment. NutriTame does not diagnose, treat, cure, or prevent any medical conditions or diseases.</strong>
             </p>
 
             <Alert className="border-red-200 bg-red-50">
