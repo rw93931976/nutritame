@@ -2258,26 +2258,15 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
 
     // Use unified send function with Dashboard-specific success/error handling
     const effectiveUser = userProfile || { id: `demo-${Date.now()}` };
-    let sessionId = currentAiSession?.id;
     
-    if (!sessionId) {
-      try {
-        const session = await aiCoachService.createSession(effectiveUser.id, "Dashboard Chat");
-        sessionId = session.id;
-        setCurrentAiSession(session);
-      } catch (error) {
-        console.error('❌ Session creation failed:', error);
-        setMessages(prev => prev.slice(0, -1));
-        setLoading(false);
-        toast.error("Failed to create session. Please try again.");
-        return;
-      }
-    }
+    // Use try/catch/finally to ensure UI flags are always cleared
+    try {
+      const sessionId = await getOrCreateSessionId(currentChatId, setCurrentChatId, effectiveUser);
 
-    await window.sendMessageInternal(
-      messageText,
-      sessionId,
-      effectiveUser,
+      await window.sendMessageInternal(
+        messageText,
+        sessionId,
+        effectiveUser,
       (response, messages) => {
         // Success callback
         const aiResponseText = response.ai_response?.text || response.response || "I apologize, but I couldn't generate a response. Please try again.";
