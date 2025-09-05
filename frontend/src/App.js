@@ -3398,6 +3398,25 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
     setMessages([welcomeMsg]);
   }, []); // STABILITY FIX: Only run once on mount, not on every prop change
 
+  // UX wrapper for disclaimer acceptance to handle resume polish
+  const handleDisclaimerAcceptWithUX = async () => {
+    // Check if there's a pending question before acceptance
+    const pending = localStorage.getItem('nt_coach_pending_question');
+    
+    // Call the original disclaimer handler
+    await onDisclaimerAccept();
+    
+    // If there was a pending question, handle UX polish for resume
+    if (pending) {
+      // Clear input and show toast for resume case
+      setInputText('');
+      setShowConsentResumeToast(true);
+      setTimeout(() => setShowConsentResumeToast(false), 5000);
+      inputRef.current?.focus();
+      console.error('[UX] resume toast shown');
+    }
+  };
+
   const sendMessageInternal = async (messageBody) => {
     // Register this as the current send handler for auto-resume
     window.currentSendHandler = sendMessageInternal;
