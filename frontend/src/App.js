@@ -4,7 +4,7 @@ import axios from "axios";
 import "./App.css";
 
 // VERSION BANNER - Kill legacy resume path; hard-return after sendPendingWithUX
-console.error('[VERSION] v2.2.13-kill-legacy-resume-hardreturn | commit=<pending>');
+console.error('[VERSION] v2.2.13-kill-legacy-resume-hardreturn | commit=6fe794b');
 
 // Performance logging - ensuring no long setTimeout violations
 console.error('[Perf] post-load tasks scheduled (no long setTimeout)');
