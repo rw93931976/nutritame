@@ -3146,17 +3146,11 @@ const CoachRoute = React.memo(({ currentUser }) => {
         localStorage.removeItem('nt_coach_pending_question');
         setPendingQuestion(null);
         console.error(`[RESUME] auto-sending pending question="${pending}"`);
+        console.error('[UX] accept handler: with-ux resume path engaged');
         
-        // Direct call - no timers/events
-        if (window.currentSendHandler) {
-          await window.currentSendHandler(pending);
-        } else {
-          // Fallback: dispatch event if no direct handler available
-          setTimeout(async () => {
-            const event = new CustomEvent('unifiedAutoResume', { detail: { message: pending } });
-            window.dispatchEvent(event);
-          }, 100);
-        }
+        // REMOVED: Legacy window.currentSendHandler and CustomEvent fallbacks
+        // The accept flow should be handled by handleDisclaimerAcceptWithUX instead
+        console.error('❌ Legacy currentSendHandler resume path - should use handleDisclaimerAcceptWithUX');
       }
       
       // Show encouragement toast after disclaimer acceptance
