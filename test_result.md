@@ -658,9 +658,10 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
-  stuck_tasks:
-    - "AI Coach Flow Fixes - Final Validation"
+  current_focus:
+    - "CORS Configuration Fix for Frontend Access"
+    - "AI Health Coach Real AI Integration"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
   completed_focus:
