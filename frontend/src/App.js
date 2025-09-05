@@ -3257,6 +3257,7 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
   // UX polish: refs and state for auto-scroll, focus, and resume toast
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const acceptHandledRef = useRef(false); // once-only Accept guard
   const [showConsentResumeToast, setShowConsentResumeToast] = useState(false);
   
   // UX helper functions
