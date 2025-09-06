@@ -2226,34 +2226,79 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
   };
 
   const sendMessage = async (messageText = currentMessage) => {
-    if (!messageText?.trim()) return;
-
-    setMessages(prev => [...prev, { id: uid(), role: 'user', text: messageText }]);
+    if (!messageText.trim() || loading) return;
+    
+    console.log('[SEND] Starting send with text:', messageText);
     setCurrentMessage("");
-    setLoading(true);
+    setLoading(true);  // HOTFIX: Button disabled while sending
 
+    // Add user message to UI
+    const tempUserMsg = {
+      id: Date.now(),
+      message: messageText,
+      response: '',
+      isUser: true
+    };
+    setMessages(prev => [...prev, tempUserMsg]);
+
+    // HOTFIX: Strict await with unified sender only
     try {
-      const res = await window.unifiedCoachSend(messageText);
-      console.log('[SEND] Normalized result', res);
+      console.log('[SEND] Calling unified sender...');
+      const response = await window.unifiedCoachSend(messageText);
+      
+      // Success - process AI response
+      const aiResponseText = response.ai_response?.text || "I apologize, but I couldn't generate a response. Please try again.";
+      
+      // Clean up AI response - remove markdown formatting
+      const cleanedResponse = aiResponseText
+        .replace(/\*\*(.*?)\*\*/g, '$1')  // Remove **bold**
+        .replace(/\*(.*?)\*/g, '$1')     // Remove *italic*
+        .replace(/#{1,6}\s/g, '')        // Remove # headers
+        .replace(/^\s*[-*+]\s/gm, '- ') // Normalize bullet points
+        .trim();
 
-      const aiText = extractAiText(res);
-      const display = aiText || 'I generated a response, but no text field was present.';
+      // Check if response contains meal planning and show shopping list button
+      const containsMealPlan = cleanedResponse.toLowerCase().includes('meal') && 
+                              (cleanedResponse.toLowerCase().includes('plan') || 
+                               cleanedResponse.toLowerCase().includes('breakfast') || 
+                               cleanedResponse.toLowerCase().includes('lunch') || 
+                               cleanedResponse.toLowerCase().includes('dinner'));
+      
+      if (containsMealPlan) {
+        setLastMealPlan(cleanedResponse);
+        setShowShoppingListButton(true);
+      }
 
-      setMessages(prev => [...prev, { id: uid(), role: 'assistant', text: display }]);
-    } catch (err) {
-      setMessages(prev => [...prev, {
-        id: uid(),
-        role: 'assistant', 
-        text: 'Sorry—something went wrong sending that. Please try again.'
+      // Add AI response to UI
+      setMessages(prev => [...prev.slice(0, -1), {
+        id: `ai-${Date.now()}`,
+        message: messageText,
+        response: cleanedResponse,
+        isUser: false
       }]);
-      console.error('[SEND] error', err);
+
+      toast.success("Response received!");
+    } catch (error) {
+      // Error handling - defensive against TypeError and other errors
+      console.error("Dashboard send error:", error);
+      
+      // Show friendly fallback message instead of crashing
+      if (error instanceof TypeError) {
+        console.warn('[SEND] TypeError caught - showing fallback message');
+        setMessages(prev => [...prev.slice(0, -1), {
+          id: `ai-${Date.now()}`,
+          message: messageText,
+          response: 'I apologize, but there was an issue displaying the response. Please try again.',
+          isUser: false
+        }]);
+        toast.error("Response formatting issue - please try again.");
+      } else {
+        toast.error("Failed to send message. Please try again.");
+        setMessages(prev => prev.slice(0, -1)); // Remove failed message
+      }
     } finally {
+      // Always clear UI flags
       setLoading(false);
-      requestAnimationFrame(() => {
-        try { 
-          messagesEndRef?.current?.scrollIntoView?.({ behavior: 'smooth' }); 
-        } catch {}
-      });
     }
   };
 
