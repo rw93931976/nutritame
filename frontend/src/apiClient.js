@@ -125,11 +125,9 @@ export async function sendCoachMessage(messageText) {
       user_id: user_id 
     });
 
-    // Breadcrumb: log raw payload from backend
     const raw = response?.data ?? response;
-    console.log('[MESSAGE] Raw response', raw);
 
-    // Normalize to a stable shape
+    // normalize to stable shape
     const aiText =
       raw?.ai_response?.text ??
       raw?.response?.ai_response?.text ??
@@ -137,15 +135,15 @@ export async function sendCoachMessage(messageText) {
       raw?.text ??
       (typeof raw === 'string' ? raw : null);
 
-    // Return normalized contract to the UI
     const normalized = {
       ai_response: { text: aiText ?? '' },
-      session_id: sessionId,
+      session_id: sessionId || raw?.session_id,
       raw
     };
 
-    console.log('[MESSAGE] Message sent successfully (normalized)');
-    return normalized;
+    console.log('[MESSAGE] Raw response', raw);
+    console.log('[MESSAGE] Message sent successfully (normalized)', normalized);
+    return normalized; // <-- return this object
   } catch (error) {
     console.error('[WIRE] sendCoachMessage failed', error.response?.data || error.message);
     throw error;
