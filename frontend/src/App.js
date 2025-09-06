@@ -2236,90 +2236,34 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
   };
 
   const sendMessage = async (messageText = currentMessage) => {
-    if (!messageText.trim() || loading) return;
-    
-    console.log('[SEND] Starting send with text:', messageText);
+    if (!messageText?.trim()) return;
+
+    setMessages(prev => [...prev, { id: uid(), role: 'user', text: messageText }]);
     setCurrentMessage("");
-    setLoading(true);  // HOTFIX: Button disabled while sending
+    setLoading(true);
 
-    // Add user message to UI
-    const tempUserMsg = {
-      id: Date.now(),
-      message: messageText,
-      response: '',
-      isUser: true
-    };
-    setMessages(prev => [...prev, tempUserMsg]);
-
-    // HOTFIX: Strict await with unified sender only
     try {
-      console.log('[SEND] Calling unified sender...');
       const res = await window.unifiedCoachSend(messageText);
       console.log('[SEND] Normalized result', res);
 
-      const aiText =
-        res?.ai_response?.text ??
-        res?.raw?.ai_response?.text ??
-        res?.raw?.message?.text ??
-        res?.raw?.text ??
-        '';
+      const aiText = extractAiText(res);
+      const display = aiText || 'I generated a response, but no text field was present.';
 
-      if (!aiText) {
-        console.warn('[SEND] No ai_text found in response; showing fallback');
-      }
-
-      const aiResponseText = aiText || 'I generated a response, but no text field was present.';
-      
-      // Clean up AI response - remove markdown formatting
-      const cleanedResponse = aiResponseText
-        .replace(/\*\*(.*?)\*\*/g, '$1')  // Remove **bold**
-        .replace(/\*(.*?)\*/g, '$1')     // Remove *italic*
-        .replace(/#{1,6}\s/g, '')        // Remove # headers
-        .replace(/^\s*[-*+]\s/gm, '- ') // Normalize bullet points
-        .trim();
-
-      // Check if response contains meal planning and show shopping list button
-      const containsMealPlan = cleanedResponse.toLowerCase().includes('meal') && 
-                              (cleanedResponse.toLowerCase().includes('plan') || 
-                               cleanedResponse.toLowerCase().includes('breakfast') || 
-                               cleanedResponse.toLowerCase().includes('lunch') || 
-                               cleanedResponse.toLowerCase().includes('dinner'));
-      
-      if (containsMealPlan) {
-        setLastMealPlan(cleanedResponse);
-        setShowShoppingListButton(true);
-      }
-
-      // Add AI response to UI
-      setMessages(prev => [...prev.slice(0, -1), {
-        id: `ai-${Date.now()}`,
-        message: messageText,
-        response: cleanedResponse,
-        isUser: false
+      setMessages(prev => [...prev, { id: uid(), role: 'assistant', text: display }]);
+    } catch (err) {
+      setMessages(prev => [...prev, {
+        id: uid(),
+        role: 'assistant', 
+        text: 'Sorry—something went wrong sending that. Please try again.'
       }]);
-
-      toast.success("Response received!");
-    } catch (error) {
-      // Error handling - defensive against TypeError and other errors
-      console.error("Dashboard send error:", error);
-      
-      // Show friendly fallback message instead of crashing
-      if (error instanceof TypeError) {
-        console.warn('[SEND] TypeError caught - showing fallback message');
-        setMessages(prev => [...prev.slice(0, -1), {
-          id: `ai-${Date.now()}`,
-          message: messageText,
-          response: 'I apologize, but there was an issue displaying the response. Please try again.',
-          isUser: false
-        }]);
-        toast.error("Response formatting issue - please try again.");
-      } else {
-        toast.error("Failed to send message. Please try again.");
-        setMessages(prev => prev.slice(0, -1)); // Remove failed message
-      }
+      console.error('[SEND] error', err);
     } finally {
-      // Always clear UI flags
       setLoading(false);
+      requestAnimationFrame(() => {
+        try { 
+          messagesEndRef?.current?.scrollIntoView?.({ behavior: 'smooth' }); 
+        } catch {}
+      });
     }
   };
 
