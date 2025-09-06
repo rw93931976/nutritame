@@ -3466,9 +3466,7 @@ const CoachInterface = React.memo(({ pendingQuestion, currentUser, disclaimerAcc
                         data-role={msg.isUser ? 'user-message' : 'ai-message'}
                       >
                         <p className="text-sm">
-                          {msg.role === 'user' ? msg.text : 
-                          msg.role === 'assistant' ? msg.text :
-                          msg.isUser ? (msg.message || msg.text) : (msg.response || msg.message || msg.text)}
+                          {msg.isUser ? (msg.message || msg.text) : (msg.response || msg.message || msg.text)}
                         </p>
                         
                         {/* Status indicators for user messages (Choice 3B) */}
