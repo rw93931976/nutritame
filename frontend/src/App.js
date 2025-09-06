@@ -2747,12 +2747,14 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
                           <div className="flex-1">
                             <div className="flex items-start justify-between">
                               <p className="whitespace-pre-wrap leading-relaxed text-base flex-1">
-                                {msg.isUser ? msg.message : (msg.response || msg.message)}
+                                {msg.role === 'user' ? msg.text : 
+                                msg.role === 'assistant' ? msg.text :
+                                msg.isUser ? (msg.message || msg.text) : (msg.response || msg.message || msg.text)}
                               </p>
                               {/* Add to Favorites button for AI responses */}
-                              {!msg.isUser && !msg.isWelcome && (msg.response || msg.message) && (
+                              {((msg.role === 'assistant') || (!msg.isUser && !msg.isWelcome)) && (msg.text || msg.response || msg.message) && (
                                 <button
-                                  onClick={() => addToFavorites(msg.response || msg.message, index)}
+                                  onClick={() => addToFavorites(msg.text || msg.response || msg.message, index)}
                                   className="ml-3 p-2 text-gray-400 hover:text-pink-600 hover:bg-pink-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
                                   title="Add to favorites"
                                 >
