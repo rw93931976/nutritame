@@ -1662,6 +1662,16 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
   // Consent acceptance guard
   const acceptHandledRef = useRef(false);
 
+  // Helper functions for locked chat rendering
+  const uid = () => (crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+
+  const extractAiText = (res) =>
+    res?.ai_response?.text ??
+    res?.raw?.ai_response?.text ??
+    res?.raw?.message?.text ??
+    res?.raw?.text ??
+    '';
+
   // Auto-scroll to show start of latest AI response (not the very bottom)
   const scrollToLatestResponse = () => {
     // Find all messages
