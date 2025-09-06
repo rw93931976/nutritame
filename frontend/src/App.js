@@ -2059,7 +2059,7 @@ const Dashboard = ({ userProfile, onBack, demoMode, authToken, shoppingLists, se
     try {
       const messages = await aiCoachService.getMessages(session.id);
       
-      // Convert AI Coach messages to UI format
+      // Convert AI Coach messages to UI format (original format)
       const uiMessages = messages.map(msg => ({
         id: msg.id,
         message: msg.role === 'user' ? msg.text : '',
